@@ -8,68 +8,89 @@
 
 @layer base {
   :root {
-    /* Luxury Color Palette */
-    --background: 35 20% 98%;
-    --foreground: 30 15% 15%;
+    /* Everview Modern Coastal Color Palette */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 16.5%;
 
-    --card: 40 25% 97%;
-    --card-foreground: 30 15% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 16.5%;
 
-    --popover: 40 25% 97%;
-    --popover-foreground: 30 15% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 16.5%;
 
-    --primary: 30 15% 15%;
-    --primary-foreground: 40 25% 97%;
+    --primary: 0 0% 16.5%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 38 35% 92%;
-    --secondary-foreground: 30 15% 15%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 0 0% 16.5%;
 
-    --muted: 42 25% 94%;
-    --muted-foreground: 30 8% 45%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 0 0% 45%;
 
-    --accent: 45 65% 85%;
-    --accent-foreground: 30 15% 15%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 0 0% 16.5%;
 
-    --luxury-gold: 42 78% 60%;
-    --luxury-gold-light: 45 85% 85%;
-    --luxury-champagne: 45 45% 90%;
-    --luxury-cream: 42 30% 95%;
-    --luxury-navy: 215 25% 20%;
-    --luxury-charcoal: 30 8% 25%;
+    /* Everview Brand Colors */
+    --ever-bg: 0 0% 100%;
+    --ever-ink: 0 0% 16.5%;
+    --ever-body: 0 0% 16.5%;
+    --ever-blue: 200 36% 37%;
+    --ever-champ: 44 36% 80%;
+    --ever-line: 31 12% 91%;
+    --ever-panel: 0 0% 100%;
+
+    /* Legacy luxury colors for gradual migration */
+    --luxury-gold: 44 36% 80%;
+    --luxury-gold-light: 44 36% 80%;
+    --luxury-champagne: 44 36% 80%;
+    --luxury-cream: 39 30% 95%;
+    --luxury-navy: 200 36% 37%;
+    --luxury-charcoal: 0 0% 16.5%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 40 25% 97%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 42 25% 88%;
-    --input: 42 25% 90%;
-    --ring: 42 78% 60%;
+    --border: 31 12% 91%;
+    --input: 31 12% 91%;
+    --ring: 0 0% 16.5%;
 
     /* Gradients & Shadows */
-    --gradient-luxury: linear-gradient(135deg, hsl(var(--luxury-gold)) 0%, hsl(var(--luxury-champagne)) 100%);
-    --gradient-hero: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.6) 100%);
-    --shadow-luxury: 0 20px 40px -12px hsl(var(--luxury-gold) / 0.25);
-    --shadow-card: 0 8px 32px -8px hsl(30 15% 15% / 0.08);
-    --shadow-elegant: 0 4px 20px -4px hsl(30 15% 15% / 0.1);
+    --gradient-luxury: linear-gradient(135deg, hsl(var(--ever-champ)) 0%, hsl(var(--ever-blue)) 100%);
+    --gradient-hero: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 35%, rgba(0,0,0,0.6) 100%);
+    --shadow-luxury: 0 8px 24px rgba(0,0,0,0.05);
+    --shadow-card: 0 8px 32px -8px rgba(0,0,0,0.05);
+    --shadow-elegant: 0 4px 20px -4px rgba(0,0,0,0.1);
 
     /* Animations */
     --transition-luxury: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-    --radius: 0.75rem;
+    --radius: 1rem;
   }
 
   .dark {
-    /* Keep existing dark mode styles but update key colors */
-    --luxury-gold: 42 65% 55%;
-    --luxury-gold-light: 45 75% 75%;
-    --luxury-champagne: 45 35% 80%;
-    --luxury-cream: 42 20% 85%;
+    /* Dark mode adjustments for coastal theme */
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
 
-    --background: 30 8% 8%;
-    --foreground: 40 25% 97%;
+    /* Everview Dark Mode Colors */
+    --ever-bg: 240 10% 3.9%;
+    --ever-ink: 0 0% 98%;
+    --ever-body: 0 0% 90%;
+    --ever-blue: 200 36% 55%;
+    --ever-champ: 44 36% 70%;
+    --ever-line: 240 3.7% 15.9%;
+    --ever-panel: 240 10% 3.9%;
 
-    --card: 30 8% 12%;
-    --card-foreground: 40 25% 97%;
+    /* Legacy colors updated for dark mode */
+    --luxury-gold: 44 36% 70%;
+    --luxury-gold-light: 44 36% 75%;
+    --luxury-champagne: 44 36% 70%;
+    --luxury-cream: 39 30% 85%;
+    --luxury-navy: 200 36% 55%;
+    --luxury-charcoal: 0 0% 98%;
   }
 }
 
@@ -104,21 +125,27 @@
 
   /* Interactive Elements */
   .btn-luxury {
-    @apply inline-flex items-center justify-center px-8 py-4 rounded-lg font-medium transition-all duration-300;
-    @apply bg-[hsl(var(--luxury-gold))] text-white hover:bg-[hsl(var(--luxury-gold)/0.9)];
-    @apply shadow-[0_4px_20px_-4px_hsl(var(--luxury-gold)/0.4)] hover:shadow-[0_8px_32px_-8px_hsl(var(--luxury-gold)/0.5)];
-    @apply transform hover:scale-105;
+    @apply inline-flex items-center justify-center px-8 py-4 rounded-full font-medium transition-all duration-300;
+    @apply bg-primary text-white hover:shadow-2xl hover:shadow-black/20;
   }
 
   .btn-luxury-outline {
-    @apply inline-flex items-center justify-center px-8 py-4 rounded-lg font-medium transition-all duration-300;
-    @apply border-2 border-[hsl(var(--luxury-gold))] text-[hsl(var(--luxury-gold))] hover:bg-[hsl(var(--luxury-gold))] hover:text-white;
-    @apply hover:shadow-[0_4px_20px_-4px_hsl(var(--luxury-gold)/0.4)];
+    @apply inline-flex items-center justify-center px-8 py-4 rounded-full font-medium transition-all duration-300;
+    @apply border border-ever-champ text-primary bg-transparent hover:bg-ever-champ hover:text-primary;
   }
 
   .card-luxury {
-    @apply bg-card rounded-xl p-6 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-elegant)] transition-all duration-300;
-    @apply border border-[hsl(var(--border))] hover:border-[hsl(var(--luxury-gold)/0.3)];
+    @apply bg-white rounded-2xl shadow-sm hover:shadow-lg hover:shadow-black/5 transition-all duration-300;
+    @apply border border-ever-line;
+  }
+
+  /* Glass Effects */
+  .glass {
+    @apply backdrop-blur-md bg-white/6 border-b border-white/12;
+  }
+
+  .glass-card {
+    @apply backdrop-blur-md bg-white/60 border border-ever-line rounded-2xl;
   }
 
   /* Animations */

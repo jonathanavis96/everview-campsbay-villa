@@ -110,14 +110,14 @@ const GallerySection = () => {
   const selectedImageData = selectedImage ? galleryImages.find(img => img.id === selectedImage) : null;
 
   return (
-    <section id="gallery" className="section-spacing bg-luxury-cream/20">
+    <section id="gallery" className="section-spacing bg-gradient-to-b from-ever-bg to-ever-bg/90">
       <div className="container-luxury">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <h2 className="font-heading text-4xl md:text-5xl font-bold text-luxury-charcoal mb-6">
+          <h2 className="font-heading text-4xl md:text-5xl font-bold text-ever-ink mb-6">
             Villa Gallery
           </h2>
-          <p className="font-body text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
+          <p className="font-body text-xl text-ever-body max-w-3xl mx-auto mb-8">
             Explore every corner of Everview through our curated collection of images, 
             showcasing the villa's stunning architecture, luxurious interiors, and breathtaking views.
           </p>
@@ -130,8 +130,8 @@ const GallerySection = () => {
                 onClick={() => setSelectedCategory(category)}
                 className={`px-4 py-2 rounded-full font-body text-sm font-medium transition-all duration-200 ${
                   selectedCategory === category
-                    ? 'bg-luxury-gold text-white shadow-lg'
-                    : 'bg-white/60 text-luxury-charcoal hover:bg-luxury-gold/20'
+                    ? 'bg-ever-champ/25 border border-ever-champ text-ever-ink'
+                    : 'bg-white border border-ever-line text-ever-ink hover:bg-ever-champ/10'
                 }`}
               >
                 {category}
@@ -162,17 +162,17 @@ const GallerySection = () => {
 
                 {/* Category Badge */}
                 <div className="absolute top-4 left-4">
-                  <Badge className="bg-white/90 text-luxury-charcoal hover:bg-white">
+                  <Badge className="bg-white/90 text-ever-ink border border-ever-line hover:bg-white">
                     {image.category}
                   </Badge>
                 </div>
               </div>
               
               <div className="p-4">
-                <h3 className="font-heading text-lg font-bold text-luxury-charcoal mb-1">
+                <h3 className="font-heading text-lg font-bold text-ever-ink mb-1">
                   {image.title}
                 </h3>
-                <p className="font-body text-sm text-muted-foreground">
+                <p className="font-body text-sm text-ever-body">
                   {image.description}
                 </p>
               </div>
@@ -181,11 +181,11 @@ const GallerySection = () => {
         </div>
 
         {/* Virtual Tour Call-to-Action */}
-        <div className="bg-gradient-to-r from-luxury-gold/10 to-luxury-champagne/20 rounded-2xl p-8 md:p-12 text-center">
-          <h3 className="font-heading text-3xl font-bold text-luxury-charcoal mb-4">
+        <div className="bg-gradient-to-b from-white to-ever-bg border-t border-ever-champ rounded-2xl p-8 md:p-12 text-center">
+          <h3 className="font-heading text-3xl font-bold text-ever-ink mb-4">
             See More of Everview
           </h3>
-          <p className="font-body text-lg text-muted-foreground mb-6 max-w-2xl mx-auto">
+          <p className="font-body text-lg text-ever-body mb-6 max-w-2xl mx-auto">
             Ready to experience the villa in person? Contact us to arrange a viewing 
             or request additional images and floor plans.
           </p>
@@ -253,7 +253,7 @@ const GallerySection = () => {
                     {selectedImageData.description}
                   </p>
                 </div>
-                <Badge className="bg-luxury-gold text-white">
+                <Badge className="bg-ever-blue text-white">
                   {selectedImageData.category}
                 </Badge>
               </div>

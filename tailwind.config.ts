@@ -58,6 +58,15 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				ever: {
+					bg: 'hsl(var(--ever-bg))',
+					ink: 'hsl(var(--ever-ink))',
+					body: 'hsl(var(--ever-body))',
+					blue: 'hsl(var(--ever-blue))',
+					champ: 'hsl(var(--ever-champ))',
+					line: 'hsl(var(--ever-line))',
+					panel: 'hsl(var(--ever-panel))',
+				},
 				luxury: {
 					gold: 'hsl(var(--luxury-gold))',
 					'gold-light': 'hsl(var(--luxury-gold-light))',

@@ -91,10 +91,10 @@ const FeaturesSection = () => {
       <div className="container-luxury">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <h2 className="font-heading text-4xl md:text-5xl font-bold text-luxury-charcoal mb-6">
+          <h2 className="font-heading text-4xl md:text-5xl font-bold text-ever-ink mb-6">
             Features & Comfort
           </h2>
-          <p className="font-body text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
+          <p className="font-body text-xl text-ever-body max-w-3xl mx-auto mb-8">
             Every detail has been carefully considered to ensure your stay exceeds expectations. 
             Discover the premium amenities that make Everview extraordinary.
           </p>
@@ -107,8 +107,8 @@ const FeaturesSection = () => {
                 onClick={() => setSelectedCategory(category)}
                 className={`px-4 py-2 rounded-full font-body text-sm font-medium transition-all duration-200 ${
                   selectedCategory === category
-                    ? 'bg-luxury-gold text-white shadow-lg'
-                    : 'bg-luxury-champagne/50 text-luxury-charcoal hover:bg-luxury-gold/20'
+                    ? 'bg-ever-champ/25 border border-ever-champ text-ever-ink'
+                    : 'bg-white border border-ever-line text-ever-ink hover:bg-ever-champ/10'
                 }`}
               >
                 {category}
@@ -129,32 +129,32 @@ const FeaturesSection = () => {
             >
               <CardContent className="p-6">
                 <div className="flex items-center mb-4">
-                  <div className="bg-luxury-gold/10 p-3 rounded-xl mr-4">
-                    <feature.icon className="h-6 w-6 text-luxury-gold" />
+                  <div className="bg-ever-champ/20 p-3 rounded-xl mr-4">
+                    <feature.icon className="h-6 w-6 text-ever-champ stroke-2" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-heading text-lg font-bold text-luxury-charcoal mb-1">
+                    <h3 className="font-heading text-lg font-bold text-ever-ink mb-1">
                       {feature.title}
                     </h3>
-                    <span className="text-xs bg-luxury-champagne/60 text-luxury-charcoal px-2 py-1 rounded-full">
+                    <span className="text-xs bg-ever-line text-ever-body px-2 py-1 rounded-full">
                       {feature.category}
                     </span>
                   </div>
                 </div>
 
-                <p className="font-body text-muted-foreground text-sm mb-3">
+                <p className="font-body text-ever-body text-sm mb-3">
                   {feature.summary}
                 </p>
 
                 {expandedFeature === index && (
-                  <div className="border-t border-luxury-gold/20 pt-4 animate-fade-up">
-                    <p className="font-body text-sm text-foreground leading-relaxed">
+                  <div className="border-t border-ever-line pt-4 animate-fade-up">
+                    <p className="font-body text-sm text-ever-ink leading-relaxed">
                       {feature.details}
                     </p>
                   </div>
                 )}
 
-                <div className="text-xs text-luxury-gold font-medium mt-3">
+                <div className="text-xs text-ever-blue font-medium mt-3">
                   {expandedFeature === index ? 'Tap to collapse' : 'Tap to expand'}
                 </div>
               </CardContent>
@@ -163,12 +163,12 @@ const FeaturesSection = () => {
         </div>
 
         {/* Comfort Guarantee */}
-        <div className="mt-16 bg-gradient-to-r from-luxury-gold/10 via-luxury-champagne/20 to-luxury-gold/10 rounded-2xl p-8 md:p-12 text-center">
-          <Sun className="h-12 w-12 text-luxury-gold mx-auto mb-6" />
-          <h3 className="font-heading text-3xl font-bold text-luxury-charcoal mb-4">
+        <div className="mt-16 bg-gradient-to-b from-white to-ever-bg/50 border-t border-ever-champ rounded-2xl p-8 md:p-12 text-center">
+          <Sun className="h-12 w-12 text-ever-blue mx-auto mb-6" />
+          <h3 className="font-heading text-3xl font-bold text-ever-ink mb-4">
             Comfort Guaranteed
           </h3>
-          <p className="font-body text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="font-body text-lg text-ever-body max-w-2xl mx-auto">
             From the moment you arrive to the time you reluctantly leave, every aspect of your 
             stay has been designed to exceed expectations. Experience true luxury living.
           </p>

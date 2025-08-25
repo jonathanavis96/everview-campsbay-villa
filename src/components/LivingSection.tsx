@@ -52,28 +52,28 @@ const LivingSection = () => {
   ];
 
   return (
-    <section id="living" className="section-spacing bg-luxury-cream/20">
+    <section id="living" className="section-spacing bg-gradient-to-b from-ever-bg to-ever-bg/90">
       <div className="container-luxury">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <h2 className="font-heading text-4xl md:text-5xl font-bold text-luxury-charcoal mb-6">
+          <h2 className="font-heading text-4xl md:text-5xl font-bold text-ever-ink mb-6">
             Living & Entertaining
           </h2>
-          <p className="font-body text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
+          <p className="font-body text-xl text-ever-body max-w-3xl mx-auto mb-8">
             Every space is designed for comfort, connection, and creating unforgettable memories 
             with family and friends.
           </p>
 
           {/* Lifestyle Moments */}
-          <div className="bg-gradient-to-r from-luxury-gold/10 to-luxury-champagne/20 rounded-2xl p-8 mb-16">
-            <h3 className="font-heading text-2xl font-bold text-luxury-charcoal mb-6">
+          <div className="bg-gradient-to-b from-white to-ever-bg border-t border-ever-champ rounded-2xl p-8 mb-16">
+            <h3 className="font-heading text-2xl font-bold text-ever-ink mb-6">
               Moments to Treasure
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {lifestyleMoments.map((moment, index) => (
                 <div key={index} className="flex items-center">
-                  <div className="w-2 h-2 bg-luxury-gold rounded-full mr-3 flex-shrink-0"></div>
-                  <span className="font-body text-muted-foreground font-medium">
+                  <div className="w-2 h-2 bg-ever-champ rounded-full mr-3 flex-shrink-0"></div>
+                  <span className="font-body text-ever-body font-medium">
                     {moment}
                   </span>
                 </div>
@@ -101,10 +101,10 @@ const LivingSection = () => {
               </div>
               
               <CardContent className="p-6">
-                <h3 className="font-heading text-xl font-bold text-luxury-charcoal mb-3">
+                <h3 className="font-heading text-xl font-bold text-ever-ink mb-3">
                   {space.name}
                 </h3>
-                <p className="font-body text-muted-foreground leading-relaxed">
+                <p className="font-body text-ever-body leading-relaxed">
                   {space.description}
                 </p>
               </CardContent>
@@ -113,38 +113,38 @@ const LivingSection = () => {
         </div>
 
         {/* Dining Experiences Highlight */}
-        <div className="mt-16 bg-luxury-gold/5 rounded-2xl p-8 md:p-12 text-center">
-          <h3 className="font-heading text-3xl font-bold text-luxury-charcoal mb-4">
+        <div className="mt-16 bg-white border border-ever-line rounded-2xl p-8 md:p-12 text-center">
+          <h3 className="font-heading text-3xl font-bold text-ever-ink mb-4">
             Multiple Dining Experiences
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-8">
             <div className="text-center">
-              <div className="bg-luxury-gold/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
-                <Utensils className="h-8 w-8 text-luxury-gold" />
+              <div className="border border-ever-champ w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Utensils className="h-8 w-8 text-ever-champ" />
               </div>
-              <h4 className="font-body font-semibold text-luxury-charcoal">Formal Dining</h4>
-              <p className="text-sm text-muted-foreground">Elegant indoor setting</p>
+              <h4 className="font-body font-semibold text-ever-ink">Formal Dining</h4>
+              <p className="text-sm text-ever-body">Elegant indoor setting</p>
             </div>
             <div className="text-center">
-              <div className="bg-luxury-gold/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
-                <Waves className="h-8 w-8 text-luxury-gold" />
+              <div className="border border-ever-champ w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Waves className="h-8 w-8 text-ever-champ" />
               </div>
-              <h4 className="font-body font-semibold text-luxury-charcoal">Ocean Terrace</h4>
-              <p className="text-sm text-muted-foreground">Al fresco with views</p>
+              <h4 className="font-body font-semibold text-ever-ink">Ocean Terrace</h4>
+              <p className="text-sm text-ever-body">Al fresco with views</p>
             </div>
             <div className="text-center">
-              <div className="bg-luxury-gold/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
-                <ChefHat className="h-8 w-8 text-luxury-gold" />
+              <div className="border border-ever-champ w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
+                <ChefHat className="h-8 w-8 text-ever-champ" />
               </div>
-              <h4 className="font-body font-semibold text-luxury-charcoal">Kitchen Island</h4>
-              <p className="text-sm text-muted-foreground">Casual breakfast nook</p>
+              <h4 className="font-body font-semibold text-ever-ink">Kitchen Island</h4>
+              <p className="text-sm text-ever-body">Casual breakfast nook</p>
             </div>
             <div className="text-center">
-              <div className="bg-luxury-gold/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
-                <Wine className="h-8 w-8 text-luxury-gold" />
+              <div className="border border-ever-champ w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Wine className="h-8 w-8 text-ever-champ" />
               </div>
-              <h4 className="font-body font-semibold text-luxury-charcoal">Wine Cellar</h4>
-              <p className="text-sm text-muted-foreground">Intimate tastings</p>
+              <h4 className="font-body font-semibold text-ever-ink">Kitchen Island</h4>
+              <p className="text-sm text-ever-body">Intimate tastings</p>
             </div>
           </div>
         </div>
