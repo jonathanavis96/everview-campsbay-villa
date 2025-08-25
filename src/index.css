@@ -141,7 +141,7 @@
 
   /* Glass Effects */
   .glass {
-    @apply backdrop-blur-md bg-white/6 border-b border-white/12;
+    @apply backdrop-blur-md bg-white/10 border-b border-white/20;
   }
 
   .glass-card {
