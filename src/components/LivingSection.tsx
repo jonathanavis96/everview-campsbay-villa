@@ -1,19 +1,28 @@
-// src/sections/LivingSection.tsx
 import React, { useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Utensils, Sofa, Wine, PlayCircle, ChefHat, Waves } from "lucide-react";
 
+import { loadPhotosFrom } from "@/utils/photoLoader";
 import ZoomableImage from "@/components/lightbox/ZoomableImage";
 import type { Photo } from "@/components/lightbox/Lightbox";
 
-import livingRoomImage from "@/assets/living-room-luxury.jpg";
-// When you have specific assets, import like this:
-// import wineBar from "@/assets/living/wine-bar.jpg";
-// import wineCellar from "@/assets/living/wine-cellar.jpg";
-// import loungeWide from "@/assets/living/lounge-wide.jpg";
-
 const LivingSection = () => {
-  // Each space owns its own mini-gallery (1+ photos)
+  // Load all living photos; we’ll group them per tile by keyword
+  const allLiving: Photo[] = useMemo(
+    () => loadPhotosFrom("living", "Living & Entertainment"),
+    []
+  );
+
+  const pick = (contains: RegExp | string): Photo[] => {
+    const res = allLiving.filter((p) =>
+      typeof contains === "string"
+        ? p.title.toLowerCase().includes(contains.toLowerCase())
+        : contains.test(p.title)
+    );
+    // Fallback: ensure each tile has at least one photo
+    return res.length ? res : allLiving.slice(0, 1);
+  };
+
   const livingSpaces = useMemo(
     () => [
       {
@@ -21,54 +30,45 @@ const LivingSection = () => {
         description:
           "Spacious seating with panoramic ocean views, perfect for gathering and relaxation.",
         icon: Sofa,
-        images: [
-          { src: livingRoomImage, title: "Open Living Lounge" },
-          // { src: loungeWide, title: "Lounge (Wide)" }, // ← uncomment when asset exists
-        ] as Photo[],
+        images: pick(/lounge|living/i),
       },
       {
         name: "Gourmet Kitchen",
         description:
           "Modern appliances, marble countertops, and a large island for culinary adventures.",
         icon: ChefHat,
-        images: [{ src: livingRoomImage, title: "Gourmet Kitchen" }] as Photo[],
+        images: pick(/kitchen|island/i),
       },
       {
         name: "Indoor Dining",
         description:
           "Elegant dining for 8 with stunning views and sophisticated ambiance.",
         icon: Utensils,
-        images: [{ src: livingRoomImage, title: "Indoor Dining" }] as Photo[],
+        images: pick(/dining|table/i),
       },
       {
         name: "Outdoor Terrace",
         description:
           "Al fresco dining and entertaining with breathtaking sunset views.",
         icon: Waves,
-        images: [{ src: livingRoomImage, title: "Outdoor Terrace" }] as Photo[],
+        images: pick(/terrace|outdoor|patio/i),
       },
       {
         name: "Wine Cellar & Bar",
         description:
           "Curated wine collection and professional bar setup for memorable evenings.",
         icon: Wine,
-        images: [
-          // Replace placeholders with your real images when ready:
-          // { src: wineBar, title: "Wine Bar" },
-          // { src: wineCellar, title: "Wine Cellar" },
-          { src: livingRoomImage, title: "Wine Bar (placeholder)" },
-          { src: livingRoomImage, title: "Wine Cellar (placeholder)" },
-        ] as Photo[],
+        images: pick(/bar|cellar|wine/i), // will include multiple if matched
       },
       {
         name: "Entertainment Lounge",
         description:
           "Pool table, media center, and comfortable seating for memorable nights.",
         icon: PlayCircle,
-        images: [{ src: livingRoomImage, title: "Entertainment Lounge" }] as Photo[],
+        images: pick(/entertainment|games?|media|pool/i),
       },
     ],
-    []
+    [allLiving]
   );
 
   const lifestyleMoments = [
@@ -95,9 +95,7 @@ const LivingSection = () => {
 
           {/* Lifestyle Moments */}
           <div className="bg-gradient-to-b from-white to-ever-bg border-t border-ever-champ rounded-2xl p-8 mb-16">
-            <h3 className="font-heading text-2xl font-bold text-ever-ink mb-6">
-              Moments to Treasure
-            </h3>
+            <h3 className="font-heading text-2xl font-bold text-ever-ink mb-6">Moments to Treasure</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {lifestyleMoments.map((moment, index) => (
                 <div key={index} className="flex items-center">
@@ -114,12 +112,11 @@ const LivingSection = () => {
           {livingSpaces.map((space, index) => (
             <Card key={index} className="card-luxury overflow-hidden group">
               <div className="relative overflow-hidden">
-                {/* Zoomable: open this card's own mini-gallery at image 0 */}
+                {/* Zoomable: open this card's own mini-gallery (1+ photos) */}
                 <ZoomableImage
                   photos={space.images}
                   index={0}
-                  className="h-48"
-                  imgClassName="object-cover"
+                  className="h-48 w-full"
                 />
 
                 {/* Hover gradient overlay */}
@@ -143,9 +140,7 @@ const LivingSection = () => {
 
         {/* Dining Experiences Highlight */}
         <div className="mt-16 bg-white border border-ever-line rounded-2xl p-8 md:p-12 text-center">
-          <h3 className="font-heading text-3xl font-bold text-ever-ink mb-4">
-            Multiple Dining Experiences
-          </h3>
+          <h3 className="font-heading text-3xl font-bold text-ever-ink mb-4">Multiple Dining Experiences</h3>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-8">
             <div className="text-center">
               <div className="border border-ever-champ w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
