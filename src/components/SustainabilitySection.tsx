@@ -5,6 +5,7 @@ const SustainabilitySection = () => {
   const sustainabilityFeatures = [
     {
       icon: Sun,
+      color: "text-ever-solar",
       title: 'Solar-Powered Living',
       description: '40 high-efficiency solar panels with 26kWh battery storage',
       details: 'Complete energy independence with zero load-shedding impact. Our advanced solar system powers the entire villa, ensuring uninterrupted luxury.',
@@ -12,6 +13,7 @@ const SustainabilitySection = () => {
     },
     {
       icon: Droplets,
+      color: "text-ever-blue",
       title: 'Pure Water System',
       description: 'Private borehole with advanced multi-stage filtration',
       details: 'Crystal-clear water sourced from our private borehole and purified through state-of-the-art filtration systems for peace of mind.',
@@ -19,6 +21,7 @@ const SustainabilitySection = () => {
     },
     {
       icon: Leaf,
+      color: "text-ever-green",
       title: 'Eco-Luxury Design',
       description: 'Sustainable materials and energy-efficient systems',
       details: 'Thoughtfully chosen materials and smart home technology reduce environmental impact without compromising on luxury or comfort.',
@@ -39,7 +42,7 @@ const SustainabilitySection = () => {
             Eco-Conscious Excellence
           </h2>
           <p className="font-body text-xl text-ever-body max-w-3xl mx-auto">
-            Experience guilt-free luxury with our commitment to sustainability. Advanced systems 
+            Experience guilt-free luxury with our commitment to sustainability. Advanced systems
             ensure your comfort while protecting the beautiful environment we call home.
           </p>
         </div>
@@ -51,7 +54,7 @@ const SustainabilitySection = () => {
             Never Experience Load-Shedding
           </h3>
           <p className="font-body text-xl mb-6 text-ever-body">
-            Our 26kWh battery storage and 40-panel solar array ensure uninterrupted power, 
+            Our 26kWh battery storage and 40-panel solar array ensure uninterrupted power,
             24 hours a day, 365 days a year.
           </p>
           <div className="flex flex-col md:flex-row justify-center items-center gap-8 text-center">
@@ -81,31 +84,43 @@ const SustainabilitySection = () => {
 
         {/* Sustainability Features */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-          {sustainabilityFeatures.map((feature, index) => (
-            <Card key={index} className="card-luxury text-center p-8 hover:scale-105 transition-transform duration-300">
-              <CardContent className="p-0">
-                <div className="border border-ever-champ w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <feature.icon className="h-10 w-10 text-ever-champ stroke-2" />
-                </div>
-                
-                <div className="text-ever-ink bg-ever-champ/20 border border-ever-champ px-3 py-1 rounded-full text-sm font-medium mb-4 inline-block">
-                  {feature.stats}
-                </div>
-                
-                <h3 className="font-heading text-xl font-bold text-ever-ink mb-3">
-                  {feature.title}
-                </h3>
-                
-                <p className="font-body text-ever-blue font-medium mb-3">
-                  {feature.description}
-                </p>
-                
-                <p className="font-body text-ever-body text-sm leading-relaxed">
-                  {feature.details}
-                </p>
-              </CardContent>
-            </Card>
-          ))}
+          {sustainabilityFeatures.map((feature, index) => {
+            const Icon = feature.icon;
+            return (
+              <Card
+                key={index}
+                className="card-luxury text-center p-8 hover:scale-105 transition-transform duration-300"
+              >
+                <CardContent className="p-0">
+                  {/* Circle around icon */}
+                  <div
+                    className={`border w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 ${feature.color}`}
+                  >
+                    <Icon className={`h-10 w-10 stroke-2 ${feature.color}`} />
+                  </div>
+
+                  {/* Stats pill */}
+                  <div
+                    className={`text-ever-ink border px-3 py-1 rounded-full text-sm font-medium mb-4 inline-block ${feature.color.replace("text-", "bg-")}/20 border-current`}
+                  >
+                    {feature.stats}
+                  </div>
+
+                  <h3 className="font-heading text-xl font-bold text-ever-ink mb-3">
+                    {feature.title}
+                  </h3>
+
+                  <p className="font-body text-ever-blue font-medium mb-3">
+                    {feature.description}
+                  </p>
+
+                  <p className="font-body text-ever-body text-sm leading-relaxed">
+                    {feature.details}
+                  </p>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
 
         {/* Environmental Impact */}
