@@ -66,6 +66,7 @@ export default {
 					champ: 'hsl(var(--ever-champ))',
 					line: 'hsl(var(--ever-line))',
 					panel: 'hsl(var(--ever-panel))',
+					solar: 'hsl(var(--ever-solar))',
 				},
 				luxury: {
 					gold: 'hsl(var(--luxury-gold))',
