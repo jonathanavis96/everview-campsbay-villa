@@ -38,6 +38,7 @@
     --ever-champ: 44 36% 80%;
     --ever-line: 31 12% 91%;
     --ever-panel: 0 0% 100%;
+    --ever-solar: 48 91% 68%; /* HSL version of #F5D367 */
 
     /* Legacy luxury colors for gradual migration */
     --luxury-gold: 44 36% 80%;
