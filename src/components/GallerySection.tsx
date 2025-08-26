@@ -3,7 +3,7 @@ import React, { useMemo, useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ZoomIn } from "lucide-react";
-import Lightbox, { type Photo } from "@/components/Lightbox";
+import Lightbox, { type Photo } from "@/components/lightbox/Lightbox";
 
 import heroImage from "@/assets/hero-villa-exterior.jpg";
 import masterBedroom from "@/assets/master-bedroom-ocean.jpg";

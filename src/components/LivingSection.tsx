@@ -1,54 +1,83 @@
-import { Card, CardContent } from '@/components/ui/card';
-import { Utensils, Sofa, Wine, PlayCircle, ChefHat, Waves } from 'lucide-react';
-import livingRoomImage from '@/assets/living-room-luxury.jpg';
+// src/sections/LivingSection.tsx
+import React, { useMemo } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Utensils, Sofa, Wine, PlayCircle, ChefHat, Waves } from "lucide-react";
+
+import ZoomableImage from "@/components/lightbox/ZoomableImage";
+import type { Photo } from "@/components/lightbox/Lightbox";
+
+import livingRoomImage from "@/assets/living-room-luxury.jpg";
+// When you have specific assets, import like this:
+// import wineBar from "@/assets/living/wine-bar.jpg";
+// import wineCellar from "@/assets/living/wine-cellar.jpg";
+// import loungeWide from "@/assets/living/lounge-wide.jpg";
 
 const LivingSection = () => {
-  const livingSpaces = [
-    {
-      name: 'Open Living Lounge',
-      description: 'Spacious seating with panoramic ocean views, perfect for gathering and relaxation.',
-      icon: Sofa,
-      image: livingRoomImage,
-    },
-    {
-      name: 'Gourmet Kitchen',
-      description: 'Modern appliances, marble countertops, and a large island for culinary adventures.',
-      icon: ChefHat,
-      image: livingRoomImage, // Placeholder
-    },
-    {
-      name: 'Indoor Dining',
-      description: 'Elegant dining for 8 with stunning views and sophisticated ambiance.',
-      icon: Utensils,
-      image: livingRoomImage, // Placeholder
-    },
-    {
-      name: 'Outdoor Terrace',
-      description: 'Al fresco dining and entertaining with breathtaking sunset views.',
-      icon: Waves,
-      image: livingRoomImage, // Placeholder
-    },
-    {
-      name: 'Wine Cellar & Bar',
-      description: 'Curated wine collection and professional bar setup for memorable evenings.',
-      icon: Wine,
-      image: livingRoomImage, // Placeholder
-    },
-    {
-      name: 'Entertainment Lounge',
-      description: 'Pool table, media center, and comfortable seating for memorable nights.',
-      icon: PlayCircle,
-      image: livingRoomImage, // Placeholder
-    },
-  ];
+  // Each space owns its own mini-gallery (1+ photos)
+  const livingSpaces = useMemo(
+    () => [
+      {
+        name: "Open Living Lounge",
+        description:
+          "Spacious seating with panoramic ocean views, perfect for gathering and relaxation.",
+        icon: Sofa,
+        images: [
+          { src: livingRoomImage, title: "Open Living Lounge" },
+          // { src: loungeWide, title: "Lounge (Wide)" }, // ← uncomment when asset exists
+        ] as Photo[],
+      },
+      {
+        name: "Gourmet Kitchen",
+        description:
+          "Modern appliances, marble countertops, and a large island for culinary adventures.",
+        icon: ChefHat,
+        images: [{ src: livingRoomImage, title: "Gourmet Kitchen" }] as Photo[],
+      },
+      {
+        name: "Indoor Dining",
+        description:
+          "Elegant dining for 8 with stunning views and sophisticated ambiance.",
+        icon: Utensils,
+        images: [{ src: livingRoomImage, title: "Indoor Dining" }] as Photo[],
+      },
+      {
+        name: "Outdoor Terrace",
+        description:
+          "Al fresco dining and entertaining with breathtaking sunset views.",
+        icon: Waves,
+        images: [{ src: livingRoomImage, title: "Outdoor Terrace" }] as Photo[],
+      },
+      {
+        name: "Wine Cellar & Bar",
+        description:
+          "Curated wine collection and professional bar setup for memorable evenings.",
+        icon: Wine,
+        images: [
+          // Replace placeholders with your real images when ready:
+          // { src: wineBar, title: "Wine Bar" },
+          // { src: wineCellar, title: "Wine Cellar" },
+          { src: livingRoomImage, title: "Wine Bar (placeholder)" },
+          { src: livingRoomImage, title: "Wine Cellar (placeholder)" },
+        ] as Photo[],
+      },
+      {
+        name: "Entertainment Lounge",
+        description:
+          "Pool table, media center, and comfortable seating for memorable nights.",
+        icon: PlayCircle,
+        images: [{ src: livingRoomImage, title: "Entertainment Lounge" }] as Photo[],
+      },
+    ],
+    []
+  );
 
   const lifestyleMoments = [
-    'Sunset dinners on the terrace',
-    'Movie nights in the lounge',
-    'Quiet reading corners',
-    'Pool table evenings',
-    'Morning coffee with ocean views',
-    'Gourmet cooking experiences',
+    "Sunset dinners on the terrace",
+    "Movie nights in the lounge",
+    "Quiet reading corners",
+    "Pool table evenings",
+    "Morning coffee with ocean views",
+    "Gourmet cooking experiences",
   ];
 
   return (
@@ -57,10 +86,10 @@ const LivingSection = () => {
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className="font-heading text-4xl md:text-5xl font-bold text-ever-ink mb-6">
-            Living & Entertaining
+            Living &amp; Entertaining
           </h2>
           <p className="font-body text-xl text-ever-body max-w-3xl mx-auto mb-8">
-            Every space is designed for comfort, connection, and creating unforgettable memories 
+            Every space is designed for comfort, connection, and creating unforgettable memories
             with family and friends.
           </p>
 
@@ -72,10 +101,8 @@ const LivingSection = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {lifestyleMoments.map((moment, index) => (
                 <div key={index} className="flex items-center">
-                  <div className="w-2 h-2 bg-ever-champ rounded-full mr-3 flex-shrink-0"></div>
-                  <span className="font-body text-ever-body font-medium">
-                    {moment}
-                  </span>
+                  <div className="w-2 h-2 bg-ever-champ rounded-full mr-3 flex-shrink-0" />
+                  <span className="font-body text-ever-body font-medium">{moment}</span>
                 </div>
               ))}
             </div>
@@ -87,26 +114,28 @@ const LivingSection = () => {
           {livingSpaces.map((space, index) => (
             <Card key={index} className="card-luxury overflow-hidden group">
               <div className="relative overflow-hidden">
-                <img
-                  src={space.image}
-                  alt={space.name}
-                  className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105"
+                {/* Zoomable: open this card's own mini-gallery at image 0 */}
+                <ZoomableImage
+                  photos={space.images}
+                  index={0}
+                  className="h-48"
+                  imgClassName="object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div className="absolute top-4 left-4">
+
+                {/* Hover gradient overlay */}
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10" />
+
+                {/* Top-left icon badge */}
+                <div className="absolute top-4 left-4 z-20">
                   <div className="bg-white/20 backdrop-blur-sm rounded-lg p-2">
                     <space.icon className="h-6 w-6 text-white" />
                   </div>
                 </div>
               </div>
-              
+
               <CardContent className="p-6">
-                <h3 className="font-heading text-xl font-bold text-ever-ink mb-3">
-                  {space.name}
-                </h3>
-                <p className="font-body text-ever-body leading-relaxed">
-                  {space.description}
-                </p>
+                <h3 className="font-heading text-xl font-bold text-ever-ink mb-3">{space.name}</h3>
+                <p className="font-body text-ever-body leading-relaxed">{space.description}</p>
               </CardContent>
             </Card>
           ))}
