@@ -13,21 +13,21 @@ const BedroomsSection = () => {
       image: masterBedroomImage,
     },
     {
-      name: 'Ocean Double (Upstairs)',
-      features: ['Private Balcony', 'Ocean Views', 'En-suite Bathroom', 'Built-in Storage'],
+      name: 'Ocean King (Upstairs)',
+      features: ['Mountain Views', 'Ocean Views', 'En-suite Bathroom', 'Built-in Storage'],
       icon: Waves,
       highlight: 'Stunning sea vistas',
       image: masterBedroomImage, // Placeholder - would generate separate images
     },
     {
-      name: 'Garden Double (Upstairs)',
+      name: 'Garden King (Upstairs)',
       features: ['Private Balcony', 'Mountain Views', 'En-suite Bathroom', 'Garden Outlook'],
       icon: Mountain,
       highlight: 'Tranquil mountain setting',
       image: masterBedroomImage, // Placeholder
     },
     {
-      name: 'Ground Floor Double',
+      name: 'Ground Floor King',
       features: ['Mountain Views', 'Garden Access', 'En-suite Bathroom', 'Complete Privacy'],
       icon: Mountain,
       highlight: 'Private garden level',

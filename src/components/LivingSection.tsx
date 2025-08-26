@@ -45,7 +45,7 @@ const LivingSection = () => {
   const lifestyleMoments = [
     'Sunset dinners on the terrace',
     'Movie nights in the lounge',
-    'Wine cellar tastings',
+    'Quiet reading corners',
     'Pool table evenings',
     'Morning coffee with ocean views',
     'Gourmet cooking experiences',
@@ -143,8 +143,8 @@ const LivingSection = () => {
               <div className="border border-ever-champ w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
                 <Wine className="h-8 w-8 text-ever-champ" />
               </div>
-              <h4 className="font-body font-semibold text-ever-ink">Kitchen Island</h4>
-              <p className="text-sm text-ever-body">Intimate tastings</p>
+              <h4 className="font-body font-semibold text-ever-ink">Poolside Patio</h4>
+              <p className="text-sm text-ever-body">Relaxed Poolside Dining</p>
             </div>
           </div>
         </div>
