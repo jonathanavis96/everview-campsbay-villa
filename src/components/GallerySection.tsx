@@ -227,7 +227,7 @@ const GallerySection = () => {
       {/* Lightbox Modal */}
       {selectedImage && selectedImageData && (
         <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
-          <div className="relative max-w-7xl w-full max-h-full">
+          <div className="relative max-w-7xl w-full max-h-full flex flex-col">
             {/* Close Button */}
             <button
               onClick={closeLightbox}
@@ -252,22 +252,22 @@ const GallerySection = () => {
             </button>
 
             {/* Image */}
-            <div className="flex items-center justify-center h-full">
+            <div className="flex-grow flex items-center justify-center">
               <img
                 src={selectedImageData.src}
                 alt={selectedImageData.alt}
-                className="max-w-full max-h-full object-contain rounded-lg"
+                className="max-w-full max-h-[80vh] object-contain rounded-lg"
               />
             </div>
 
-            {/* Image Info */}
-            <div className="absolute bottom-4 left-4 right-4 bg-white/10 backdrop-blur-md text-white p-4 rounded-lg">
-              <div className="flex items-center justify-between">
+            {/* Image Info BELOW */}
+            <div className="mt-4 bg-white/40 backdrop-blur-md text-ever-ink p-4 rounded-lg">
+              <div className="flex items-center justify-between flex-wrap gap-3">
                 <div>
                   <h3 className="font-heading text-xl font-bold mb-1">
                     {selectedImageData.title}
                   </h3>
-                  <p className="font-body text-sm opacity-90">
+                  <p className="font-body text-sm text-ever-body">
                     {selectedImageData.description}
                   </p>
                 </div>
