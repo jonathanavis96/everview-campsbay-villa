@@ -39,6 +39,7 @@
     --ever-line: 31 12% 91%;
     --ever-panel: 0 0% 100%;
     --ever-solar: 48 91% 68%; /* HSL version of #F5D367 */
+    --ever-green: 141 22% 56%; /* muted green (#7FA27C) */
 
     /* Legacy luxury colors for gradual migration */
     --luxury-gold: 44 36% 80%;
