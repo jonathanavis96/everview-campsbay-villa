@@ -46,7 +46,7 @@ const SustainabilitySection = () => {
 
         {/* No Load-Shedding Hero */}
         <div className="bg-gradient-to-br from-white to-ever-bg border-l-4 border-ever-blue rounded-2xl p-8 md:p-12 text-center mb-16">
-          <Zap className="h-16 w-16 mx-auto mb-6 animate-pulse text-ever-blue" />
+          <Zap className="h-16 w-16 mx-auto mb-6 animate-pulse text-ever-solar" />
           <h3 className="font-heading text-3xl md:text-4xl font-bold mb-4 text-ever-ink">
             Never Experience Load-Shedding
           </h3>
@@ -63,7 +63,7 @@ const SustainabilitySection = () => {
               </div>
             </div>
             <div className="flex items-center">
-              <Sun className="h-8 w-8 mr-3 text-ever-blue" />
+              <Sun className="h-8 w-8 mr-3 text-ever-solar" />
               <div>
                 <div className="font-heading text-2xl font-bold text-ever-ink">40</div>
                 <div className="text-sm text-ever-body">Solar Panels</div>
