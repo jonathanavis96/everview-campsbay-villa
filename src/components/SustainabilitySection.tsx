@@ -131,15 +131,17 @@ const SustainabilitySection = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="text-center">
               <div className="font-heading text-3xl font-bold text-ever-blue mb-2">0</div>
-              <div className="font-body text-sm text-ever-body">Carbon Footprint<br />from Grid Power</div>
+              <div className="font-body text-sm text-ever-body">Carbon Footprint<br />from Solar Use</div>
             </div>
             <div className="text-center">
-              <div className="font-heading text-3xl font-bold text-ever-blue mb-2">100%</div>
+              <div className="font-heading text-3xl font-bold text-ever-blue mb-2">
+                <span className="text-base font-normal align-baseline mr-1">Up to</span>100%
+              </div>
               <div className="font-body text-sm text-ever-body">Renewable Energy<br />Generation</div>
             </div>
             <div className="text-center">
               <div className="font-heading text-3xl font-bold text-ever-blue mb-2">24/7</div>
-              <div className="font-body text-sm text-ever-body">Independent<br />Power Supply</div>
+              <div className="font-body text-sm text-ever-body">Reliable<br />Power Supply</div>
             </div>
             <div className="text-center">
               <div className="font-heading text-3xl font-bold text-ever-blue mb-2">Pure</div>
