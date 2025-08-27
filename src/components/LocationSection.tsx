@@ -52,7 +52,7 @@ const LocationSection = () => {
     "The Roundhouse Restaurant",
     "Azure Restaurant",
     "Camps Bay Retreat",
-    "HQ Restaurant",
+    "The Hussar Grill Camps Bay",
     "Paranga Restaurant",
   ];
 
