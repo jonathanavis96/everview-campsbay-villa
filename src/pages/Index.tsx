@@ -1,13 +1,19 @@
+import { lazy, Suspense } from 'react';
 import Navigation from '@/components/Navigation';
 import HeroSection from '@/components/HeroSection';
 import VillaOverview from '@/components/VillaOverview';
-import BedroomsSection from '@/components/BedroomsSection';
-import LivingSection from '@/components/LivingSection';
-import FeaturesSection from '@/components/FeaturesSection';
-import SustainabilitySection from '@/components/SustainabilitySection';
-import GallerySection from '@/components/GallerySection';
-import LocationSection from '@/components/LocationSection';
-import ContactSection from '@/components/ContactSection';
+
+// Below-the-fold sections are code-split out of the initial bundle so the
+// critical path (nav + hero + overview) has less JS to parse/execute before
+// first paint — on a client-rendered page, nothing paints until React
+// hydrates, so initial bundle size directly gates LCP under CPU throttling.
+const BedroomsSection = lazy(() => import('@/components/BedroomsSection'));
+const LivingSection = lazy(() => import('@/components/LivingSection'));
+const FeaturesSection = lazy(() => import('@/components/FeaturesSection'));
+const SustainabilitySection = lazy(() => import('@/components/SustainabilitySection'));
+const GallerySection = lazy(() => import('@/components/GallerySection'));
+const LocationSection = lazy(() => import('@/components/LocationSection'));
+const ContactSection = lazy(() => import('@/components/ContactSection'));
 
 const Index = () => {
   return (
@@ -21,26 +27,28 @@ const Index = () => {
       {/* Villa Overview */}
       <VillaOverview />
 
-      {/* Bedrooms & Layout */}
-      <BedroomsSection />
+      <Suspense fallback={null}>
+        {/* Bedrooms & Layout */}
+        <BedroomsSection />
 
-      {/* Living & Entertaining */}
-      <LivingSection />
+        {/* Living & Entertaining */}
+        <LivingSection />
 
-      {/* Features & Comfort */}
-      <FeaturesSection />
+        {/* Features & Comfort */}
+        <FeaturesSection />
 
-      {/* Sustainability */}
-      <SustainabilitySection />
+        {/* Sustainability */}
+        <SustainabilitySection />
 
-      {/* Gallery */}
-      <GallerySection />
+        {/* Gallery */}
+        <GallerySection />
 
-      {/* Location */}
-      <LocationSection />
+        {/* Location */}
+        <LocationSection />
 
-      {/* Contact & Enquiry */}
-      <ContactSection />
+        {/* Contact & Enquiry */}
+        <ContactSection />
+      </Suspense>
     </div>
   );
 };
