@@ -228,8 +228,8 @@ const ContactSection = () => {
                     <MessageCircle className="h-5 w-5 text-luxury-gold mr-3" />
                     <div>
                       <div className="font-body font-medium">WhatsApp</div>
-                      <a href="https://wa.me/27765864469" className="text-sm text-muted-foreground hover:text-luxury-gold">
-                        +27 76 586 4469
+                      <a href="https://wa.me/27822227457" className="text-sm text-muted-foreground hover:text-luxury-gold">
+                        +27 82 222 7457
                       </a>
                     </div>
                   </div>
