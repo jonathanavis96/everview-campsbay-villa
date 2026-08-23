@@ -114,7 +114,7 @@ const BedroomsSection = () => {
                     </Badge>
                   </div>
                   {hasMultiple && (
-                    <div className="absolute bottom-3 right-3 px-2.5 py-1 rounded-full bg-black/50 text-white text-xs pointer-events-none">
+                    <div className="absolute bottom-3 right-3 px-2.5 py-1 rounded-full bg-black/70 text-white text-xs pointer-events-none">
                       {bedroom.images.length} photos — swipe
                     </div>
                   )}
