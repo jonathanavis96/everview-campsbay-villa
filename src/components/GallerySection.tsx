@@ -6,95 +6,72 @@ import { ZoomIn } from "lucide-react";
 import Lightbox, { type Photo } from "@/components/lightbox/Lightbox";
 
 import heroImage from "@/assets/hero-villa-exterior.jpg";
-import masterBedroom from "@/assets/master-bedroom-ocean.jpg";
-import livingRoom from "@/assets/living-room-luxury.jpg";
+import villaExterior from "@/assets/everview_photos_webp/exterior/evening_front_of_house_1.jpg";
+import gardens from "@/assets/everview_photos_webp/outdoor/garden-1.webp";
+import livingArea from "@/assets/everview_photos_webp/living/living-room-22.webp";
+import kitchen from "@/assets/everview_photos_webp/kitchen/kitchen-11.webp";
+import formalDining from "@/assets/everview_photos_webp/dining/dining-room-19-formal.webp";
 
 const GallerySection = () => {
-  // Gallery images with categories
+  // Six real, distinct photos — no repeats, no placeholders standing in
+  // for rooms that were never shot. Villa Exterior and Heated Pool were
+  // already the two genuine images here; the rest previously recycled
+  // those same two files under six invented captions (MIS-443).
   const galleryImages = useMemo(
     () => [
       {
         id: 1,
-        src: heroImage,
-        alt: "Villa Exterior with Ocean Views",
+        src: villaExterior,
+        alt: "Everview Villa exterior at dusk",
         category: "Exterior",
         title: "Villa Exterior",
-        description: "Stunning architecture with panoramic ocean views",
+        description: "The villa's architecture, viewed from the driveway at dusk",
       },
       {
         id: 2,
-        src: masterBedroom,
-        alt: "Master Bedroom with Ocean Views",
-        category: "Bedrooms",
-        title: "Master Suite",
-        description: "Wake up to breathtaking ocean vistas",
-      },
-      {
-        id: 3,
-        src: livingRoom,
-        alt: "Luxury Living Room",
-        category: "Living Spaces",
-        title: "Main Living Area",
-        description: "Elegant comfort with natural light",
-      },
-      {
-        id: 4,
         src: heroImage,
-        alt: "Pool Area at Sunset",
+        alt: "Heated pool at sunset with mountain backdrop",
         category: "Pool & Gardens",
         title: "Heated Pool",
         description: "Evening relaxation with mountain backdrop",
       },
       {
+        id: 3,
+        src: gardens,
+        alt: "Landscaped garden and lawn",
+        category: "Pool & Gardens",
+        title: "Gardens & Grounds",
+        description: "Landscaped lawn and grounds surrounding the villa",
+      },
+      {
+        id: 4,
+        src: livingArea,
+        alt: "Covered outdoor living and lounge area",
+        category: "Living Spaces",
+        title: "Living & Entertaining",
+        description: "Indoor-outdoor lounge with ocean views",
+      },
+      {
         id: 5,
-        src: livingRoom,
-        alt: "Gourmet Kitchen",
+        src: kitchen,
+        alt: "Villa kitchen",
         category: "Kitchen",
-        title: "Modern Kitchen",
-        description: "Professional appliances and marble finishes",
+        title: "Kitchen",
+        description: "Fully equipped kitchen for self-catering",
       },
       {
         id: 6,
-        src: masterBedroom,
-        alt: "Dining Area",
+        src: formalDining,
+        alt: "Formal dining room",
         category: "Dining",
-        title: "Elegant Dining",
-        description: "Perfect for memorable meals together",
-      },
-      {
-        id: 7,
-        src: heroImage,
-        alt: "Outdoor Terrace",
-        category: "Outdoor",
-        title: "Ocean Terrace",
-        description: "Al fresco dining with stunning sunsets",
-      },
-      {
-        id: 8,
-        src: livingRoom,
-        alt: "Night View",
-        category: "Night Views",
-        title: "Evening Ambiance",
-        description: "Villa illuminated against the night sky",
+        title: "Formal Dining",
+        description: "Seating for the full party at a formal dining table",
       },
     ],
     []
   );
 
-  const categories = useMemo(
-    () => ["All", ...Array.from(new Set(galleryImages.map((img) => img.category)))],
-    [galleryImages]
-  );
-
-  const [selectedCategory, setSelectedCategory] = useState("All");
-
-  const filteredImages = useMemo(
-    () =>
-      selectedCategory === "All"
-        ? galleryImages
-        : galleryImages.filter((img) => img.category === selectedCategory),
-    [galleryImages, selectedCategory]
-  );
+  const filteredImages = galleryImages;
 
   // Lightbox state tracks the INDEX within filteredImages
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -140,35 +117,16 @@ const GallerySection = () => {
           <h2 className="font-heading text-4xl md:text-5xl font-bold text-ever-ink mb-6">
             Villa Gallery
           </h2>
-          <p className="font-body text-xl text-ever-body max-w-3xl mx-auto mb-8">
-            Explore every corner of Everview through our curated collection of images, showcasing
-            the villa&apos;s stunning architecture, luxurious interiors, and breathtaking views.
+          <p className="font-body text-xl text-ever-body max-w-3xl mx-auto mb-2">
+            A curated look at Everview — the villa&apos;s architecture, grounds, and living spaces.
           </p>
-
-          {/* Category Filters */}
-          <div className="flex flex-wrap justify-center gap-3 mb-12">
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => {
-                  setSelectedCategory(category);
-                  // optional: reset lightbox when switching categories
-                  setSelectedIndex(null);
-                }}
-                className={`px-4 py-2 rounded-full font-body text-sm font-medium transition-all duration-200 ${
-                  selectedCategory === category
-                    ? "bg-ever-champ/25 border border-ever-champ text-ever-ink"
-                    : "bg-white border border-ever-line text-ever-ink hover:bg-ever-champ/10"
-                }`}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
+          <p className="font-body text-sm text-ever-body/70 max-w-3xl mx-auto mb-8">
+            This is the complete photo set for now — see the brochure below, or enquire for more.
+          </p>
         </div>
 
         {/* Gallery Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
           {filteredImages.map((image, i) => (
             <Card
               key={image.id}
@@ -176,10 +134,13 @@ const GallerySection = () => {
               onClick={() => openLightboxAt(i)}
             >
               <div className="relative overflow-hidden">
+                {/* Native aspect ratio, no forced crop — each photo shows
+                    in full, matching the Bedrooms & Layout treatment. */}
                 <img
                   src={image.src}
                   alt={image.alt}
-                  className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110"
+                  loading="lazy"
+                  className="w-full h-auto block transition-transform duration-500 group-hover:scale-105"
                 />
 
                 {/* Overlay */}
