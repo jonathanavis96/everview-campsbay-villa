@@ -134,6 +134,16 @@
     transform: translateZ(0);
     backface-visibility: hidden;
   }
+
+  /* Native scroll-snap strips (room photo carousels) — hide the
+     scrollbar but keep the element natively scrollable/swipeable. */
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 @layer base {
