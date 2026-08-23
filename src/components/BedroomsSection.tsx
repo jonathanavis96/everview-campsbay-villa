@@ -79,19 +79,45 @@ const BedroomsSection = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
           {bedrooms.map((bedroom, index) => {
             if (!bedroom.images || bedroom.images.length === 0) return null;
+            const hasMultiple = bedroom.images.length > 1;
 
             return (
               <Card key={index} className="card-luxury overflow-hidden group">
-                <div className="relative overflow-hidden">
-                  {/* Zoomable thumbnail opens this card's mini gallery */}
-                  <ZoomableImage photos={bedroom.images} index={0} className="h-64 w-full" />
+                <div className="relative">
+                  {hasMultiple ? (
+                    // Multi-photo room: a native scroll-snap strip, no JS
+                    // carousel library. Each frame keeps its own natural
+                    // aspect ratio — portrait, landscape or floor-plan —
+                    // instead of being cropped to a shared box.
+                    <div className="flex overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar">
+                      {bedroom.images.map((photo, i) => (
+                        <div
+                          key={photo.src}
+                          className="shrink-0 basis-full snap-center"
+                        >
+                          <ZoomableImage
+                            photos={bedroom.images}
+                            index={i}
+                            mode="natural"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <ZoomableImage photos={bedroom.images} index={0} mode="natural" />
+                  )}
                   {/* Top-left badge */}
-                  <div className="absolute top-4 left-4">
+                  <div className="absolute top-4 left-4 pointer-events-none">
                     <Badge className="border border-ever-champ bg-ever-champ/20 text-ever-ink">
                       <bedroom.icon className="w-4 h-4 mr-2" />
                       {bedroom.highlight}
                     </Badge>
                   </div>
+                  {hasMultiple && (
+                    <div className="absolute bottom-3 right-3 px-2.5 py-1 rounded-full bg-black/50 text-white text-xs pointer-events-none">
+                      {bedroom.images.length} photos — swipe
+                    </div>
+                  )}
                 </div>
 
                 <CardContent className="p-6">

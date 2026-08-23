@@ -1,5 +1,5 @@
 // components/Lightbox.tsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 
 export type Photo = {
@@ -9,6 +9,8 @@ export type Photo = {
   description?: string; // matches Gallery
   category?: string;    // matches Gallery
 };
+
+const SWIPE_THRESHOLD_PX = 40;
 
 export default function Lightbox({
   photos,
@@ -23,27 +25,48 @@ export default function Lightbox({
   onPrev: () => void;
   onNext: () => void;
 }) {
-  if (!Array.isArray(photos) || photos.length === 0 || index < 0 || index >= photos.length) {
-    return null;
-  }
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const touchStartX = useRef<number | null>(null);
 
-  const photo = photos[index];
-
-  // Detect orientation for adaptive fit
-  const [isLandscape, setIsLandscape] = useState<boolean>(
-    typeof window !== "undefined" ? window.innerWidth > window.innerHeight : false
-  );
+  // Focus the dialog on open, trap Tab inside it, restore focus on close.
   useEffect(() => {
-    const handler = () => setIsLandscape(window.innerWidth > window.innerHeight);
-    window.addEventListener("resize", handler);
-    window.addEventListener("orientationchange", handler);
-    return () => {
-      window.removeEventListener("resize", handler);
-      window.removeEventListener("orientationchange", handler);
-    };
-  }, []);
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    closeButtonRef.current?.focus();
 
-  // Prevent background scroll
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
+      if (e.key === "ArrowLeft") onPrev();
+      if (e.key === "ArrowRight") onNext();
+      if (e.key === "Tab") {
+        const focusable = dialogRef.current?.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        if (!focusable || focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      previouslyFocused?.focus();
+    };
+  }, [onClose, onPrev, onNext]);
+
+  // Prevent background scroll while open; scroll position is untouched
+  // (we only toggle overflow, never move the page), so it is restored
+  // automatically when this unmounts.
   useEffect(() => {
     const original = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -52,86 +75,109 @@ export default function Lightbox({
     };
   }, []);
 
-  // Keyboard shortcuts
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-      if (e.key === "ArrowLeft") onPrev();
-      if (e.key === "ArrowRight") onNext();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose, onPrev, onNext]);
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const deltaX = e.changedTouches[0].clientX - touchStartX.current;
+    touchStartX.current = null;
+    if (Math.abs(deltaX) < SWIPE_THRESHOLD_PX) return;
+    if (deltaX > 0) onPrev();
+    else onNext();
+  };
+
+  if (!Array.isArray(photos) || photos.length === 0 || index < 0 || index >= photos.length) {
+    return null;
+  }
+
+  const photo = photos[index];
 
   return (
     <div
+      ref={dialogRef}
       className="fixed inset-0 z-[100] bg-black/90 text-white flex flex-col"
       role="dialog"
       aria-modal="true"
+      aria-label={photo.title || "Photo viewer"}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
     >
       {/* Close */}
       <button
+        ref={closeButtonRef}
         aria-label="Close"
         onClick={onClose}
-        className="absolute right-3 top-3 p-3 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md"
+        className="absolute right-3 top-3 z-10 p-3 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md"
       >
         <X className="h-6 w-6" />
       </button>
 
       {/* Prev / Next */}
-      <button
-        onClick={onPrev}
-        aria-label="Previous"
-        className="absolute left-3 top-1/2 -translate-y-1/2 p-4 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md"
-      >
-        <ChevronLeft className="h-7 w-7" />
-      </button>
-      <button
-        onClick={onNext}
-        aria-label="Next"
-        className="absolute right-3 top-1/2 -translate-y-1/2 p-4 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md"
-      >
-        <ChevronRight className="h-7 w-7" />
-      </button>
+      {photos.length > 1 && (
+        <>
+          <button
+            onClick={onPrev}
+            aria-label="Previous photo"
+            className="absolute left-3 top-1/2 -translate-y-1/2 z-10 p-4 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md"
+          >
+            <ChevronLeft className="h-7 w-7" />
+          </button>
+          <button
+            onClick={onNext}
+            aria-label="Next photo"
+            className="absolute right-3 top-1/2 -translate-y-1/2 z-10 p-4 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md"
+          >
+            <ChevronRight className="h-7 w-7" />
+          </button>
+        </>
+      )}
 
       {/* Image + matched-width info bar (centered on both axes) */}
-      <div className="flex-1 px-0 sm:px-6 overflow-hidden flex items-center justify-center">
-        {/* Wrapper auto-sizes to image width so the bar matches exactly */}
-        <div className="mx-auto inline-flex flex-col items-stretch">
+      <div
+        className="flex-1 px-0 sm:px-6 overflow-hidden flex items-center justify-center"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
+        {/* Wrapper auto-sizes to image width so the bar matches exactly.
+            Always object-contain — never crop — so mixed portrait,
+            landscape and floor-plan photos all show in full. */}
+        <div className="mx-auto inline-flex flex-col items-stretch max-w-full">
           <figure className="flex items-center justify-center">
             <img
+              key={photo.src}
               src={photo.src}
-              alt={photo.alt || ""}
-              className={[
-                "block rounded-2xl shadow-2xl",
-                "max-w-[100vw] max-h-[90vh]", // a bit taller so mobile feels full
-                isLandscape ? "h-[90vh] w-auto object-cover" : "w-full h-auto object-contain",
-              ].join(" ")}
+              alt={photo.alt || photo.title || ""}
+              className="block max-w-[100vw] max-h-[80vh] w-auto h-auto object-contain rounded-2xl shadow-2xl select-none"
+              draggable={false}
             />
           </figure>
 
           {/* Info bar (same width as image) */}
-          <div className="w-full mt-4 pb-[max(12px,env(safe-area-inset-bottom))]">
-            <div className="w-full bg-white/25 backdrop-blur-md rounded-2xl p-5 text-ever-ink flex items-center justify-between gap-4">
-              <div className="min-w-0">
-                {photo.title && (
-                  <h3 className="text-2xl font-semibold truncate">{photo.title}</h3>
-                )}
-                {photo.description && (
-                  <p className="text-ever-ink/80 mt-1 break-words">
-                    {photo.description}
-                  </p>
+          {(photo.title || photo.description || photo.category) && (
+            <div className="w-full mt-4 pb-[max(12px,env(safe-area-inset-bottom))]">
+              <div className="w-full bg-white/25 backdrop-blur-md rounded-2xl p-5 text-ever-ink flex items-center justify-between gap-4">
+                <div className="min-w-0">
+                  {photo.title && (
+                    <h3 className="text-2xl font-semibold truncate">{photo.title}</h3>
+                  )}
+                  {photo.description && (
+                    <p className="text-ever-ink/80 mt-1 break-words">
+                      {photo.description}
+                    </p>
+                  )}
+                </div>
+
+                {photo.category && (
+                  <span className="shrink-0 px-4 py-2 rounded-full bg-ever-blue text-white text-sm">
+                    {photo.category}
+                  </span>
                 )}
               </div>
-
-              {/* Pill on the right with Everview colors */}
-              {photo.category && (
-                <span className="shrink-0 px-4 py-2 rounded-full bg-ever-blue text-white text-sm">
-                  {photo.category}
-                </span>
-              )}
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
