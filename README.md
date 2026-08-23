@@ -1,73 +1,39 @@
-# Welcome to your Lovable project
+# Everview Villa
 
-## Project info
+Single-page marketing site for Everview Villa, a Camps Bay holiday villa. Live at
+https://jonathanavis96.github.io/everview-campsbay-villa/
 
-**URL**: https://lovable.dev/projects/697af42e-039b-4e6d-8822-ef37588ac3e5
+## Stack
 
-## How can I edit this code?
+Vite + React 18 + TypeScript + Tailwind + shadcn/ui.
 
-There are several ways of editing your application.
+## Local development
 
-**Use Lovable** 
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/697af42e-039b-4e6d-8822-ef37588ac3e5) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+Requires Node.js (v20+).
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+npm install
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+Other scripts:
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```sh
+npm run build    # production build to dist/
+npm run lint     # eslint
+npm run preview  # preview a production build locally
+```
 
-**Use GitHub Codespaces**
+## Deployment
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Pushing to `main` triggers `.github/workflows/deploy.yml`, which builds the site
+and publishes it to GitHub Pages. There is no manual deploy step.
 
-## What technologies are used for this project?
+The site is served from the `/everview-campsbay-villa/` subpath (see
+`vite.config.ts`'s `base` setting), not from a domain root.
 
-This project is built with:
+## `public/old/`
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/697af42e-039b-4e6d-8822-ef37588ac3e5) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+`public/old/` is a frozen snapshot of the pre-revamp site, kept for before/after
+comparison. It is marked `noindex` and is not part of the current site — do not
+edit it.
