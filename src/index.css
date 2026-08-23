@@ -2,118 +2,88 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Everview Villa Design System - Luxury Modern Aesthetic */
+/* Everview Villa Design System — "Atlantic Edge" (MIS-441 direction) */
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
 @layer base {
   :root {
-    /* Everview Modern Coastal Color Palette */
-    --background: 0 0% 100%;
-    --foreground: 0 0% 16.5%;
+    /* Atlantic Edge palette — teal sampled from the hero photograph's pool/ocean
+       band, charcoal ground, warm off-white body (not pure white). */
+    --background: 40 27% 95.7%;
+    --foreground: 60 3.7% 10.6%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 16.5%;
+    --card-foreground: 60 3.7% 10.6%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 16.5%;
+    --popover-foreground: 60 3.7% 10.6%;
 
-    --primary: 0 0% 16.5%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 60 3.7% 10.6%;
+    --primary-foreground: 40 27% 95.7%;
 
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 0 0% 16.5%;
+    --secondary: 40 15% 91%;
+    --secondary-foreground: 60 3.7% 10.6%;
 
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 0 0% 45%;
+    --muted: 40 15% 91%;
+    --muted-foreground: 60 3% 40%;
 
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 0 0% 16.5%;
+    --accent: 183.2 47.5% 23.1%;
+    --accent-foreground: 40 27% 95.7%;
 
-    /* Everview Brand Colors */
-    --ever-bg: 0 0% 100%;
-    --ever-ink: 0 0% 16.5%;
-    --ever-body: 0 0% 16.5%;
-    --ever-blue: 200 36% 37%;
-    --ever-champ: 44 36% 80%;
-    --ever-line: 31 12% 91%;
+    /* Everview Brand Colors — ever-blue/ever-champ kept as the section files'
+       existing hook names, repointed from the old gold/navy pair onto the
+       Atlantic Edge teal family so every section shifts colour immediately;
+       full renames happen as each section is rebuilt in later MIS-443 PRs. */
+    --ever-bg: 40 27% 95.7%;
+    --ever-ink: 60 3.7% 10.6%;
+    --ever-body: 60 3.7% 10.6%;
+    --ever-blue: 183.2 47.5% 23.1%;
+    --ever-champ: 182.7 43.8% 30%;
+    --ever-line: 40 15% 88%;
     --ever-panel: 0 0% 100%;
     --ever-solar: 48 91% 68%; /* HSL version of #F5D367 */
     --ever-green: 141 22% 56%; /* muted green (#7FA27C) */
 
-    /* Legacy luxury colors for gradual migration */
-    --luxury-gold: 44 36% 80%;
-    --luxury-gold-light: 44 36% 80%;
-    --luxury-champagne: 44 36% 80%;
-    --luxury-cream: 39 30% 95%;
-    --luxury-navy: 200 36% 37%;
-    --luxury-charcoal: 0 0% 16.5%;
+    /* Legacy luxury-* hooks, repointed onto the same teal family (no gold) */
+    --luxury-gold: 182.7 43.8% 30%;
+    --luxury-gold-light: 182.7 43.8% 30%;
+    --luxury-champagne: 182.7 43.8% 30%;
+    --luxury-cream: 40 27% 95.7%;
+    --luxury-navy: 183.2 47.5% 23.1%;
+    --luxury-charcoal: 60 3.7% 10.6%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 31 12% 91%;
-    --input: 31 12% 91%;
-    --ring: 0 0% 16.5%;
+    --border: 40 15% 88%;
+    --input: 40 15% 88%;
+    --ring: 183.2 47.5% 23.1%;
 
     /* Gradients & Shadows */
-    --gradient-luxury: linear-gradient(135deg, hsl(var(--ever-champ)) 0%, hsl(var(--ever-blue)) 100%);
     --gradient-hero: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 35%, rgba(0,0,0,0.6) 100%);
     --shadow-luxury: 0 8px 24px rgba(0,0,0,0.05);
     --shadow-card: 0 8px 32px -8px rgba(0,0,0,0.05);
     --shadow-elegant: 0 4px 20px -4px rgba(0,0,0,0.1);
 
     /* Animations */
-    --transition-luxury: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-    --radius: 1rem;
-  }
-
-  .dark {
-    /* Dark mode adjustments for coastal theme */
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-
-    /* Everview Dark Mode Colors */
-    --ever-bg: 240 10% 3.9%;
-    --ever-ink: 0 0% 98%;
-    --ever-body: 0 0% 90%;
-    --ever-blue: 200 36% 55%;
-    --ever-champ: 44 36% 70%;
-    --ever-line: 240 3.7% 15.9%;
-    --ever-panel: 240 10% 3.9%;
-
-    /* Legacy colors updated for dark mode */
-    --luxury-gold: 44 36% 70%;
-    --luxury-gold-light: 44 36% 75%;
-    --luxury-champagne: 44 36% 70%;
-    --luxury-cream: 39 30% 85%;
-    --luxury-navy: 200 36% 55%;
-    --luxury-charcoal: 0 0% 98%;
+    --radius: 0.125rem;
   }
 }
 
 @layer components {
   /* Typography Styles */
   .font-heading {
-    font-family: 'Playfair Display', serif;
-    font-weight: 500;
-    letter-spacing: -0.02em;
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    letter-spacing: -0.01em;
   }
 
   .font-body {
     font-family: 'Inter', sans-serif;
     font-weight: 400;
-  }
-
-  .text-luxury-gradient {
-    background: var(--gradient-luxury);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
   }
 
   /* Layout Components */
@@ -125,19 +95,20 @@
     @apply py-16 lg:py-24;
   }
 
-  /* Interactive Elements */
+  /* Interactive Elements — sharp corners, uppercase, generous padding
+     (Atlantic Edge button register, replacing the soft gold pill) */
   .btn-luxury {
-    @apply inline-flex items-center justify-center px-8 py-4 rounded-full font-medium transition-all duration-300;
+    @apply inline-flex items-center justify-center px-8 py-4 font-medium tracking-wide uppercase text-sm transition-all duration-300;
     @apply bg-primary text-white hover:shadow-2xl hover:shadow-black/20;
   }
 
   .btn-luxury-outline {
-    @apply inline-flex items-center justify-center px-8 py-4 rounded-full font-medium transition-all duration-300;
+    @apply inline-flex items-center justify-center px-8 py-4 font-medium tracking-wide uppercase text-sm transition-all duration-300;
     @apply border border-ever-champ text-primary bg-transparent hover:bg-ever-champ hover:text-primary;
   }
 
   .card-luxury {
-    @apply bg-white rounded-2xl shadow-sm hover:shadow-lg hover:shadow-black/5 transition-all duration-300;
+    @apply bg-white shadow-sm hover:shadow-lg hover:shadow-black/5 transition-all duration-300;
     @apply border border-ever-line;
   }
 
