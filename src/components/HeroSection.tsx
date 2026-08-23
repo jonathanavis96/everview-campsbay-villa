@@ -9,7 +9,25 @@ import {
   Wifi,
   Waves,
 } from "lucide-react";
-import heroImage from "@/assets/hero-villa-exterior.jpg";
+import hero640Avif from "@/assets/hero/hero-640.avif";
+import hero960Avif from "@/assets/hero/hero-960.avif";
+import hero1280Avif from "@/assets/hero/hero-1280.avif";
+import hero1920Avif from "@/assets/hero/hero-1920.avif";
+import hero2048Avif from "@/assets/hero/hero-2048.avif";
+import hero640Webp from "@/assets/hero/hero-640.webp";
+import hero960Webp from "@/assets/hero/hero-960.webp";
+import hero1280Webp from "@/assets/hero/hero-1280.webp";
+import hero1920Webp from "@/assets/hero/hero-1920.webp";
+import hero2048Webp from "@/assets/hero/hero-2048.webp";
+import hero640Jpg from "@/assets/hero/hero-640.jpg";
+import hero960Jpg from "@/assets/hero/hero-960.jpg";
+import hero1280Jpg from "@/assets/hero/hero-1280.jpg";
+import hero1920Jpg from "@/assets/hero/hero-1920.jpg";
+import hero2048Jpg from "@/assets/hero/hero-2048.jpg";
+
+const heroAvifSrcSet = `${hero640Avif} 640w, ${hero960Avif} 960w, ${hero1280Avif} 1280w, ${hero1920Avif} 1920w, ${hero2048Avif} 2048w`;
+const heroWebpSrcSet = `${hero640Webp} 640w, ${hero960Webp} 960w, ${hero1280Webp} 1280w, ${hero1920Webp} 1920w, ${hero2048Webp} 2048w`;
+const heroJpgSrcSet = `${hero640Jpg} 640w, ${hero960Jpg} 960w, ${hero1280Jpg} 1280w, ${hero1920Jpg} 1920w, ${hero2048Jpg} 2048w`;
 
 const HeroSection = () => {
   const scrollToSection = (href: string) => {
@@ -32,11 +50,21 @@ const HeroSection = () => {
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Image with Overlay */}
       <div className="absolute inset-0">
-        <img
-          src={heroImage}
-          alt="Everview Villa Exterior with Ocean Views"
-          className="w-full h-full object-cover"
-        />
+        <picture>
+          <source type="image/avif" srcSet={heroAvifSrcSet} sizes="100vw" />
+          <source type="image/webp" srcSet={heroWebpSrcSet} sizes="100vw" />
+          <img
+            src={hero1920Jpg}
+            srcSet={heroJpgSrcSet}
+            sizes="100vw"
+            width={2048}
+            height={1366}
+            decoding="async"
+            {...{ fetchpriority: "high" }}
+            alt="Everview Villa exterior with panoramic ocean views, Camps Bay"
+            className="w-full h-full object-cover"
+          />
+        </picture>
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/20 to-black/60" />
       </div>
 

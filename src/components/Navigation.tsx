@@ -46,11 +46,20 @@ const Navigation = () => {
         <div className="container-luxury">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
-            <div className={`font-heading text-2xl font-bold transition-colors duration-300 ${
-              isScrolled ? 'text-ever-ink' : 'text-white'
-            }`}>
+            <a
+              href="#top"
+              onClick={(e) => {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                setIsMobileMenuOpen(false);
+              }}
+              aria-label="Everview — back to top"
+              className={`font-heading text-2xl font-bold transition-colors duration-300 ${
+                isScrolled ? 'text-ever-ink' : 'text-white'
+              }`}
+            >
               Everview
-            </div>
+            </a>
 
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center space-x-8">
