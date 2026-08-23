@@ -178,3 +178,24 @@
     transform: scale(1);
   }
 }
+
+/* Table Mountain wordmark reveal — one-shot on load, CSS-only. */
+@keyframes mountain-reveal {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.mountain-reveal {
+  animation: mountain-reveal 700ms ease-out 150ms both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mountain-reveal {
+    animation: none;
+    clip-path: inset(0 0 0 0);
+  }
+}
