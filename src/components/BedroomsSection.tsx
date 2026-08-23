@@ -29,14 +29,14 @@ const BedroomsSection = () => {
         images: masterPhotos,
       },
       {
-        name: "Ocean King (Upstairs)",
+        name: "Ocean King",
         features: ["Mountain Views", "Ocean Views", "En-suite Bathroom", "Built-in Storage"],
         icon: Waves,
         highlight: "Stunning sea vistas",
         images: oceanKingPhotos,
       },
       {
-        name: "Garden King (Upstairs)",
+        name: "Garden King",
         features: ["Private Balcony", "Mountain Views", "En-suite Bathroom", "Garden Outlook"],
         icon: Mountain,
         highlight: "Tranquil mountain setting",
