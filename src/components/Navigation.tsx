@@ -54,11 +54,31 @@ const Navigation = () => {
                 setIsMobileMenuOpen(false);
               }}
               aria-label="Everview — back to top"
-              className={`font-heading text-2xl font-bold transition-colors duration-300 ${
-                isScrolled ? 'text-ever-ink' : 'text-white'
-              }`}
+              className="relative inline-flex items-center"
             >
-              Everview
+              {/* One-shot Table Mountain silhouette reveal, CSS-only, gated
+                  on prefers-reduced-motion. Lives in the nav, physically
+                  separate from the hero image, so it can't touch the LCP
+                  element or shift layout. */}
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 120 40"
+                className={`mountain-reveal absolute -left-2 -bottom-1 h-8 w-[110px] transition-colors duration-300 ${
+                  isScrolled ? 'text-ever-blue/20' : 'text-white/25'
+                }`}
+              >
+                <path
+                  d="M0,40 L0,28 L15,28 L20,10 L85,10 L92,26 L120,26 L120,40 Z"
+                  fill="currentColor"
+                />
+              </svg>
+              <span
+                className={`relative font-heading text-2xl font-bold transition-colors duration-300 ${
+                  isScrolled ? 'text-ever-ink' : 'text-white'
+                }`}
+              >
+                Everview
+              </span>
             </a>
 
             {/* Desktop Navigation */}
