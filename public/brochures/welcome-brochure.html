@@ -7,14 +7,41 @@
 <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
 <title>Everview — Welcome Brochure</title>
 <style>
+  /* The site's own faces, copied from src/assets/fonts. The brochure is a
+     static file in public/, so it cannot import the bundled stylesheet — the
+     three @font-face rules below are the same three the site declares. */
+  @font-face {
+    font-family: "Fraunces Variable";
+    font-style: normal;
+    font-display: swap;
+    font-weight: 100 900;
+    src: url("../fonts/fraunces-variable-latin.woff2") format("woff2-variations");
+  }
+  @font-face {
+    font-family: "Archivo Variable";
+    font-style: normal;
+    font-display: swap;
+    font-weight: 100 900;
+    font-stretch: 62% 125%;
+    src: url("../fonts/archivo-variable-latin.woff2") format("woff2-variations");
+  }
+  @font-face {
+    font-family: "IBM Plex Mono";
+    font-style: normal;
+    font-display: swap;
+    font-weight: 400;
+    src: url("../fonts/ibm-plex-mono-400-latin.woff2") format("woff2");
+  }
+
   :root {
     --paper: #f4f1eb;
     --ink: #1b1a17;
     --stone: #67655e;
     --line: #dad8d2;
     --water: #2f6f9b;
-    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
-    --mono: ui-monospace, "SF Mono", "DejaVu Sans Mono", Menlo, monospace;
+    --display: "Fraunces Variable", Georgia, serif;
+    --body: "Archivo Variable", system-ui, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, monospace;
   }
   * { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
@@ -22,7 +49,7 @@
     margin: 0;
     background: #e9e6e0;
     color: var(--ink);
-    font: 400 11pt/1.6 var(--serif);
+    font: 400 10.5pt/1.65 var(--body);
   }
   .page {
     position: relative;
@@ -33,23 +60,50 @@
     padding: 18mm 18mm 16mm;
     box-shadow: 0 2px 18px rgba(0,0,0,.12);
   }
-  h1, h2, h3, h4 { font-weight: 400; margin: 0; }
-  h1 { font-size: 34pt; line-height: 1; letter-spacing: -0.01em; }
-  h2 { font-size: 19pt; margin-bottom: 4mm; }
-  h3 { font-size: 12.5pt; margin: 5mm 0 1.5mm; }
-  h4 { font-size: 11pt; margin: 4mm 0 1mm; }
+  h1, h2, h3, h4 { margin: 0; font-family: var(--display); }
+  h1 {
+    font-weight: 300;
+    font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 0;
+    font-size: 34pt;
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+  }
+  h2 {
+    font-weight: 400;
+    font-variation-settings: "opsz" 72, "SOFT" 0, "WONK" 0;
+    font-size: 19pt;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    margin-bottom: 4mm;
+  }
+  h3 {
+    font-weight: 400;
+    font-variation-settings: "opsz" 40, "SOFT" 0, "WONK" 0;
+    font-size: 12.5pt;
+    margin: 5mm 0 1.5mm;
+  }
+  h4 { font-family: var(--body); font-weight: 600; font-size: 10.5pt; margin: 4mm 0 1mm; }
   p { margin: 0 0 3mm; }
   ol, ul { margin: 0 0 3mm; padding-left: 6mm; }
   li { margin-bottom: 1.6mm; }
   li > ul, li > ol { margin-top: 1.6mm; }
   .label {
-    font: 500 8pt/1 var(--mono);
-    letter-spacing: .16em;
+    font-family: var(--body);
+    font-weight: 500;
+    font-size: 8pt;
+    line-height: 1;
+    letter-spacing: .14em;
     text-transform: uppercase;
     color: var(--stone);
   }
   .rule { height: 1px; background: var(--line); border: 0; margin: 6mm 0; }
-  .lede { font-size: 13pt; line-height: 1.55; }
+  .lede {
+    font-family: var(--display);
+    font-weight: 300;
+    font-variation-settings: "opsz" 40, "SOFT" 0, "WONK" 0;
+    font-size: 13.5pt;
+    line-height: 1.45;
+  }
   section { margin-bottom: 9mm; }
   .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm; }
   .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5mm; }
@@ -62,7 +116,13 @@
     background: #fff;
   }
   figure img.tall { max-height: 105mm; object-fit: contain; }
-  figcaption { font: 500 8pt/1.4 var(--mono); letter-spacing: .06em; color: var(--stone); margin-top: 2mm; text-transform: uppercase; }
+  figcaption {
+    font: 400 7.5pt/1.5 var(--mono);
+    letter-spacing: .06em;
+    color: var(--stone);
+    margin-top: 2mm;
+    text-transform: uppercase;
+  }
   .row {
     display: flex; justify-content: space-between; gap: 6mm;
     border-top: 1px solid var(--line); padding: 1.8mm 0;
@@ -82,20 +142,28 @@
   .pagenote { font-size: 8.5pt; color: var(--stone); }
   a { color: var(--water); }
 
-  /* The wordmark, exactly as the site's navigation sets it: the skyline
-     arching over the word, with the word sitting up inside the arch. */
-  .wordmark { position: relative; width: 78mm; margin-bottom: 8mm; }
-  .wordmark svg { display: block; width: 100%; height: 13mm; }
-  .wordmark span {
-    display: block;
-    font: 400 27pt/1 var(--serif);
-    letter-spacing: .005em;
-    text-align: center;
-    margin-top: -7.5mm;
+  /* The wordmark, copied from the navigation bar: <RidgelineMark> at
+     strokeWidth 2 with a non-scaling stroke, and the word directly under it
+     in the site's display face, pulled up into the arch. The nav sets these
+     as h-6 w-[13rem] / text-display-m / -mt-3. */
+  .wordmark {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1;
   }
-  .wordmark.small { width: 46mm; margin: 0; }
-  .wordmark.small svg { height: 8mm; }
-  .wordmark.small span { font-size: 15pt; margin-top: -4.5mm; }
+  .wordmark svg { display: block; width: 208px; height: 24px; }
+  .wordmark span {
+    font-family: var(--display);
+    font-weight: 400;
+    font-variation-settings: "opsz" 72, "SOFT" 0, "WONK" 0;
+    font-size: 32px;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    margin-top: -12px;
+  }
+  .wordmark.small svg { width: 152px; height: 18px; }
+  .wordmark.small span { font-size: 24px; margin-top: -9px; }
 
   @media print {
     body { background: #fff; }
@@ -146,10 +214,10 @@
 
 <!-- ─────────────────────────── PAGE 1 ─────────────────────────── -->
 <article class="page">
-  <div class="wordmark">
+  <div class="wordmark" style="margin-bottom:8mm">
     <svg viewBox="0 20 2400 370" preserveAspectRatio="none" aria-label="Everview">
       <path d="M0,372 L66,349 L156,341 L207,314 L270,306 L317,278 L367,271 L453,224 L504,149 L610,99 L645,40 L731,48 L758,79 L786,56 L864,40 L1380,56 L1399,95 L1489,130 L1521,189 L1548,200 L1618,263 L1696,278 L1755,302 L1802,294 L1864,259 L1911,220 L1966,153 L1978,153 L2009,204 L2033,220 L2232,298 L2326,361 L2400,368"
-            fill="none" stroke="#1b1a17" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
+            fill="none" stroke="#1b1a17" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
             vector-effect="non-scaling-stroke"/>
     </svg>
     <span>Everview</span>
@@ -605,7 +673,7 @@
     <div class="wordmark small">
       <svg viewBox="0 20 2400 370" preserveAspectRatio="none" aria-hidden="true">
         <path d="M0,372 L66,349 L156,341 L207,314 L270,306 L317,278 L367,271 L453,224 L504,149 L610,99 L645,40 L731,48 L758,79 L786,56 L864,40 L1380,56 L1399,95 L1489,130 L1521,189 L1548,200 L1618,263 L1696,278 L1755,302 L1802,294 L1864,259 L1911,220 L1966,153 L1978,153 L2009,204 L2033,220 L2232,298 L2326,361 L2400,368"
-              fill="none" stroke="#1b1a17" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"
+              fill="none" stroke="#1b1a17" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
               vector-effect="non-scaling-stroke"/>
       </svg>
       <span>Everview</span>
