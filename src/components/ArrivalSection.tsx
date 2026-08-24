@@ -22,6 +22,21 @@ const ARRIVAL_TIMES = [
   { label: "Check-out", value: "By 10:00 AM" },
 ];
 
+// The WiFi password and the alarm codes are on the printed card in the house
+// and nowhere else — not on this page, not in the brochure. A document that
+// can be emailed or screenshotted is a document a network password should
+// never be in (Jonathan, 2026-08-24).
+const IN_THE_HOUSE = [
+  {
+    heading: "WiFi",
+    body: "Fibre throughout, and it stays up through load-shedding. The network name and password are on the printed card in the house, beside the welcome brochure — they are deliberately not published anywhere that leaves the property.",
+  },
+  {
+    heading: "Alarm and security",
+    body: "The property is monitored 24/7 by ADT Security, with armed response. The alarm codes and the arming steps are on that same printed card, and the property manager walks you through them on arrival.",
+  },
+];
+
 const HOUSE_RULES = [
   "No pets.",
   "No smoking anywhere on the property.",
@@ -57,6 +72,28 @@ export default function ArrivalSection() {
                 </div>
               ))}
             </dl>
+            <div className="mt-6 space-y-4">
+              {IN_THE_HOUSE.map((item) => (
+                <div key={item.heading}>
+                  <h3 className="text-label text-stone-text mb-1">{item.heading}</h3>
+                  <p className="text-body text-ink/80">{item.body}</p>
+                </div>
+              ))}
+              <p className="text-body text-ink/80">
+                The full welcome brochure — power, water, the lift, local
+                numbers — is{" "}
+                <a
+                  href={`${import.meta.env.BASE_URL}brochures/welcome-brochure.html`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline decoration-line underline-offset-4 transition-colors hover:decoration-ink"
+                >
+                  readable here
+                </a>{" "}
+                and a printed copy waits in the house.
+              </p>
+            </div>
+
             <p className="text-body text-ink/80 mt-4">
               Arriving after 7:00 PM: arrange a time with the property
               manager in advance. Late check-out is subject to availability
