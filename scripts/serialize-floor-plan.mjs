@@ -13,6 +13,10 @@ export const MARKER =
 /** Room keys in the order they are written, so diffs stay readable. */
 const ROOM_KEYS = ["name", "planName", "area", "x", "y", "w", "h", "outdoor", "service"];
 
+/** Opening keys, likewise. */
+const OPENING_KEYS = ["between", "kind", "axis", "at", "span", "into"];
+const OPENING_KINDS = ["wall", "door", "slider", "open"];
+
 const isFiniteNumber = (v) => typeof v === "number" && Number.isFinite(v);
 
 /** The plan's coordinate space, mirroring VIEW_W / VIEW_H in floorPlan.ts. */
@@ -82,11 +86,74 @@ export function validateFloors(data) {
       return out;
     });
 
-    return { id: floor.id, label: floor.label, intro: floor.intro, rooms };
+    // Openings name rooms, so they are checked against the names above: an
+    // entry for a room that has been renamed or deleted is dead weight in the
+    // file and silently stops overriding anything.
+    const openings = (floor.openings ?? []).map((opening, j) => {
+      const where = `floor ${floor.id}, opening ${j}`;
+      const between = opening?.between;
+      if (!Array.isArray(between) || between.length !== 2) {
+        throw new Error(`${where}: between must be a pair of room names`);
+      }
+      for (const name of between) {
+        if (!seen.has(name)) throw new Error(`${where}: no room named "${name}"`);
+      }
+      if (between[0] === between[1]) throw new Error(`${where}: a room cannot open onto itself`);
+      if (!OPENING_KINDS.includes(opening.kind)) {
+        throw new Error(`${where}: kind must be one of ${OPENING_KINDS.join(", ")}`);
+      }
+
+      const out = { between: [between[0], between[1]], kind: opening.kind };
+      if (opening.axis === "v" || opening.axis === "h") out.axis = opening.axis;
+      if (opening.at !== undefined && opening.at !== null) {
+        if (!isFiniteNumber(opening.at) || opening.at < 0 || opening.at > 1) {
+          throw new Error(`${where}: at must be between 0 and 1`);
+        }
+        out.at = Math.round(opening.at * 100) / 100;
+      }
+      if (opening.span !== undefined && opening.span !== null) {
+        if (!isFiniteNumber(opening.span) || opening.span <= 0) {
+          throw new Error(`${where}: span must be a positive number`);
+        }
+        out.span = Math.round(opening.span);
+      }
+      if (opening.into !== undefined && opening.into !== null && opening.into !== "") {
+        if (!between.includes(opening.into)) {
+          throw new Error(`${where}: into must be one of the two rooms`);
+        }
+        out.into = opening.into;
+      }
+      return out;
+    });
+
+    // A pair may be spoken for once per axis, and once for "both axes". Two
+    // entries claiming the same wall would make the drawing depend on array
+    // order, which is not something anyone can see in the editor.
+    const claimed = new Set();
+    for (const o of openings) {
+      const key = [...o.between].sort().join("\u0000") + "\u0000" + (o.axis ?? "*");
+      if (claimed.has(key)) {
+        throw new Error(`floor ${floor.id}: two openings claim ${o.between.join(" / ")}`);
+      }
+      claimed.add(key);
+    }
+
+    return { id: floor.id, label: floor.label, intro: floor.intro, rooms, openings };
   });
 }
 
 const quote = (s) => JSON.stringify(s);
+
+function openingLine(opening) {
+  const parts = OPENING_KEYS.filter((k) => opening[k] !== undefined).map((k) =>
+    k === "between"
+      ? `between: [${opening.between.map(quote).join(", ")}]`
+      : typeof opening[k] === "string"
+        ? `${k}: ${quote(opening[k])}`
+        : `${k}: ${opening[k]}`
+  );
+  return `      { ${parts.join(", ")} },`;
+}
 
 function roomLine(room) {
   const parts = ROOM_KEYS.filter((k) => room[k] !== undefined).map((k) =>
@@ -100,6 +167,7 @@ export function serializeFloors(floors) {
   const body = floors
     .map((floor) => {
       const rooms = floor.rooms.map(roomLine).join("\n");
+      const openings = (floor.openings ?? []).map(openingLine).join("\n");
       return [
         "  {",
         `    id: ${quote(floor.id)},`,
@@ -109,6 +177,9 @@ export function serializeFloors(floors) {
         "    rooms: [",
         rooms,
         "    ],",
+        // Omitted entirely when empty, so a floor with nothing overridden
+        // keeps reading as "everything here is derived".
+        ...(openings ? ["    openings: [", openings, "    ],"] : []),
         "  },",
       ].join("\n");
     })

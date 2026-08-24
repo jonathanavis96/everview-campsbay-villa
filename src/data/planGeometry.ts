@@ -20,7 +20,12 @@
 //     long enough stretch of it gets a window: a gap with two glazing lines.
 //     A terrace counts as outside, which is why the seaward rooms glaze.
 //   · Outdoor rooms carry no wall at all — they keep the dashed outline.
-import type { Floor, Room } from "@/data/floorPlan";
+//
+// The door rule is a default, not a verdict. A `WallOpening` in the floor's
+// `openings` list overrides it for one pair of rooms — closing a door the
+// derivation invented, opening a wall it kept, or turning either into a
+// slider — and the plan editor writes those by clicking the wall.
+import type { Floor, Room, WallOpening } from "@/data/floorPlan";
 
 /** Poché thickness, in plan units. */
 export const WALL = 3.6;
@@ -34,7 +39,7 @@ const MAX_WINDOW = 58;
 type Span = [number, number];
 
 export type Opening = {
-  kind: "door" | "window";
+  kind: "door" | "slider" | "open" | "window";
   /** The wall's own direction: "v" is a vertical wall, drawn at x = `at`. */
   axis: "v" | "h";
   at: number;
@@ -112,28 +117,54 @@ function outwardSpans(room: Room, rooms: Room[], side: "l" | "r" | "t" | "b"): S
   return spans;
 }
 
-export function floorGeometry(floor: Floor): FloorGeometry {
-  const rooms = floor.rooms;
-  const indoor = rooms.filter(isIndoor);
-  const walls: FloorGeometry["walls"] = [];
-  const openings: Opening[] = [];
+/**
+ * One stretch of wall shared by two indoor rooms, with what goes in it.
+ *
+ * Every such stretch is listed, closed ones included, because the plan editor
+ * needs something to click on to open them. `explicit` marks the ones an
+ * author decided rather than the derivation.
+ */
+export type Segment = {
+  a: string;
+  b: string;
+  axis: "v" | "h";
+  at: number;
+  /** The full shared stretch, before the opening is centred in it. */
+  lo: number;
+  hi: number;
+  kind: WallOpening["kind"];
+  explicit: boolean;
+  /** The opening itself, within [lo, hi]. */
+  from: number;
+  to: number;
+  into: 1 | -1;
+};
 
-  for (const room of indoor) {
-    walls.push(
-      { axis: "v", at: room.x, from: room.y, to: room.y + room.h },
-      { axis: "v", at: room.x + room.w, from: room.y, to: room.y + room.h },
-      { axis: "h", at: room.y, from: room.x, to: room.x + room.w },
-      { axis: "h", at: room.y + room.h, from: room.x, to: room.x + room.w }
-    );
+const pairKey = (a: string, b: string, axis: string) => [a, b].sort().join("\u0000") + "\u0000" + axis;
+
+/**
+ * Every shared wall on a floor, resolved to what is drawn in it.
+ *
+ * Pairs of rooms sharing a long enough wall are *candidates*, not doors:
+ * taking them all gave a bathroom four doors, one to each neighbour it
+ * happened to touch (Jonathan, 2026-08-24). A room gets as many doors as its
+ * use allows — one for a bathroom or a closet, more for circulation — and the
+ * widest shared walls win, since that is where a door actually goes. A room
+ * with candidates always keeps at least one, so nothing reads as unreachable.
+ *
+ * An explicit `WallOpening` skips all of that for its pair: it is drawn as
+ * written, and it counts against the neighbours' door budget so the
+ * derivation fills in around it rather than fighting it.
+ */
+export function sharedWalls(floor: Floor): Segment[] {
+  const indoor = floor.rooms.filter(isIndoor);
+  const specs = new Map<string, WallOpening>();
+  for (const o of floor.openings ?? []) {
+    specs.set(pairKey(o.between[0], o.between[1], o.axis ?? "*"), o);
   }
+  const specFor = (a: string, b: string, axis: "v" | "h") =>
+    specs.get(pairKey(a, b, axis)) ?? specs.get(pairKey(a, b, "*"));
 
-  // Doors. Every pair of rooms sharing a long enough wall is a *candidate*,
-  // not a door: taking them all gave a bathroom four doors, one to each
-  // neighbour it happened to touch (Jonathan, 2026-08-24). A room gets as
-  // many doors as its use allows — one for a bathroom or a closet, more for
-  // circulation — and the widest shared walls win, since that is where a
-  // door actually goes. A room with candidates always keeps at least one,
-  // so nothing on the plan is drawn as unreachable.
   type Candidate = {
     a: Room;
     b: Room;
@@ -142,7 +173,10 @@ export function floorGeometry(floor: Floor): FloorGeometry {
     lo: number;
     hi: number;
     depth: number;
+    /** The room on the far side of the wall in the positive direction. */
+    positive: Room;
     into: 1 | -1;
+    spec?: WallOpening;
   };
   const candidates: Candidate[] = [];
 
@@ -164,41 +198,40 @@ export function floorGeometry(floor: Floor): FloorGeometry {
       if (meetsV !== null) {
         const lo = Math.max(a.y, b.y);
         const hi = Math.min(a.y + a.h, b.y + b.h);
-        if (hi - lo >= MIN_DOOR_SPAN) {
-          // The leaf opens into the larger room, which is the one with space
-          // for it.
+        const spec = specFor(a.name, b.name, "v");
+        // A wall short of the minimum is still listed when someone asked for
+        // an opening in it. They can see the plan; the threshold is a guess.
+        if (hi - lo >= MIN_DOOR_SPAN || spec) {
+          // The leaf opens into the larger room, which is the one with space.
           const left = a.x < b.x ? a : b;
           const right = left === a ? b : a;
           candidates.push({
             a, b, axis: "v", at: meetsV, lo, hi,
             depth: Math.min(a.w, b.w),
+            positive: right,
             into: area(right) >= area(left) ? 1 : -1,
+            spec,
           });
         }
       }
       if (meetsH !== null) {
         const lo = Math.max(a.x, b.x);
         const hi = Math.min(a.x + a.w, b.x + b.w);
-        if (hi - lo >= MIN_DOOR_SPAN) {
+        const spec = specFor(a.name, b.name, "h");
+        if (hi - lo >= MIN_DOOR_SPAN || spec) {
           const top = a.y < b.y ? a : b;
           const bottom = top === a ? b : a;
           candidates.push({
             a, b, axis: "h", at: meetsH, lo, hi,
             depth: Math.min(a.h, b.h),
+            positive: bottom,
             into: area(bottom) >= area(top) ? 1 : -1,
+            spec,
           });
         }
       }
     }
   }
-
-  // Through rooms first, then the widest shared wall. A door belongs on the
-  // wall two rooms actually share most of rather than the corner they clip —
-  // but a stretch of wall shared with a bathroom is the last place to put
-  // one, however wide it is, or the master bedroom ends up entered through
-  // the en-suite.
-  const rank = (c: Candidate) => (doorLimit(c.a) === 1 ? 1 : 0) + (doorLimit(c.b) === 1 ? 1 : 0);
-  candidates.sort((p, q) => rank(p) - rank(q) || q.hi - q.lo - (p.hi - p.lo));
 
   const doors = new Map<Room, number>();
   const taken = new Set<Candidate>();
@@ -208,7 +241,23 @@ export function floorGeometry(floor: Floor): FloorGeometry {
     doors.set(c.b, (doors.get(c.b) ?? 0) + 1);
   };
 
+  // Authored openings are settled first and count towards both rooms, so the
+  // derivation below sees a bathroom that already has its one door.
+  const derived: Candidate[] = [];
   for (const c of candidates) {
+    if (!c.spec) derived.push(c);
+    else if (c.spec.kind !== "wall") accept(c);
+  }
+
+  // Through rooms first, then the widest shared wall. A door belongs on the
+  // wall two rooms actually share most of rather than the corner they clip —
+  // but a stretch of wall shared with a bathroom is the last place to put
+  // one, however wide it is, or the master bedroom ends up entered through
+  // the en-suite.
+  const rank = (c: Candidate) => (doorLimit(c.a) === 1 ? 1 : 0) + (doorLimit(c.b) === 1 ? 1 : 0);
+  derived.sort((p, q) => rank(p) - rank(q) || q.hi - q.lo - (p.hi - p.lo));
+
+  for (const c of derived) {
     if ((doors.get(c.a) ?? 0) >= doorLimit(c.a) || (doors.get(c.b) ?? 0) >= doorLimit(c.b)) continue;
     accept(c);
   }
@@ -217,7 +266,7 @@ export function floorGeometry(floor: Floor): FloorGeometry {
   // closet, which have their one door already and are not a way through.
   for (const room of indoor) {
     if (!walkable(room) || (doors.get(room) ?? 0) > 0) continue;
-    const best = candidates.find((c) => {
+    const best = derived.find((c) => {
       if (taken.has(c) || (c.a !== room && c.b !== room)) return false;
       const other = c.a === room ? c.b : c.a;
       return doorLimit(other) > 1;
@@ -227,17 +276,66 @@ export function floorGeometry(floor: Floor): FloorGeometry {
   // Last resort: a room whose only neighbour is a bathroom or a closet takes
   // that door anyway. An en-suite reached through the dressing room is how
   // this house is actually arranged, and a room with no door at all reads as
-  // a mistake in the drawing.
+  // a mistake in the drawing. A wall someone closed by hand stays closed.
   for (const room of indoor) {
     if (!walkable(room) || (doors.get(room) ?? 0) > 0) continue;
-    const best = candidates.find((c) => !taken.has(c) && (c.a === room || c.b === room));
+    const best = derived.find((c) => !taken.has(c) && (c.a === room || c.b === room));
     if (best) accept(best);
   }
 
-  for (const c of candidates) {
-    if (!taken.has(c)) continue;
-    const [from, to] = centred([c.lo, c.hi], doorWidth([c.lo, c.hi], c.depth));
-    openings.push({ kind: "door", axis: c.axis, at: c.at, from, to, into: c.into });
+  return candidates.map((c) => {
+    const kind: WallOpening["kind"] = c.spec ? c.spec.kind : taken.has(c) ? "door" : "wall";
+    const stretch = c.hi - c.lo;
+    const want = c.spec?.span ?? doorWidth([c.lo, c.hi], c.depth);
+    const width = Math.max(TOL, Math.min(want, Math.max(stretch - 2 * TOL, TOL)));
+    const centre = c.lo + stretch * (c.spec?.at ?? 0.5);
+    const from = Math.min(Math.max(centre - width / 2, c.lo), c.hi - width);
+    const into: 1 | -1 = c.spec?.into
+      ? c.spec.into === c.positive.name
+        ? 1
+        : -1
+      : c.into;
+    return {
+      a: c.a.name,
+      b: c.b.name,
+      axis: c.axis,
+      at: c.at,
+      lo: c.lo,
+      hi: c.hi,
+      kind,
+      explicit: Boolean(c.spec),
+      from,
+      to: from + width,
+      into,
+    };
+  });
+}
+
+export function floorGeometry(floor: Floor): FloorGeometry {
+  const rooms = floor.rooms;
+  const indoor = rooms.filter(isIndoor);
+  const walls: FloorGeometry["walls"] = [];
+  const openings: Opening[] = [];
+
+  for (const room of indoor) {
+    walls.push(
+      { axis: "v", at: room.x, from: room.y, to: room.y + room.h },
+      { axis: "v", at: room.x + room.w, from: room.y, to: room.y + room.h },
+      { axis: "h", at: room.y, from: room.x, to: room.x + room.w },
+      { axis: "h", at: room.y + room.h, from: room.x, to: room.x + room.w }
+    );
+  }
+
+  for (const seg of sharedWalls(floor)) {
+    if (seg.kind === "wall") continue;
+    openings.push({
+      kind: seg.kind,
+      axis: seg.axis,
+      at: seg.at,
+      from: seg.from,
+      to: seg.to,
+      into: seg.into,
+    });
   }
 
   // Windows, one in the longest outward stretch of each side.

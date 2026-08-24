@@ -29,6 +29,30 @@ export type Room = {
   service?: boolean;
 };
 
+/**
+ * A hand-authored opening in the wall two rooms share.
+ *
+ * Doors are derived from the rectangles by default (see `planGeometry.ts`),
+ * which is right most of the time and wrong where the house is unusual — a
+ * bathroom that happens to touch four rooms, a bar that opens to the lounge
+ * with no door in it at all. An entry here overrides the derivation for that
+ * pair of rooms: it is the last word, and the plan editor writes them.
+ */
+export type WallOpening = {
+  /** The two room names, in either order. */
+  between: [string, string];
+  /** `wall` closes the opening; `open` is a gap with no leaf in it. */
+  kind: "wall" | "door" | "slider" | "open";
+  /** Which shared wall, where two rooms touch on both axes. Both, if absent. */
+  axis?: "v" | "h";
+  /** Centre along the shared stretch, 0–1. Defaults to the middle. */
+  at?: number;
+  /** Clear width in plan units. Defaults to the derived door width. */
+  span?: number;
+  /** The room the leaf swings into; doors only. Defaults to the larger room. */
+  into?: string;
+};
+
 export type Floor = {
   id: string;
   /** The tab label. */
@@ -36,6 +60,8 @@ export type Floor = {
   /** One line under the tabs. */
   intro: string;
   rooms: Room[];
+  /** Overrides for the derived doors. Absent means "derive everything". */
+  openings?: WallOpening[];
 };
 
 /** The plan's own coordinate space. The editor works in these units too. */

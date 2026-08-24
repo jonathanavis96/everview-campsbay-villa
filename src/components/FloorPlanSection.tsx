@@ -175,6 +175,31 @@ function FloorPlan({ floor }: { floor: Floor }) {
                 </g>
               );
             }
+            // An opening with nothing in it — a cased opening between two
+            // rooms — is drawn as the gap alone, which is the convention.
+            if (o.kind === "open") return null;
+            if (o.kind === "slider") {
+              // Two leaves, each half the clear width, offset to either side
+              // of the wall's centre line: one panel slides behind the other.
+              const mid = (o.from + o.to) / 2;
+              const offset = WALL / 3;
+              return (
+                <g key={i} strokeWidth="1.6">
+                  {[
+                    [o.from, mid, -offset],
+                    [mid, o.to, offset],
+                  ].map(([a, b, d]) => (
+                    <line
+                      key={a}
+                      x1={o.axis === "v" ? o.at + d : a}
+                      y1={o.axis === "v" ? a : o.at + d}
+                      x2={o.axis === "v" ? o.at + d : b}
+                      y2={o.axis === "v" ? b : o.at + d}
+                    />
+                  ))}
+                </g>
+              );
+            }
             const { leaf, arc } = doorPath(o);
             return (
               <g key={i}>
