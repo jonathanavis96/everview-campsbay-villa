@@ -1,34 +1,70 @@
-// Subsets the three self-hosted variable fonts down to the characters the
-// site and the brochure actually render, keeping every variable axis alive
-// (Fraunces' opsz/SOFT/WONK, Archivo's width axis via font-stretch) so
-// `font-variation-settings` and `font-weight: 100 900` keep working exactly
-// as before — only the *glyph table* shrinks, not the design space.
+// Shrinks the three self-hosted variable fonts down to (1) the variable
+// axes the site actually varies and (2) the characters the site and the
+// brochure actually render.
 //
-// Why this exists: the three woff2 files under src/assets/fonts/ are 211 KB
-// combined and sit on the hero's critical path (MIS perf work, 2026-08-24).
-// They already ship as "-latin" subsets from the font vendor, but that is
-// still the whole Latin script — thousands of glyphs this site never uses.
+// Why this exists: the three woff2 files under src/assets/fonts/ sit on the
+// hero's critical path (MIS perf work, 2026-08-24). They already ship as
+// "-latin" subsets from the font vendor, but that is still the whole Latin
+// script's worth of glyphs across every axis position, most of which this
+// site never asks for.
 //
-// Re-run this whenever new site or brochure copy could plausibly introduce a
-// character outside "printable ASCII + Latin-1 + the extra punctuation
-// listed below": a new guest name with an unusual accent, a new symbol in
-// rates/reviews JSON, a new brochure page. Re-running is cheap and safe —
-// worst case it re-derives the same charset and produces byte-identical
-// output.
+// Two separate savings, in order:
 //
-// How the charset is derived (see CHARSET below): every .ts/.tsx file under
-// src/, the JSON content files, and the static brochure HTML are read and
-// their literal characters unioned together, then the whole of Basic Latin
-// (0x20-0x7E) and Latin-1 Supplement (0xA0-0xFF) is added as a safety
-// margin — cheap in bytes, and it means a glyph nobody screenshotted still
-// renders. A short list of typographic characters the design uses that fall
-// outside Latin-1 (em/en dash, curly quotes, ellipsis, bullet, euro, arrow,
-// ≥, box-drawing rule) is added explicitly, since they cannot come from a
-// codepoint-range safety margin.
+// 1. Axis pinning (fonttools varLib.instancer). Read src/index.css (grepped
+//    2026-08-24, see AXIS_PINS below and the repo-wide grep this script
+//    would need re-running if new copy shows up): Fraunces is only ever
+//    used at "SOFT" 0, "WONK" 0, with opsz/wght varying. Archivo declares
+//    `font-stretch: 62% 125%` on its @font-face but nothing in the site
+//    ever sets a width other than the default 100. SOFT carries a full set
+//    of deltas — pinning it before subsetting is most of Fraunces' saving.
+//    WONK is NOT pinned despite always being set to 0 — see the long
+//    comment on AXIS_PINS for why (a real fontTools instancer bug on this
+//    font, not a site-usage question). IBM Plex Mono is a static font (no
+//    fvar) and is left alone. Axes that ARE pinned here are DROPPED from
+//    the font entirely — pin only an axis nothing on the site varies, and
+//    verify the pinned value actually matches what the live font renders
+//    at that value (see the WONK story), or the browser/the font silently
+//    renders something different. Pinning Archivo's wdth means
+//    `font-stretch: 62% 125%` must also be removed from every @font-face
+//    declaring Archivo (src/index.css and public/brochures/*.html) — a
+//    stretch range on a font with no width axis left asks the browser to
+//    synthesize a width, which is a visible regression this script cannot
+//    catch on its own. This script does not edit those @font-face blocks;
+//    that was done by hand alongside it.
 //
-// Requires fontTools' pyftsubset (`pip install fonttools[woff]` — variable
-// font + woff2 support needs the `[woff]` extra for brotli). This repo was
-// subset with fontTools 4.61.1 via `~/.local/bin/pyftsubset`.
+// 2. Glyph subsetting (pyftsubset), same as before: the charset is derived
+//    from every .ts/.tsx file under src/, the JSON content files, and the
+//    static brochure HTML, unioned together, then the whole of Basic Latin
+//    (0x20-0x7E) and Latin-1 Supplement (0xA0-0xFF) is added as a safety
+//    margin — cheap in bytes, and it means a glyph nobody screenshotted
+//    still renders. A short list of typographic characters the design uses
+//    that fall outside Latin-1 (em/en dash, curly quotes, ellipsis, bullet,
+//    euro, arrow, ≥, box-drawing rule) is added explicitly, since they
+//    cannot come from a codepoint-range safety margin.
+//
+// Hinting is kept (pyftsubset's default) rather than passing the more usual
+// `--no-hinting`: measured 2026-08-24 that dropping it shifts Chromium's
+// glyph-advance rounding by a few px across a paragraph, which was enough
+// to flip a line wrap in a testimonial quote. An isolated @font-face test
+// confirmed keeping hinting produces 0px difference against the original
+// font. The extra bytes are worth it for byte-identical layout.
+//
+// Re-run this whenever:
+//   - new site or brochure copy could introduce a character outside
+//     "printable ASCII + Latin-1 + the extra punctuation listed below" (a
+//     guest name with an unusual accent, a new symbol in rates/reviews
+//     JSON, a new brochure page) — re-deriving the charset is cheap and
+//     safe, worst case it produces byte-identical output.
+//   - new site or brochure copy sets `font-variation-settings`,
+//     `font-stretch`, or `font-weight` to a value outside what AXIS_PINS
+//     below assumes (see the repo-wide grep note above) — in that case,
+//     update AXIS_PINS (or stop pinning that axis) BEFORE re-running, or
+//     the new copy will render with a synthesized/wrong axis value.
+//
+// Requires fontTools' pyftsubset and varLib.instancer
+// (`pip install fonttools[woff]` — variable font + woff2 support needs the
+// `[woff]` extra for brotli). This repo was processed with fontTools 4.61.1
+// via `~/.local/bin/pyftsubset` and `~/.local/bin/fonttools`.
 //
 // Usage: node scripts/subset-fonts.mjs
 
@@ -46,7 +82,7 @@ const DEST_DIRS = [
 // Source files whose literal text contributes to the charset. Covers every
 // place a human-authored string can reach the page: component copy, content
 // JSON, and the standalone brochure (which can't import the bundled CSS, so
-// it carries its own copy of these fonts — see public/fonts/README below).
+// it carries its own copy of these fonts).
 const TEXT_SOURCE_GLOBS = [
   "src", // walked recursively below, .ts/.tsx only
   "src/content/rates.json",
@@ -69,6 +105,31 @@ const EXTRA_CHARS =
   "→" + // →
   "≥" + // ≥
   "─"; // ─
+
+// Axes to pin (drop) per font before subsetting. Verified against
+// src/index.css and public/brochures/welcome-brochure.html 2026-08-24: the
+// site only ever sets Fraunces' SOFT/WONK to 0 and never sets Archivo's
+// width away from its default 100. Axes NOT listed here (opsz, wght) are
+// left as full ranges because the site varies them.
+//
+// WONK is deliberately NOT pinned even though the site always sets it to
+// 0. Measured 2026-08-24: pinning WONK via varLib.instancer breaks
+// Fraunces' GSUB "rvrn" (required variation) resolution for at least the
+// ampersand — an isolated @font-face test held font-variation-settings at
+// "WONK" 0 for both fonts and got a plain "&" from the live/unpinned font
+// but a swash "&" from the WONK-pinned one, i.e. pinning it changes what
+// explicitly requesting the pinned value renders. That is a fontTools
+// instancer limitation on this specific font, not a case of the site
+// varying the axis — pinning WONK is unsafe regardless. It also barely
+// contributes bytes on its own (121,016 -> 120,496 B pinned alone), so
+// nothing meaningful is given up by leaving it live. SOFT pins cleanly
+// (verified the same way: matches the live font exactly) and carries
+// nearly all of Fraunces' pinning saving.
+const AXIS_PINS = {
+  "fraunces-variable-latin.woff2": { SOFT: 0 },
+  "archivo-variable-latin.woff2": { wdth: 100 },
+  "ibm-plex-mono-400-latin.woff2": null, // static font, no fvar — skip instancer
+};
 
 function walk(dir, out) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -110,12 +171,8 @@ const FONTS = [
   "ibm-plex-mono-400-latin.woff2",
 ];
 
-function findPyftsubset() {
-  const candidates = [
-    path.join(process.env.HOME ?? "", ".local/bin/pyftsubset"),
-    "pyftsubset",
-  ];
-  for (const c of candidates) {
+function findTool(names) {
+  for (const c of names) {
     try {
       execFileSync(c, ["--help"], { stdio: "ignore" });
       return c;
@@ -124,7 +181,7 @@ function findPyftsubset() {
     }
   }
   throw new Error(
-    "pyftsubset not found (tried ~/.local/bin/pyftsubset and PATH). Install fontTools: pip install fonttools[woff]",
+    `none of [${names.join(", ")}] found. Install fontTools: pip install fonttools[woff]`,
   );
 }
 
@@ -132,7 +189,10 @@ function main() {
   const { chars, fileCount } = deriveCharset();
   console.log(`Derived charset from ${fileCount} source files: ${chars.length} unique characters`);
 
-  const pyftsubset = findPyftsubset();
+  const home = process.env.HOME ?? "";
+  const pyftsubset = findTool([path.join(home, ".local/bin/pyftsubset"), "pyftsubset"]);
+  const fonttools = findTool([path.join(home, ".local/bin/fonttools"), "fonttools"]);
+
   const charsFile = path.join(ROOT, ".font-subset-charset.txt");
   fs.writeFileSync(charsFile, chars, "utf8");
 
@@ -141,45 +201,58 @@ function main() {
     if (!fs.existsSync(src)) {
       throw new Error(`missing full source font: ${src}`);
     }
-    const before = fs.statSync(src).size;
+    const originalBytes = fs.statSync(src).size;
 
+    // Step 1: pin axes the site never varies (skip for static fonts).
+    const pins = AXIS_PINS[fontFile];
+    let instancerInput = src;
+    let pinnedTmp = null;
+    if (pins) {
+      pinnedTmp = path.join(ROOT, `.${fontFile}.pinned.tmp`);
+      const pinArgs = Object.entries(pins).map(([axis, value]) => `${axis}=${value}`);
+      execFileSync(fonttools, [
+        "varLib.instancer",
+        src,
+        ...pinArgs,
+        `-o`,
+        pinnedTmp,
+        "--no-recalc-timestamp",
+      ]);
+      instancerInput = pinnedTmp;
+    }
+    const afterPinBytes = fs.statSync(instancerInput).size;
+
+    // Step 2: subset glyphs to the derived charset, keeping hinting and
+    // every remaining variable axis.
     const tmpOut = path.join(ROOT, `.${fontFile}.subset.tmp`);
     execFileSync(pyftsubset, [
-      src,
+      instancerInput,
       `--output-file=${tmpOut}`,
       `--text-file=${charsFile}`,
       "--flavor=woff2",
       "--layout-features=*",
-      // Hinting is kept (the default), deliberately overriding the
-      // otherwise-standard `--no-hinting` webfont recipe. Measured
-      // 2026-08-24: with --no-hinting, Chromium's glyph-advance rounding
-      // shifts by a few px across a full paragraph, which is enough to
-      // flip a line wrap at the container's exact width (verified with an
-      // isolated @font-face test: --no-hinting reflows a Fraunces
-      // testimonial paragraph, keeping hinting does not — 0px difference).
-      // The bytes hinting instructions cost are worth it for byte-identical
-      // layout; see the isolated-test note in the perf/subset-fonts PR.
-      //
-      // fvar/gvar/avar/STAT are not in pyftsubset's default drop-tables
-      // list, so the variable axes (weight, Archivo's width, Fraunces'
-      // opsz/SOFT/WONK) survive subsetting untouched — no extra flag
-      // needed. Verified per-font after this script runs.
+      // Hinting kept — see file header. fvar/gvar/avar/STAT are not in
+      // pyftsubset's default drop-tables list, so any axis instancer left
+      // alone (opsz, wght) survives subsetting untouched.
     ]);
 
-    const after = fs.statSync(tmpOut).size;
+    const finalBytes = fs.statSync(tmpOut).size;
+    const pinNote = pins ? ` (pin: ${JSON.stringify(pins)} -> ${afterPinBytes.toLocaleString()} B)` : "";
     console.log(
-      `${fontFile}: ${before.toLocaleString()} B -> ${after.toLocaleString()} B (${(100 * (1 - after / before)).toFixed(1)}% smaller)`,
+      `${fontFile}: ${originalBytes.toLocaleString()} B -> ${finalBytes.toLocaleString()} B ` +
+        `(${(100 * (1 - finalBytes / originalBytes)).toFixed(1)}% smaller)${pinNote}`,
     );
 
     for (const destDir of DEST_DIRS) {
       fs.copyFileSync(tmpOut, path.join(destDir, fontFile));
     }
     fs.rmSync(tmpOut);
+    if (pinnedTmp) fs.rmSync(pinnedTmp);
   }
 
   fs.rmSync(charsFile);
   console.log(
-    "Done. Verify fvar axes survived: fonttools ttLib.woff2 decompress, then check the fvar table of each font in src/assets/fonts/.",
+    "Done. Verify fvar axes: read the fvar table of each font in src/assets/fonts/ and confirm pinned axes are gone, others intact.",
   );
 }
 
