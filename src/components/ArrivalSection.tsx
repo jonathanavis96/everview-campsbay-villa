@@ -1,25 +1,40 @@
-// design-direction §6.10 — "Arrival and the house rules". Facts sourced from
-// public/brochures/Everview-Welcome-Brochure-v3.pdf (recovered via `git show
-// baaedbe:public/brochures/Everview-Welcome-Brochure-v3.pdf | pdftotext - -`
-// after MIS-457 removed the file from the working tree) — never republished
-// here. The WiFi network/password, the Ajax app, per-mode sensor behaviour,
-// emergency contact numbers and the street address are deliberately excluded;
-// "monitored 24/7 by ADT Security, with armed response" is the only alarm
-// fact carried over, verbatim and with nothing added. See MIS-457/MIS-458.
+// design-direction §6.10 — "Arrival and the house rules".
 //
-// A well-run house, not a list of restrictions: housekeeping, the lift,
-// monitoring and off-grid power lead in body type, and the rules follow
-// underneath rather than in the source PDF's shouting caps.
+// The section carries what a guest needs *before* they arrive: the times, the
+// short version of how the house runs, and the rules. Everything operational
+// — the lift's load-shedding behaviour, the AV walkthrough, the two music
+// systems, the emergency numbers — lives in the welcome brochure, which is
+// one button away and printed in the house. The page used to try to be both
+// and read as a wall of paragraphs (Jonathan, 2026-08-24).
 //
-// The rules, the check-in times and the late-arrival note were all set in
-// 13px mono in stone tint, and Jonathan could not read them (2026-08-24).
-// They are body type on ink now: the hierarchy comes from position and from
-// the labels beside them, not from shrinking the thing a guest has to read.
+// The WiFi password and the alarm codes appear in neither: they are on the
+// printed card in the house. A page or a brochure gets forwarded and
+// screenshotted; a card on the kitchen counter does not.
 import Reveal from "@/components/Reveal";
 
 const ARRIVAL_TIMES = [
   { label: "Check-in", value: "2:00 PM – 7:00 PM" },
   { label: "Check-out", value: "By 10:00 AM" },
+  { label: "After 7:00 PM", value: "Arrange with the property manager" },
+];
+
+const HOW_IT_RUNS = [
+  {
+    heading: "Housekeeping",
+    body: "Daily, with laundry provided and available on request.",
+  },
+  {
+    heading: "The lift",
+    body: "Between all levels, up to six people, and it keeps running through load-shedding on days the battery bank has had sun.",
+  },
+  {
+    heading: "WiFi",
+    body: "Fibre on every level. The network and password are on the printed card in the house — never in a document that can be forwarded.",
+  },
+  {
+    heading: "Alarm",
+    body: "Monitored 24/7 by ADT Security with armed response. The codes are on that same card, and the property manager sets you up on arrival.",
+  },
 ];
 
 const HOUSE_RULES = [
@@ -31,51 +46,80 @@ const HOUSE_RULES = [
   "Damages reported to the property manager immediately.",
 ];
 
+const BROCHURE_HREF = `${import.meta.env.BASE_URL}brochures/welcome-brochure.html`;
+
 export default function ArrivalSection() {
   return (
     <section id="arrival" className="py-8 md:py-12">
       <div className="container">
         <p className="text-label text-stone-text mb-4">Arrival</p>
 
-        <div className="grid md:grid-cols-2 gap-8 md:gap-12 border-t border-line pt-8 md:pt-12">
-          <Reveal>
+        <div className="border-t border-line pt-8 md:pt-12">
+          <Reveal className="max-w-3xl">
             <h2 className="text-display-l text-ink mb-4">A well-run house</h2>
-            <p className="text-body text-ink/80 mb-6">
-              Housekeeping comes daily, with laundry provided and available on
-              request. The lift carries up to six people between the
-              basement and the upper level, and keeps running through
-              load-shedding on days the battery bank has had sun to charge.
-              The property is monitored 24/7 by ADT Security, with armed
-              response, and by day the house runs largely on its own solar
-              power.
-            </p>
-            <dl className="space-y-2">
-              {ARRIVAL_TIMES.map((a) => (
-                <div key={a.label} className="flex items-baseline gap-3">
-                  <dt className="text-label text-stone-text w-24 shrink-0">{a.label}</dt>
-                  <dd className="text-body text-ink">{a.value}</dd>
-                </div>
-              ))}
-            </dl>
-            <p className="text-body text-ink/80 mt-4">
-              Arriving after 7:00 PM: arrange a time with the property
-              manager in advance. Late check-out is subject to availability
-              and additional cost, arranged in advance.
+            <p className="text-lede text-ink">
+              Someone looks after this house every day, and it shows in the
+              small things: the beds turned down, the lift working through a
+              power cut, the alarm already set up for you when you walk in.
             </p>
           </Reveal>
 
-          <Reveal delayMs={100}>
-            <h3 className="text-display-m text-ink mb-4">House rules</h3>
-            <ul className="text-body text-ink/80 space-y-2">
-              {HOUSE_RULES.map((rule) => (
-                <li
-                  key={rule}
-                  className="border-t border-line pt-2 first:border-t-0 first:pt-0"
-                >
-                  {rule}
-                </li>
+          {/* The three times used to sit in a narrow rail at the far right,
+              which left a third of the row empty between them and the lede and
+              wrapped "Arrange with the property manager" onto two lines. They
+              run the full width now, three across on one rule, so each value
+              has the room to sit on a single line. */}
+          <Reveal delayMs={100} as="div" className="mt-8 border-t border-line pt-6 md:mt-10">
+            <dl className="grid gap-6 sm:grid-cols-3 md:gap-12">
+              {ARRIVAL_TIMES.map((a) => (
+                <div key={a.label}>
+                  <dt className="text-label text-stone-text mb-1">{a.label}</dt>
+                  <dd className="text-body text-ink/80">{a.value}</dd>
+                </div>
               ))}
-            </ul>
+            </dl>
+          </Reveal>
+
+          <Reveal as="div" className="mt-10 grid gap-8 md:grid-cols-2 md:gap-12">
+            <div>
+              {/* Headed and hairline-separated, like the house rules opposite:
+                  the four facts used to float under nothing while the column
+                  beside them carried a heading, which is most of why the row
+                  looked unfinished. */}
+              <h3 className="text-display-m text-ink mb-4">How the house runs</h3>
+              <ul className="grid gap-x-8 sm:grid-cols-2">
+                {HOW_IT_RUNS.map((item) => (
+                  <li key={item.heading} className="border-t border-line pb-4 pt-3">
+                    <h3 className="text-label text-stone-text mb-1">{item.heading}</h3>
+                    <p className="text-body text-ink/80">{item.body}</p>
+                  </li>
+                ))}
+              </ul>
+
+              <a
+                href={BROCHURE_HREF}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-6 inline-flex items-center gap-3 border border-ink px-6 py-3 text-label text-ink transition-colors hover:bg-ink hover:text-paper"
+              >
+                Read the welcome brochure
+              </a>
+            </div>
+
+            <div>
+              <h3 className="text-display-m text-ink mb-4">House rules</h3>
+              <ul className="text-body text-ink/80 space-y-2 pb-1">
+                {HOUSE_RULES.map((rule) => (
+                  <li key={rule} className="border-t border-line pt-2">
+                    {rule}
+                  </li>
+                ))}
+              </ul>
+              <p className="text-body text-ink/80 mt-4">
+                Late check-out is subject to availability and additional cost,
+                arranged in advance.
+              </p>
+            </div>
           </Reveal>
         </div>
       </div>

@@ -50,6 +50,11 @@ const LEVELS: Level[] = [
         "A formal table for eight under the chandelier, with the ocean through the glass."
       ),
       space(
+        "living-level/outside-dining",
+        "Outside dining",
+        "The covered dining table on the terrace, where most meals end up happening."
+      ),
+      space(
         "living-level/formal-living-room",
         "The formal living room",
         "A fireplace, deep seating, and the Atlantic filling the far wall."
@@ -65,9 +70,14 @@ const LEVELS: Level[] = [
         "Off the kitchen: loungers and a reading nook, for the part of the day nobody wants to be indoors."
       ),
       space(
+        "living-level/bar",
+        "The bar",
+        "A proper bar off the living room, stocked and ready for the evening."
+      ),
+      space(
         "living-level/wine-cellar",
         "Wine cellar & TV room",
-        "A wine cellar and a proper bar alongside the television room, for evenings that run late."
+        "A wine cellar alongside the television room, for evenings that run late."
       ),
       space(
         "living-level/terrace",

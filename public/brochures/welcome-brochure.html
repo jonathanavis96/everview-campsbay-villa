@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../favicon-96.png" sizes="96x96" type="image/png" />
+<title>Everview — Welcome Brochure</title>
+<style>
+  /* The site's own faces, copied from src/assets/fonts. The brochure is a
+     static file in public/, so it cannot import the bundled stylesheet — the
+     three @font-face rules below are the same three the site declares. */
+  @font-face {
+    font-family: "Fraunces Variable";
+    font-style: normal;
+    font-display: swap;
+    font-weight: 100 900;
+    src: url("../fonts/fraunces-variable-latin.woff2") format("woff2-variations");
+  }
+  @font-face {
+    font-family: "Archivo Variable";
+    font-style: normal;
+    font-display: swap;
+    font-weight: 100 900;
+    font-stretch: 62% 125%;
+    src: url("../fonts/archivo-variable-latin.woff2") format("woff2-variations");
+  }
+  @font-face {
+    font-family: "IBM Plex Mono";
+    font-style: normal;
+    font-display: swap;
+    font-weight: 400;
+    src: url("../fonts/ibm-plex-mono-400-latin.woff2") format("woff2");
+  }
+
+  :root {
+    --paper: #f4f1eb;
+    --ink: #1b1a17;
+    --stone: #67655e;
+    --line: #dad8d2;
+    --water: #2f6f9b;
+    --display: "Fraunces Variable", Georgia, serif;
+    --body: "Archivo Variable", system-ui, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: #e9e6e0;
+    color: var(--ink);
+    font: 400 10.5pt/1.65 var(--body);
+  }
+  .page {
+    position: relative;
+    background: var(--paper);
+    width: 210mm;
+    min-height: 297mm;
+    margin: 10mm auto;
+    padding: 18mm 18mm 16mm;
+    box-shadow: 0 2px 18px rgba(0,0,0,.12);
+  }
+  h1, h2, h3, h4 { margin: 0; font-family: var(--display); }
+  h1 {
+    font-weight: 300;
+    font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 0;
+    font-size: 34pt;
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+  }
+  h2 {
+    font-weight: 400;
+    font-variation-settings: "opsz" 72, "SOFT" 0, "WONK" 0;
+    font-size: 19pt;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    margin-bottom: 4mm;
+  }
+  h3 {
+    font-weight: 400;
+    font-variation-settings: "opsz" 40, "SOFT" 0, "WONK" 0;
+    font-size: 12.5pt;
+    margin: 5mm 0 1.5mm;
+  }
+  h4 { font-family: var(--body); font-weight: 600; font-size: 10.5pt; margin: 4mm 0 1mm; }
+  p { margin: 0 0 3mm; }
+  ol, ul { margin: 0 0 3mm; padding-left: 6mm; }
+  li { margin-bottom: 1.6mm; }
+  li > ul, li > ol { margin-top: 1.6mm; }
+  .label {
+    font-family: var(--body);
+    font-weight: 500;
+    font-size: 8pt;
+    line-height: 1;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--stone);
+  }
+  /* The label at the head of a page is that page's title, not a running head,
+     so it is set at heading size — a page whose only large type was a
+     sub-heading further down read as if its title had been left off. Only the
+     direct child of a page is promoted; the small labels inside the check-in
+     and check-out blocks keep their size. */
+  .page > .label {
+    font-family: var(--display);
+    font-weight: 400;
+    font-variation-settings: "opsz" 72, "SOFT" 0, "WONK" 0;
+    font-size: 19pt;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    text-transform: none;
+    color: var(--ink);
+  }
+  .rule { height: 1px; background: var(--line); border: 0; margin: 6mm 0; }
+  .lede {
+    font-family: var(--display);
+    font-weight: 300;
+    font-variation-settings: "opsz" 40, "SOFT" 0, "WONK" 0;
+    font-size: 13.5pt;
+    line-height: 1.45;
+  }
+  section { margin-bottom: 9mm; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm; }
+  /* Text on the left, the photograph held to the top of the right column. */
+  .split { display: grid; grid-template-columns: 1.15fr 1fr; gap: 8mm; align-items: start; }
+  .split .split-text > h2 { margin-top: 0; }
+  .split-figure { align-self: start; }
+  /* A photograph that has to be read — a control panel with its steps marked
+     — runs the full width of the column and stacks under the one above it. */
+  .plate { margin-top: 6mm; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5mm; }
+  figure { margin: 0; }
+  figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--line);
+    background: #fff;
+  }
+  figure img.tall { max-height: 105mm; object-fit: contain; }
+  figcaption {
+    font: 400 7.5pt/1.5 var(--mono);
+    letter-spacing: .06em;
+    color: var(--stone);
+    margin-top: 2mm;
+    text-transform: uppercase;
+  }
+  .row {
+    display: flex; justify-content: space-between; gap: 6mm;
+    border-top: 1px solid var(--line); padding: 1.8mm 0;
+  }
+  .row:first-child { border-top: 0; }
+  .row dt { color: var(--stone); }
+  .row dd { margin: 0; text-align: right; }
+  dl { margin: 0; }
+  .note {
+    border-left: 2px solid var(--water);
+    background: rgba(47,111,155,.055);
+    padding: 3mm 0 3mm 4.5mm;
+    margin-bottom: 3mm;
+  }
+  .rules li::marker { color: var(--stone); }
+  .foot { font-size: 9pt; color: var(--stone); }
+  .pagenote { font-size: 8.5pt; color: var(--stone); }
+  a { color: var(--water); }
+
+  /* The wordmark, copied from the navigation bar: <RidgelineMark> at
+     strokeWidth 2 with a non-scaling stroke, and the word directly under it
+     in the site's display face, pulled up into the arch. The nav sets these
+     as h-6 w-[13rem] / text-display-m / -mt-3. */
+  .wordmark {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1;
+  }
+  .wordmark svg { display: block; width: 208px; height: 24px; }
+  .wordmark span {
+    font-family: var(--display);
+    font-weight: 400;
+    font-variation-settings: "opsz" 72, "SOFT" 0, "WONK" 0;
+    font-size: 32px;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    margin-top: -12px;
+  }
+  .wordmark.small svg { width: 152px; height: 18px; }
+  .wordmark.small span { font-size: 24px; margin-top: -9px; }
+
+  @media print {
+    body { background: #fff; }
+    .page {
+      margin: 0;
+      box-shadow: none;
+      width: auto;
+      min-height: 0;
+      padding: 14mm;
+      break-after: page;
+    }
+    .page:last-child { break-after: auto; }
+    section, figure { break-inside: avoid; }
+    /* On A4 a page has 182mm of width and 269mm of usable height. A
+       full-width plate at the photographs' 1.4:1 renders about 130mm tall, so
+       two on the music pages would need 260mm on their own, and the pool-room
+       figure lands under a page that is already nearly full. Capping every
+       page-level figure keeps each sheet whole; the screen keeps full size. */
+    figure img.tall { max-height: 88mm; }
+    .page > figure img {
+      max-height: 66mm;
+      width: auto;
+      max-width: 100%;
+      margin: 0 auto;
+    }
+    @page { size: A4; margin: 0; }
+  }
+  /* Screen only, and that is load-bearing: the print viewport is 210mm wide,
+     so an unqualified max-width:230mm query matches when the brochure is
+     printed and collapses every grid to one column on top of the print rules
+     above — which pushes the manually paginated pages onto extra sheets. */
+  @media screen and (max-width: 230mm) {
+    .page { width: auto; margin: 0; padding: 8mm; box-shadow: none; }
+    .grid-2, .grid-3, .split { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!--
+  Everview welcome brochure, v4.
+
+  This is the full contents of the v3 PDF, reset in the site's own register.
+  Nothing was dropped in the move: About the house, check-in and check-out,
+  the house rules, the kitchen, alarm and security with the Ajax modes, the
+  lights, emergency contacts, housekeeping and laundry, the lift, television
+  and the AV walkthrough, both music systems, board games, electricity, and
+  the before-you-go list — plus every photograph the PDF carried, extracted
+  from it and converted to WebP under img/.
+
+  Two things changed in substance, both at Jonathan's instruction
+  (2026-08-24), and both for the same reason: this document is published on
+  the web, and a brochure gets forwarded, screenshotted and emailed.
+
+    * The WiFi network and password are NOT printed here. v3 printed both.
+      They are on the card in the house.
+    * The alarm's account credentials and the property manager's direct
+      mobile and WhatsApp numbers are NOT printed here either. The operating
+      steps — arm, disarm, night mode, panic — are, because those are useless
+      to anyone who is not already inside the house.
+
+  Print to PDF from the browser at A4 with background graphics on.
+-->
+
+<!-- ─────────────────────────── PAGE 1 ─────────────────────────── -->
+<article class="page">
+  <div class="wordmark" style="margin-bottom:8mm">
+    <svg viewBox="0 20 2400 370" preserveAspectRatio="none" aria-label="Everview">
+      <path d="M0,372 L66,349 L156,341 L207,314 L270,306 L317,278 L367,271 L453,224 L504,149 L610,99 L645,40 L731,48 L758,79 L786,56 L864,40 L1380,56 L1399,95 L1489,130 L1521,189 L1548,200 L1618,263 L1696,278 L1755,302 L1802,294 L1864,259 L1911,220 L1966,153 L1978,153 L2009,204 L2033,220 L2232,298 L2326,361 L2400,368"
+            fill="none" stroke="#1b1a17" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            vector-effect="non-scaling-stroke"/>
+    </svg>
+    <span>Everview</span>
+  </div>
+
+  <p class="label">Welcome</p>
+  <h1>Villa Everview</h1>
+  <p class="label" style="margin-top:4mm">14 Cramond Road &middot; Camps Bay &middot; Cape Town &middot; Western Cape</p>
+
+  <hr class="rule" />
+
+  <section>
+    <h2>About the house</h2>
+    <p class="lede">
+      Wake up to the sound of waves and stunning ocean views at Everview. This
+      villa in Camps Bay features a private pool, covered terrace, and multiple
+      entertainment areas. Relax and enjoy the surrounding mountains and sea
+      from every angle.
+    </p>
+  </section>
+
+  <figure>
+    <img src="img/house-pool.webp" alt="Everview from the garden, with the pool in front of the house" />
+    <figcaption>The house from the garden</figcaption>
+  </figure>
+
+  <section style="margin-top:8mm">
+    <h2>WiFi</h2>
+    <div class="note">
+      <strong>The network name and password are on the printed card in the
+      house</strong>, beside this brochure. They are deliberately not printed
+      in any document that leaves the property. If you cannot find the card,
+      the property manager will read it to you.
+    </div>
+    <p>
+      The connection is fibre and reaches every level of the house. It stays up
+      through load-shedding on the house battery.
+    </p>
+  </section>
+</article>
+
+<!-- ─────────────────────────── PAGE 2 ─────────────────────────── -->
+<article class="page">
+  <p class="label">Arrival and departure</p>
+  <hr class="rule" />
+
+  <div class="grid-2">
+    <section>
+      <h2>Check in</h2>
+      <p class="label">Check-in time from</p>
+      <p style="font-size:20pt;margin:1mm 0 3mm">2:00 PM</p>
+      <p>
+        Check-in time is from 2pm until 7pm. If you are arriving on a late
+        flight please let the property manager know and arrange a check-in
+        time.
+      </p>
+    </section>
+
+    <section>
+      <h2>Check out</h2>
+      <p class="label">Check-out time by</p>
+      <p style="font-size:20pt;margin:1mm 0 3mm">10:00 AM</p>
+      <p>
+        Check-out time is until 10am. If you have a late flight, please let the
+        property manager know and request a late check-out — subject to
+        availability and at an additional cost.
+      </p>
+    </section>
+  </div>
+
+  <p>
+    If you require late check-in or check-out, please coordinate with the
+    property manager in advance.
+  </p>
+
+  <figure style="margin-top:6mm">
+    <img src="img/formal-lounge.webp" alt="The formal living room, looking out over the bay" />
+    <figcaption>The formal living room</figcaption>
+  </figure>
+
+  <section style="margin-top:8mm">
+    <h2>Before you go</h2>
+    <ol>
+      <li>Ensure all personal belongings are packed.</li>
+      <li>Sign in all keys to the property manager.</li>
+      <li>Log out of any personal accounts on TVs and streaming services.</li>
+    </ol>
+  </section>
+</article>
+
+<!-- ─────────────────────────── PAGE 3 ─────────────────────────── -->
+<article class="page">
+  <p class="label">House rules</p>
+  <hr class="rule" />
+
+  <section>
+    <h3>No pets</h3>
+    <p>As much as we love your fur babies, strictly no pets allowed.</p>
+
+    <h3>No smoking</h3>
+    <p>Strictly no smoking in the house or on the property.</p>
+
+    <h3>No parties</h3>
+    <p>
+      No large parties or events are permitted. For small gatherings please
+      chat to the property manager about your plans.
+    </p>
+
+    <h3>Report any damages</h3>
+    <p>
+      If there has been any accidental damage, or something is not working,
+      please report it to the property manager immediately.
+    </p>
+
+    <h3>No unauthorised people</h3>
+    <p>
+      Strictly no unauthorised people who are not part of the booking group are
+      allowed on the property, without prior arrangement with the property
+      manager.
+    </p>
+
+    <h3>No commercial filming or photography</h3>
+    <p>Commercial filming and photography is not permitted on the property.</p>
+
+    <h3>Important to note</h3>
+    <p>
+      The owner of the property will not be held liable for any injuries that
+      may occur on the premises, including the swimming pool.
+    </p>
+  </section>
+
+  <hr class="rule" />
+
+  <section>
+    <h2>The kitchen</h2>
+    <p>The kitchen is equipped with high-end appliances. Please note:</p>
+    <ol>
+      <li>Use the chopping boards provided to protect the surfaces.</li>
+      <li>Please do not drag any items across the counter — lift items up and off it.</li>
+      <li>The ice machine is currently non-functional; staff will fill ice trays as needed.</li>
+    </ol>
+  </section>
+</article>
+
+<!-- ─────────────────────────── PAGE 4 ─────────────────────────── -->
+<article class="page">
+  <p class="label">Alarm and security</p>
+  <hr class="rule" />
+
+  <section>
+    <p>The villa is monitored 24/7 by ADT Security, with armed response.</p>
+
+    <div class="note">
+      <strong>The alarm account details and the property manager's direct
+      numbers are on the printed card in the house</strong>, with this
+      brochure — not in this document, for the same reason as the WiFi
+      password. The property manager sets the app up with you on arrival and
+      links the email addresses you want on the system.
+    </div>
+
+    <p>
+      The alarm system is controlled through the Ajax Security Systems app,
+      available on both Google Play (Android) and the App Store (Apple). Once
+      your account and devices have been activated, you can:
+    </p>
+
+    <ul>
+      <li><strong>Arm</strong> — activates all internal and external security sensors.</li>
+      <li><strong>Disarm</strong> — turns off all security sensors.</li>
+      <li><strong>Night mode</strong> — activates external beams only, so you can move freely inside while the outside stays covered.</li>
+      <li><strong>Panic button</strong> — immediately alerts ADT armed response, who dispatch security personnel to the property.</li>
+    </ul>
+
+    <h4>Important notes</h4>
+    <ul>
+      <li>Ensure all doors are securely closed before arming the alarm.</li>
+      <li>For any technical issue or support with the alarm system, contact the property manager on the number on the card in the house.</li>
+    </ul>
+
+  </section>
+</article>
+
+<!-- ────────────────────── PAGE 4 (continued) ────────────────────── -->
+<article class="page">
+  <p class="label">Alarm and security</p>
+  <hr class="rule" />
+
+  <section>
+    <div class="grid-2">
+      <figure>
+        <img class="tall" src="img/ajax-app-dark.webp" alt="The Ajax app showing the Avis hub disarmed, with Arm and Disarm controls" />
+        <figcaption>The Ajax app — Android</figcaption>
+      </figure>
+      <figure>
+        <img class="tall" src="img/ajax-app-light.webp" alt="The Ajax app showing the Avis hub disarmed, with Arm and Disarm controls" />
+        <figcaption>The Ajax app — Apple</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>Lights</h2>
+    <p>
+      Garden lights, ramp lights, entrance and basement lights turn on
+      automatically at sundown, as well as a few internal lamps. Light switches
+      have been arranged logically, and all patios have external lights.
+    </p>
+  </section>
+
+  <section>
+    <h2>Emergency contacts</h2>
+    <dl>
+      <div class="row"><dt>ADT Security</dt><dd>086 121 2300</dd></div>
+      <div class="row"><dt>Camps Bay Police Station</dt><dd>021 437 8140</dd></div>
+      <div class="row"><dt>Camps Bay Watch</dt><dd>021 438 2000</dd></div>
+      <div class="row"><dt>Police (national)</dt><dd>10111</dd></div>
+      <div class="row"><dt>Ambulance</dt><dd>10177</dd></div>
+      <div class="row"><dt>From a mobile phone</dt><dd>112</dd></div>
+      <div class="row"><dt>Property manager</dt><dd>On the card in the house</dd></div>
+    </dl>
+  </section>
+</article>
+
+<!-- ─────────────────────────── PAGE 5 ─────────────────────────── -->
+<article class="page">
+  <p class="label">The house day to day</p>
+  <hr class="rule" />
+
+  <section>
+    <h2>Housekeeping &amp; laundry</h2>
+    <p>
+      Housekeeping services are available daily. Laundry can be done upon
+      request, with basic laundering provided. For high-value clothing,
+      professional services are recommended:
+    </p>
+    <ul>
+      <li>Wosh — <a href="https://www.wosh.co.za">www.wosh.co.za</a></li>
+      <li>Personal Laundry — <a href="https://www.personallaundry.co.za">www.personallaundry.co.za</a></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Electricity</h2>
+    <p>
+      The villa is equipped with solar panels and a backup power supply. During
+      load-shedding, avoid high-energy appliances like the oven and the lift.
+      During the day this is not a problem, because the house is effectively
+      off the grid.
+    </p>
+  </section>
+
+</article>
+
+<!-- ────────────────────── PAGE 5 (continued) ────────────────────── -->
+<article class="page">
+  <p class="label">The house day to day</p>
+  <hr class="rule" />
+
+  <section>
+    <h2>The lift</h2>
+    <ol>
+      <li>
+        <strong>Capacity</strong>
+        <ul><li>The lift can safely accommodate up to 6 people.</li></ul>
+      </li>
+      <li>
+        <strong>Load-shedding considerations</strong>
+        <ul>
+          <li>The lift can be used during load-shedding, but only on sunny days when sufficient energy is being generated and the batteries are fully charged.</li>
+          <li>Do not use the lift on very overcast days or at night, as the batteries may not have enough power.</li>
+          <li>To check for load-shedding: listen for the neighbour's generator, which indicates load-shedding is active, and download the ESP app for an updated schedule.</li>
+        </ul>
+      </li>
+      <li>
+        <strong>If the lift stops</strong>
+        <ul>
+          <li>If the lift is used during load-shedding or when power is insufficient, it may trip the power.</li>
+          <li>The lift will then stop and slowly descend to the next level using gravity.</li>
+          <li>If it stops at the garden roof level, press B and the lift will continue descending to the basement.</li>
+          <li>This process is perfectly safe: the descent is slow and controlled.</li>
+        </ul>
+      </li>
+      <li>
+        <strong>Emergency assistance</strong>
+        <ul>
+          <li>If the lift stops, the telephone inside will automatically dial a 24/7 emergency number.</li>
+          <li>The emergency team will check whether anyone is stuck and, if necessary, dispatch a team to assist.</li>
+          <li>This has not occurred in the past six years.</li>
+        </ul>
+      </li>
+    </ol>
+    <p>Please exercise caution and ensure conditions are suitable before using the lift.</p>
+  </section>
+
+  <figure>
+    <img src="img/pool-room.webp" alt="The pool room, with the billiards table and the ocean through the window" />
+    <figcaption>The pool room</figcaption>
+  </figure>
+</article>
+
+<!-- ─────────────────────────── PAGE 6 ─────────────────────────── -->
+<article class="page">
+  <p class="label">Television</p>
+  <hr class="rule" />
+
+  <section>
+    <h2>Television</h2>
+    <p>Everview offers DSTV, Netflix, Amazon Prime, Disney+, Showmax and YouTube Premium.</p>
+
+    <h3>Instructions for using the AV system</h3>
+    <ol>
+      <li>
+        <strong>Turn on the amplifier</strong>
+        <ul>
+          <li>Use the Marantz remote (the large black and silver one).</li>
+          <li>Press the red button at the top left to turn the integrated amplifier on.</li>
+          <li>Adjust the volume with the up and down arrows — right-hand side, middle of the remote; black arrows on a white background.</li>
+          <li>The amplifier automatically switches off after 5 minutes of inactivity, as an energy-saving feature.</li>
+        </ul>
+      </li>
+      <li>
+        <strong>Turn on the TV</strong>
+        <ul>
+          <li>Use the LG remote.</li>
+          <li>Press the red button at the top left to turn on the LG OLED TV.</li>
+        </ul>
+      </li>
+      <li>
+        <strong>Access streaming services</strong>
+        <ul>
+          <li><em>Netflix</em> — press the Netflix button, bottom left of the remote.</li>
+          <li><em>Amazon Prime</em> — press the house button to open the content store, then scroll to the Amazon Prime icon with the arrows in the central portion of the remote. Alternatively use the toggle in the central circle to activate the red pointer, hover over the icon and press the central button.</li>
+          <li><em>Disney+ and other services</em> — the same steps as Amazon Prime.</li>
+        </ul>
+      </li>
+      <li>
+        <strong>Return to TV or the home dashboard</strong>
+        <ul>
+          <li>Press the return button — the back arrow, above the Netflix button at the bottom left.</li>
+          <li>Select Recent, TV, or Home Dashboard.</li>
+          <li>In the Home Dashboard, select HDMI 4 to return to standard TV.</li>
+        </ul>
+      </li>
+      <li>
+        <strong>Need help?</strong>
+        <ul><li>If all else fails, ask a teenager. 🙂</li></ul>
+      </li>
+    </ol>
+  </section>
+</article>
+
+<!-- ─────────────────────────── PAGE 7 ─────────────────────────── -->
+<article class="page">
+  <p class="label">Music systems</p>
+  <hr class="rule" />
+
+  <section>
+    <h2>Formal dining area</h2>
+    <p>The system includes a tuner, CD player, turntable and Bluetooth connector.</p>
+    <ol>
+      <li><strong>Turn on the Rotel power amplifier</strong> — press the central button to switch on the Rotel power amp.</li>
+      <li><strong>Turn on the control amplifiers</strong> — press the top-left button to power on the control amplifiers.</li>
+      <li><strong>Select AUX for Bluetooth</strong> — use the last button on the right to select the AUX input.</li>
+      <li><strong>Connect</strong> — on your device, search for <strong>C36</strong> and connect.</li>
+    </ol>
+    <p>Enjoy your music using the tuner, CD player, turntable or Bluetooth.</p>
+  </section>
+
+  <figure class="plate">
+    <img src="img/music-formal-dining-cabinet.webp" alt="The formal dining hi-fi cabinet, its turntable and its two floorstanding speakers" />
+    <figcaption>The formal dining system</figcaption>
+  </figure>
+
+  <figure class="plate">
+    <img src="img/music-formal-dining-amp.webp" alt="The Rotel amplifier stack, with the power amplifier, the control amplifier and the input selector marked" />
+    <figcaption>Steps 1–3 on the amplifier stack</figcaption>
+  </figure>
+</article>
+
+<!-- ─────────────────────────── PAGE 8 ─────────────────────────── -->
+<article class="page">
+  <p class="label">Music systems</p>
+  <hr class="rule" />
+
+  <section>
+    <h2>Kitchen &amp; patio area</h2>
+    <ol>
+      <li><strong>Locate the hi-fi</strong> — it is in the right-hand cupboard of the bay window cupboards in the kitchen.</li>
+      <li><strong>Turn on the Rotel amplifier</strong> — press the left-hand button; a red indicator light shows it is powered.</li>
+      <li><strong>Adjust the volume</strong> — the knob on the extreme right-hand side of the amplifier.</li>
+      <li>
+        <strong>Select speakers</strong> — the unit to the left of the amplifier chooses them:
+        <ul>
+          <li>Kitchen <em>and</em> patio: press both left-hand buttons in.</li>
+          <li>Kitchen only: push the patio button out.</li>
+          <li>Patio only: push the kitchen button out.</li>
+        </ul>
+      </li>
+      <li><strong>Improve Bluetooth range</strong> — leave your phone on the kitchen counter, so you can still control the volume from the patio.</li>
+      <li><strong>Connect</strong> — select <strong>OFA Music Receiver</strong> from your device's Bluetooth list.</li>
+    </ol>
+
+  </section>
+
+  <figure class="plate">
+    <img src="img/music-kitchen-cupboard.webp" alt="" />
+    <figcaption>The bay window cupboards</figcaption>
+  </figure>
+
+  <figure class="plate">
+    <img src="img/music-kitchen-amp.webp" alt="The kitchen Rotel amplifier with the power, speaker and volume controls marked" />
+    <figcaption>Power, speakers and volume</figcaption>
+  </figure>
+</article>
+
+<!-- ─────────────────────────── PAGE 9 ─────────────────────────── -->
+<article class="page">
+  <p class="label">Board games</p>
+  <hr class="rule" />
+
+  <section class="split">
+    <div class="split-text">
+      <h2>Board games</h2>
+      <p>
+        The cabinet in the lounge, beneath the gold-framed painting, houses a
+        wide selection of board games for your enjoyment. We kindly ask that you
+        return the games to their original condition and pack them back neatly as
+        you found them.
+      </p>
+    </div>
+    <figure class="split-figure">
+      <img class="tall" src="img/board-games-cabinet.webp" alt="The lounge cabinet beneath the gold-framed painting, where the board games are kept" />
+      <figcaption>The cabinet beneath the painting</figcaption>
+    </figure>
+  </section>
+
+</article>
+
+<!-- ─────────────────────────── PAGE 10 ─────────────────────────── -->
+<article class="page">
+  <p class="label">Camps Bay</p>
+  <hr class="rule" />
+
+  <section>
+    <h2>Getting around</h2>
+    <dl>
+      <div class="row"><dt>Camps Bay Beach</dt><dd>4 min drive &middot; 20 min walk &middot; 1.6 km</dd></div>
+      <div class="row"><dt>Camps Bay restaurant strip</dt><dd>4 min drive &middot; 19 min walk &middot; 1.5 km</dd></div>
+      <div class="row"><dt>Table Mountain cable car</dt><dd>8 min drive &middot; 4.2 km</dd></div>
+      <div class="row"><dt>Cape Town city centre</dt><dd>12 min drive &middot; 6.3 km</dd></div>
+      <div class="row"><dt>V&amp;A Waterfront</dt><dd>15 min drive &middot; 6.9 km</dd></div>
+      <div class="row"><dt>Cape Town International</dt><dd>30–45 min drive &middot; 25 km</dd></div>
+    </dl>
+    <p class="pagenote" style="margin-top:2mm">
+      Times are off-peak. The Waterfront, the city centre and the airport all
+      take considerably longer in the late-afternoon peak.
+    </p>
+  </section>
+
+  <section>
+    <h2>Restaurants nearby</h2>
+    <dl>
+      <div class="row"><dt>Camps Bay Retreat</dt><dd>3 min drive &middot; 1.4 km</dd></div>
+      <div class="row"><dt>Codfather Seafood &amp; Sushi</dt><dd>3 min drive &middot; 1.4 km</dd></div>
+      <div class="row"><dt>The Hussar Grill Camps Bay</dt><dd>3 min drive &middot; 1.7 km</dd></div>
+      <div class="row"><dt>Paranga Restaurant</dt><dd>4 min drive &middot; 1.6 km</dd></div>
+      <div class="row"><dt>The Roundhouse Restaurant</dt><dd>8 min drive &middot; 3.3 km</dd></div>
+      <div class="row"><dt>Azure Restaurant</dt><dd>9 min drive &middot; 5.6 km</dd></div>
+    </dl>
+  </section>
+
+  <hr class="rule" />
+
+  <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:8mm">
+    <p class="foot" style="margin:0">
+      Everview &middot; 14 Cramond Road, Camps Bay, Cape Town 8005<br />
+      Welcome brochure v4. The WiFi password, the alarm account details and the
+      property manager's direct numbers are on the printed card in the house,
+      and are never printed in a document that leaves the property.
+    </p>
+    <div class="wordmark small">
+      <svg viewBox="0 20 2400 370" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0,372 L66,349 L156,341 L207,314 L270,306 L317,278 L367,271 L453,224 L504,149 L610,99 L645,40 L731,48 L758,79 L786,56 L864,40 L1380,56 L1399,95 L1489,130 L1521,189 L1548,200 L1618,263 L1696,278 L1755,302 L1802,294 L1864,259 L1911,220 L1966,153 L1978,153 L2009,204 L2033,220 L2232,298 L2326,361 L2400,368"
+              fill="none" stroke="#1b1a17" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              vector-effect="non-scaling-stroke"/>
+      </svg>
+      <span>Everview</span>
+    </div>
+  </div>
+</article>
+
+</body>
+</html>

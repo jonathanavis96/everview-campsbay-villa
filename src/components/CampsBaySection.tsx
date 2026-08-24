@@ -14,20 +14,95 @@ import mapPoster from "@/assets/map/camps-bay-map-poster.webp";
 const MAP_EMBED_SRC =
   "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d361.5336953869003!2d18.3857876684248!3d-33.952026148004215!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f120!3m3!1m2!1s0x1dcc67added5d659%3A0x6777a5740e47b06d!2s14%20Cramond%20Rd%2C%20Camps%20Bay%2C%20Cape%20Town%2C%208040!5e0!3m2!1sen!2sza!4v1756208341188!5m2!1sen!2sza";
 
+// Every place below links to Google Maps directions *from the house*, so the
+// guest gets a live time for the day they are actually travelling.
+//
+// The printed times and distances were read off Google Maps on 2026-08-24 by
+// opening each of these links and taking the fastest route, rather than
+// estimated. Two corrections came out of that: the beach is a 20-minute walk,
+// not eight — the house is well up the slope — and the airport is 25 km, with
+// the drive running to 45 minutes or more in the afternoon peak.
+const HOUSE_ADDRESS = "14 Cramond Road, Camps Bay, Cape Town, 8005";
+
+function directionsTo(destination: string) {
+  return (
+    "https://www.google.com/maps/dir/?api=1&origin=" +
+    encodeURIComponent(HOUSE_ADDRESS) +
+    "&destination=" +
+    encodeURIComponent(destination)
+  );
+}
+
 const DISTANCES = [
-  { name: "Camps Bay Beach", time: "5–8 min walk", distance: "0.5 km" },
-  { name: "Table Mountain cable car", time: "10–15 min drive", distance: "6 km" },
-  { name: "V&A Waterfront", time: "15–30 min drive", distance: "10 km" },
-  { name: "Cape Town International", time: "25–30 min drive", distance: "23 km" },
+  {
+    name: "Camps Bay Beach",
+    destination: "Camps Bay Beach, Camps Bay, Cape Town",
+    time: "4 min drive · 20 min walk",
+    distance: "1.6 km",
+  },
+  {
+    name: "Camps Bay restaurant strip",
+    destination: "The Promenade, Victoria Road, Camps Bay, Cape Town",
+    time: "4 min drive · 19 min walk",
+    distance: "1.5 km",
+  },
+  {
+    name: "Table Mountain cable car",
+    destination: "Table Mountain Aerial Cableway, Tafelberg Road, Cape Town",
+    time: "8 min drive",
+    distance: "4.2 km",
+  },
+  {
+    name: "Cape Town city centre",
+    destination: "Cape Town City Centre, Cape Town",
+    time: "12 min drive",
+    distance: "6.3 km",
+  },
+  {
+    name: "V&A Waterfront",
+    destination: "V&A Waterfront, Cape Town",
+    time: "15 min drive",
+    distance: "6.9 km",
+  },
+  {
+    name: "Cape Town International",
+    destination: "Cape Town International Airport",
+    time: "30–45 min drive",
+    distance: "25 km",
+  },
 ];
 
 const RESTAURANTS = [
-  "Codfather Seafood & Sushi",
-  "The Roundhouse Restaurant",
-  "Azure Restaurant",
-  "Camps Bay Retreat",
-  "The Hussar Grill Camps Bay",
-  "Paranga Restaurant",
+  {
+    name: "Camps Bay Retreat",
+    destination: "Camps Bay Retreat, 7 Chilworth Road, Camps Bay",
+    note: "3 min drive · 1.4 km",
+  },
+  {
+    name: "Codfather Seafood & Sushi",
+    destination: "The Codfather Seafood and Sushi, 37 The Drive, Camps Bay",
+    note: "3 min drive · 1.4 km",
+  },
+  {
+    name: "The Hussar Grill Camps Bay",
+    destination: "The Hussar Grill Camps Bay, Victoria Road, Camps Bay",
+    note: "3 min drive · 1.7 km",
+  },
+  {
+    name: "Paranga Restaurant",
+    destination: "Paranga Restaurant, The Promenade, Victoria Road, Camps Bay",
+    note: "4 min drive · 1.6 km",
+  },
+  {
+    name: "The Roundhouse Restaurant",
+    destination: "The Roundhouse Restaurant, Roundhouse Road, Camps Bay",
+    note: "8 min drive · 3.3 km",
+  },
+  {
+    name: "Azure Restaurant",
+    destination: "Azure Restaurant, Twelve Apostles Hotel, Victoria Road, Camps Bay",
+    note: "9 min drive · 5.6 km",
+  },
 ];
 
 // Google's map hosts, warmed up as the panel comes into view.
@@ -160,6 +235,10 @@ export default function CampsBaySection() {
           <Reveal as="div" className="grid md:grid-cols-2 gap-8 md:gap-12 mt-12">
             <div>
               <h3 className="text-display-m text-ink mb-4">Getting around</h3>
+              <p className="text-body text-ink/60 mb-4">
+                Times are typical and off-peak; tap a place for live directions
+                from the house.
+              </p>
               <table className="w-full text-body text-ink/80">
                 <thead className="sr-only">
                   <tr>
@@ -171,8 +250,21 @@ export default function CampsBaySection() {
                 <tbody>
                   {DISTANCES.map((d) => (
                     <tr key={d.name} className="border-t border-line">
-                      <th scope="row" className="py-2 pr-4 text-left font-normal">{d.name}</th>
-                      <td className="py-2 pr-4 text-stone-text whitespace-nowrap">{d.time}</td>
+                      <th scope="row" className="py-2 pr-4 text-left font-normal">
+                        <a
+                          href={directionsTo(d.destination)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline decoration-line underline-offset-4 transition-colors hover:decoration-ink"
+                        >
+                          {d.name}
+                        </a>
+                      </th>
+                      {/* Deliberately allowed to wrap: "4 min drive · 20 min
+                          walk" is wider than the column this table gets on a
+                          320px phone, and holding it on one line pushed the
+                          page into a horizontal scroll. */}
+                      <td className="py-2 pr-4 text-stone-text">{d.time}</td>
                       <td className="py-2 text-stone-text whitespace-nowrap text-right">{d.distance}</td>
                     </tr>
                   ))}
@@ -182,10 +274,28 @@ export default function CampsBaySection() {
 
             <div>
               <h3 className="text-display-m text-ink mb-4">Restaurants nearby</h3>
+              {/* A note of the same shape as the one under "Getting around",
+                  so the two lists start on the same line rather than one
+                  sitting two lines above the other. */}
+              <p className="text-body text-ink/60 mb-4">
+                Drive times are off-peak; tap a name for live directions from
+                the house.
+              </p>
               <ul className="text-body text-ink/80 space-y-2">
                 {RESTAURANTS.map((r) => (
-                  <li key={r} className="border-t border-line pt-2 first:border-t-0 first:pt-0">
-                    {r}
+                  <li
+                    key={r.name}
+                    className="flex items-baseline justify-between gap-4 border-t border-line pt-2 first:border-t-0 first:pt-0"
+                  >
+                    <a
+                      href={directionsTo(r.destination)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline decoration-line underline-offset-4 transition-colors hover:decoration-ink"
+                    >
+                      {r.name}
+                    </a>
+                    <span className="whitespace-nowrap text-stone-text">{r.note}</span>
                   </li>
                 ))}
               </ul>

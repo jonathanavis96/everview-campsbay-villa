@@ -129,9 +129,45 @@ export function SolarDiagram({ className = "" }: { className?: string }) {
   );
 }
 
-/** Borehole → filtration → tap. */
+/**
+ * Borehole → filtration → tap.
+ *
+ * The water is one continuous thing. A droplet enters at the water table,
+ * climbs the bore, turns the corner, runs the full length of the riser
+ * *through* all three filter bodies and reaches the tap — one element on one
+ * path, using SVG motion along that path, so it never fades out at the top of
+ * the bore and never reappears a metre further along the top line, which is
+ * what the two separate animations used to do (Jonathan, 2026-08-24).
+ *
+ * From the tap's spout a second droplet falls slowly into a glass that is
+ * already part full, and splashes on the surface. Everything that moves is on
+ * the water blue; nothing that moves is on ink.
+ */
 export function BoreholeDiagram({ className = "" }: { className?: string }) {
   const { ref, inView } = useInView<HTMLDivElement>();
+  const WATER = "var(--water)";
+
+  // The one path the water takes: up out of the water table, along the riser,
+  // through every filter body, along the last stretch past the third filter,
+  // then down the tap's stem to the spout. It has to run the *whole* line —
+  // stopping at the third filter left the last 28 units of pipe and the whole
+  // stem dead, which is what it looked like (Jonathan, 2026-08-24).
+  const SUPPLY_PATH = "M72 146 L72 52 L282 52 L282 78";
+
+  // The drop that falls into the glass is on the *same* SMIL document clock as
+  // the water in the pipe, not a CSS animation started whenever the section
+  // scrolled into view, because the two clocks cannot be phase-locked. A
+  // carried droplet leaves at t = i * CARRIED_STAGGER and takes CARRIED_DUR to
+  // reach the spout, so one arrives every CARRIED_STAGGER seconds from
+  // FIRST_ARRIVAL onwards; the falling drop repeats on exactly that period,
+  // starting on exactly that beat (Jonathan, 2026-08-24).
+  const CARRIED_DUR = 6;
+  const CARRIED_STAGGER = 2;
+  const FIRST_ARRIVAL = CARRIED_DUR;
+  const DROP_CYCLE = CARRIED_STAGGER;
+  const FALL_PATH = "M282 78 L282 126";
+  /** The share of one cycle the fall itself takes; the rest is the wait. */
+  const FALL_FRACTION = 0.4;
 
   return (
     <div ref={ref} className={className}>
@@ -139,7 +175,7 @@ export function BoreholeDiagram({ className = "" }: { className?: string }) {
         viewBox="0 0 320 168"
         className={`w-full h-auto text-ink ${inView ? "is-live" : ""}`}
         role="img"
-        aria-label="Water rising from a private borehole through three filtration stages to a tap"
+        aria-label="Water rising from a private borehole through three filtration stages to a tap, filling a glass"
       >
         {/* Ground line and hatching */}
         <line x1="24" y1="76" x2="308" y2="76" stroke={INK} strokeWidth="1.25" />
@@ -167,42 +203,64 @@ export function BoreholeDiagram({ className = "" }: { className?: string }) {
           className="ev-wave"
           d="M34 142 q 11 -6 22 0 t 22 0 t 22 0"
           fill="none"
-          stroke={INK}
+          stroke={WATER}
           strokeWidth="1.25"
           strokeLinecap="round"
-          opacity="0.5"
+          opacity="0.6"
         />
 
-        {/* Rising water */}
-        {[0, 1, 2].map((i) => (
-          <circle
-            key={i}
-            className="ev-rise"
-            cx="72"
-            cy="146"
-            r="2.5"
-            fill={INK}
-            style={{ animationDelay: `${i * 1000}ms` }}
-          />
-        ))}
-
-        {/* Riser, up out of the ground and across to the filter stack */}
+        {/* The riser, in ink, with the supply drawn over it in water blue */}
         <path
-          d="M72 76 L72 52 L170 52"
+          d="M72 76 L72 52 L282 52"
           fill="none"
           stroke={INK}
           strokeWidth="1.25"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
+        <path
+          className="ev-flow"
+          d={SUPPLY_PATH}
+          fill="none"
+          stroke={WATER}
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          opacity="0.75"
+        />
+
+        {/* Three droplets on that one path, evenly spaced along the cycle */}
+        {[0, 1, 2].map((i) => (
+          <circle key={i} r="2.6" fill={WATER} className="ev-carried">
+            <animateMotion
+              dur={`${CARRIED_DUR}s`}
+              begin={inView ? `${i * CARRIED_STAGGER}s` : "indefinite"}
+              repeatCount="indefinite"
+              path={SUPPLY_PATH}
+              keyPoints="0;1"
+              keyTimes="0;1"
+              calcMode="linear"
+            />
+          </circle>
+        ))}
 
         {/* Three filtration stages, threaded on the riser */}
         {[0, 1, 2].map((i) => (
-          <g key={i} stroke={INK} strokeWidth="1.25" fill="none">
-            <rect x={170 + i * 30} y="38" width="24" height="28" rx="2" />
+          <g key={i} fill="none">
+            <rect
+              x={170 + i * 30}
+              y="38"
+              width="24"
+              height="28"
+              rx="2"
+              stroke={INK}
+              strokeWidth="1.25"
+            />
             <path
               className="ev-stage"
               d={`M${175 + i * 30} 52 h 14`}
+              stroke={WATER}
+              strokeWidth="1.5"
               strokeLinecap="round"
               style={{ animationDelay: `${i * 400}ms` }}
             />
@@ -211,24 +269,16 @@ export function BoreholeDiagram({ className = "" }: { className?: string }) {
 
         {/* Tap */}
         <g stroke={INK} strokeWidth="1.25" fill="none" strokeLinejoin="round">
-          <path d="M254 52 L282 52 L282 78" strokeLinecap="round" />
+          <path d="M282 52 L282 78" strokeLinecap="round" />
           <path d="M274 52 L274 42 L290 42" strokeLinecap="round" />
         </g>
 
-        {/* Drip */}
-        {[0, 1].map((i) => (
-          <circle
-            key={i}
-            className="ev-drip"
-            cx="282"
-            cy="84"
-            r="2.5"
-            fill={INK}
-            style={{ animationDelay: `${i * 1400}ms` }}
-          />
-        ))}
-
-        {/* Glass */}
+        {/* Glass, already part full */}
+        <path
+          d="M269.6 126 L294.4 126 L293 144 L271 144 Z"
+          fill={WATER}
+          opacity="0.28"
+        />
         <path
           d="M266 116 L298 116 L293 144 L271 144 Z"
           fill="none"
@@ -237,6 +287,46 @@ export function BoreholeDiagram({ className = "" }: { className?: string }) {
           strokeLinejoin="round"
           opacity="0.55"
         />
+
+        {/* The drop, on the same clock as the water that feeds it: it leaves
+            the spout at the instant a carried droplet arrives there, falls to
+            the surface, and the splash lands with it. */}
+        <ellipse cx="0" cy="0" rx="2.4" ry="3.2" fill={WATER} opacity="0">
+          <animateMotion
+            dur={`${DROP_CYCLE}s`}
+            begin={inView ? `${FIRST_ARRIVAL}s` : "indefinite"}
+            repeatCount="indefinite"
+            path={FALL_PATH}
+            keyPoints={`0;1;1`}
+            keyTimes={`0;${FALL_FRACTION};1`}
+            calcMode="linear"
+          />
+          <animate
+            attributeName="opacity"
+            dur={`${DROP_CYCLE}s`}
+            begin={inView ? `${FIRST_ARRIVAL}s` : "indefinite"}
+            repeatCount="indefinite"
+            values="0.9;0.9;0;0"
+            keyTimes={`0;${FALL_FRACTION - 0.01};${FALL_FRACTION};1`}
+            calcMode="linear"
+          />
+        </ellipse>
+
+        {/* The splash, at the moment the drop reaches the surface */}
+        <g opacity="0">
+          <animate
+            attributeName="opacity"
+            dur={`${DROP_CYCLE}s`}
+            begin={inView ? `${FIRST_ARRIVAL + DROP_CYCLE * FALL_FRACTION}s` : "indefinite"}
+            repeatCount="indefinite"
+            values="0;0.85;0;0"
+            keyTimes="0;0.06;0.3;1"
+            calcMode="linear"
+          />
+          <path d="M275 126 q 3 -6 5 -1" fill="none" stroke={WATER} strokeWidth="1.25" strokeLinecap="round" />
+          <path d="M289 126 q -3 -6 -5 -1" fill="none" stroke={WATER} strokeWidth="1.25" strokeLinecap="round" />
+          <path d="M273 126 q 9 5 18 0" fill="none" stroke={WATER} strokeWidth="1" strokeLinecap="round" />
+        </g>
       </svg>
     </div>
   );

@@ -70,26 +70,78 @@ export function RidgelineMark({
 }
 
 /**
- * A section divider: a hairline rule with a small Table Mountain glyph set
- * on it.
+ * A section divider: one unbroken hairline that runs in from the left, over
+ * the Table Mountain skyline, and out to the right.
  *
- * This replaces an earlier idea where each divider drew a different stretch
- * of the skyline path across the full width of the page. It was a nice
- * conceit and it looked like a squiggle: stretched to 1350px, a 200-unit
- * slice of a mountain is just a wobbly line with no readable shape. The
- * mountain reads at small size, in one piece, or not at all — so the rule
- * carries the width and the glyph carries the motif.
+ * The glyph is the *same path as the wordmark* in the top left of every view
+ * — Devil's Peak, the table, Kloof Nek and Lion's Head — not a table-only
+ * simplification, and it is sized at 17% of the divider's width, the
+ * proportion in Jonathan's reference image.
+ *
+ * It is drawn as three paths sharing endpoints rather than one, because the
+ * three stretches animate in sequence and at different speeds — see
+ * DIVIDER_SPEED below for the timing and how to change it. The right-hand
+ * line cannot appear before the mountain it comes out of, and nothing starts
+ * until the divider is actually in the guest's view.
  *
  * `from`/`to` are kept in the signature so callers do not all have to change
  * at once; they are no longer used to pick a stretch of path.
  */
+const GLYPH_WIDTH_FRACTION = 0.17;
+
+/* ── The divider's timing ───────────────────────────────────────────────────
+ *
+ * Two dials, and nothing else needs touching. Every duration and every delay
+ * is derived from them, so the three stretches stay one continuous streak
+ * whatever they are set to.
+ *
+ *   DIVIDER_SPEED   the whole thing. 1 is the reference drawing — 0.4s in,
+ *                   1s over the skyline, 0.4s out, 1.8s in all. 2 is twice as
+ *                   fast, 3 three times, 0.5 half.
+ *   SKYLINE_SPEED   the middle, on top of DIVIDER_SPEED. 1 leaves the skyline
+ *                   at its reference second; 3 draws it three times faster
+ *                   again while the flats keep whatever DIVIDER_SPEED gave
+ *                   them.
+ *
+ * So "twice as fast overall, and the middle three times faster than that" is
+ * DIVIDER_SPEED = 2, SKYLINE_SPEED = 3.
+ */
+export const DIVIDER_SPEED = 2;
+export const SKYLINE_SPEED = 1;
+
+/** The reference drawing, at DIVIDER_SPEED = SKYLINE_SPEED = 1. */
+const FLAT_REFERENCE_MS = 400;
+const SKYLINE_REFERENCE_MS = 1000;
+
+const FLAT_MS = FLAT_REFERENCE_MS / DIVIDER_SPEED;
+const SKYLINE_MS = SKYLINE_REFERENCE_MS / (DIVIDER_SPEED * SKYLINE_SPEED);
+/** Each stretch begins on the frame the one before it ends. */
+const SKYLINE_DELAY_MS = FLAT_MS;
+const RIGHT_FLAT_DELAY_MS = FLAT_MS + SKYLINE_MS;
+/**
+ * The wordmark path with its right-hand end pulled the last four units down
+ * onto the same y as its left-hand end. Without it the skyline finishes at
+ * y=368 and the rule that leaves it sits at y=372, which reads as a four-unit
+ * step — a visible gap — where the two meet.
+ */
+const RIDGELINE_PATH_D_LEVEL = RIDGELINE_PATH_D.replace(/L2400,368$/, "L2400,372");
+/** The wordmark path, with both ends pulled onto one baseline so the rule
+ *  runs into it and out the other side without a step. */
+const RIDGE_BASELINE = 372;
+const RIDGE_TOP = 40;
+
 export function RidgelineDivider({ className = "" }: { from?: number; to?: number; className?: string }) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(false);
+  const [width, setWidth] = useState(0);
 
   useEffect(() => {
     const el = wrapperRef.current;
     if (!el) return;
+    const measure = () => setWidth(el.getBoundingClientRect().width);
+    measure();
+    const resize = new ResizeObserver(measure);
+    resize.observe(el);
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -97,43 +149,87 @@ export function RidgelineDivider({ className = "" }: { from?: number; to?: numbe
           observer.disconnect();
         }
       },
-      { threshold: 0.4 }
+      // The divider is a few pixels tall, so "half of it" is meaningless as a
+      // trigger; what matters is that it is inside the viewport proper, which
+      // is what a zero root margin and any intersection at all give us.
+      { threshold: 0 }
     );
     observer.observe(el);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      resize.disconnect();
+    };
   }, []);
+
+  const glyphWidth = Math.max(96, width * GLYPH_WIDTH_FRACTION);
+  const scale = glyphWidth / RIDGE_VIEWBOX_WIDTH;
+  const glyphHeight = (RIDGE_BASELINE - RIDGE_TOP) * scale;
+  const height = Math.ceil(glyphHeight) + 6;
+  const baseline = height - 3;
+  const glyphX = Math.max(0, (width - glyphWidth) / 2);
+  const glyphEnd = glyphX + glyphWidth;
+  const ready = width > 0;
+
+  // The wordmark path, translated and scaled so its two end points land on
+  // the rule's baseline.
+  const glyphTransform = `translate(${glyphX}, ${baseline - RIDGE_BASELINE * scale}) scale(${scale})`;
+
+  // pathLength=1 puts every segment on the same 0..1 scale whatever its real
+  // length, so the flats keep their timing as the viewport changes width.
+  const draw = (durationMs: number, delayMs: number) => ({
+    strokeDasharray: 1,
+    strokeDashoffset: inView ? 0 : 1,
+    transition: `stroke-dashoffset ${durationMs}ms linear ${delayMs}ms`,
+  });
 
   return (
     <div ref={wrapperRef} className={className} aria-hidden="true">
-      <div className="flex items-center gap-5">
-        <span
-          className="h-px flex-1 bg-line origin-right transition-transform duration-700 ease-out"
-          style={{ transform: inView ? "scaleX(1)" : "scaleX(0)" }}
-        />
+      {ready && (
         <svg
-          viewBox="0 20 2400 370"
-          preserveAspectRatio="xMidYMid meet"
-          className="h-4 w-11 shrink-0 text-stone transition-all duration-700 ease-out"
-          style={{
-            opacity: inView ? 1 : 0,
-            transform: inView ? "translateY(0)" : "translateY(6px)",
-            transitionDelay: "160ms",
-          }}
+          height={height}
+          viewBox={`0 0 ${width} ${height}`}
+          preserveAspectRatio="none"
+          className="block w-full text-stone"
         >
-          <path
-            d={RIDGELINE_PATH_D}
+          <g
             fill="none"
             stroke="currentColor"
-            strokeWidth={18}
+            strokeWidth={1}
             strokeLinejoin="round"
             strokeLinecap="round"
-          />
+          >
+            <path
+              pathLength={1}
+              d={`M0,${baseline} L${glyphX},${baseline}`}
+              style={draw(FLAT_MS, 0)}
+            />
+            {/* No `vector-effect: non-scaling-stroke` here, and this is not a
+                style choice. With it, Chrome resolves the dash pattern in
+                screen space while `pathLength` normalises the path in user
+                space, and the two disagree so completely that the whole
+                skyline renders as drawn on the first frame of its transition
+                and then sits still for the remaining ~990ms — the line
+                "draws to the right side of the mountain, stops, then the
+                other line draws" (Jonathan, 2026-08-24). Measured: pen at
+                791px from t=500ms through t=1395ms while the dash offset ran
+                0.9 to 0.005. The hairline is kept by dividing the stroke
+                width by the glyph's scale instead, which leaves the dash
+                pattern in the user space `pathLength` normalises. */}
+            <path
+              pathLength={1}
+              d={RIDGELINE_PATH_D_LEVEL}
+              transform={glyphTransform}
+              strokeWidth={1 / scale}
+              style={draw(SKYLINE_MS, SKYLINE_DELAY_MS)}
+            />
+            <path
+              pathLength={1}
+              d={`M${glyphEnd},${baseline} L${width},${baseline}`}
+              style={draw(FLAT_MS, RIGHT_FLAT_DELAY_MS)}
+            />
+          </g>
         </svg>
-        <span
-          className="h-px flex-1 bg-line origin-left transition-transform duration-700 ease-out"
-          style={{ transform: inView ? "scaleX(1)" : "scaleX(0)" }}
-        />
-      </div>
+      )}
     </div>
   );
 }

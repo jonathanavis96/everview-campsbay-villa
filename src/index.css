@@ -44,6 +44,10 @@
        WCAG for text). Use this, not --sun, whenever the accent colours
        text rather than a background/icon. */
     --sun-text: #9c5c1f;
+    /* The water blue for the borehole drawing. Dark enough to hold a
+       hairline against paper — the same reason --sun-text is not literal
+       sunlight yellow. */
+    --water: #2f6f9b;
   }
 
   * {
@@ -308,30 +312,15 @@
     animation: ev-wave 5s ease-in-out infinite;
   }
 
-  /* A bubble of water climbing the bore and out of shot. */
-  @keyframes ev-rise {
-    0% {
-      transform: translateY(0);
-      opacity: 0;
-    }
-    12% {
-      opacity: 0.55;
-    }
-    88% {
-      opacity: 0.55;
-    }
-    100% {
-      transform: translateY(-96px);
-      opacity: 0;
-    }
-  }
-
-  .ev-rise {
+  /* The droplets carried along the supply path are positioned by
+     <animateMotion>; all CSS has to do is keep them out of sight until the
+     drawing is live. */
+  .ev-carried {
     opacity: 0;
   }
 
-  .is-live .ev-rise {
-    animation: ev-rise 3s linear infinite;
+  .is-live .ev-carried {
+    opacity: 0.9;
   }
 
   /* Each filter stage lighting in turn as the water passes through it. */
@@ -355,31 +344,7 @@
     animation: ev-stage 3s ease-in-out infinite;
   }
 
-  /* One drop from the tap, with a long pause between. */
-  @keyframes ev-drip {
-    0% {
-      transform: translateY(0) scale(0.6);
-      opacity: 0;
-    }
-    8% {
-      opacity: 0.7;
-    }
-    38% {
-      transform: translateY(28px) scale(1);
-      opacity: 0.7;
-    }
-    46%,
-    100% {
-      transform: translateY(30px) scale(1);
-      opacity: 0;
-    }
-  }
-
-  .ev-drip {
-    opacity: 0;
-  }
-
-  .is-live .ev-drip {
-    animation: ev-drip 2.8s ease-in infinite;
-  }
+  /* The drop into the glass and its splash are SMIL now, on the same document
+     clock as the water in the pipe — see BoreholeDiagram. A CSS animation
+     starts when its class lands, which cannot be phase-locked to SMIL. */
 }
