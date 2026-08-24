@@ -23,7 +23,8 @@
     font-style: normal;
     font-display: swap;
     font-weight: 100 900;
-    font-stretch: 62% 125%;
+    /* No font-stretch: the shared font at ../fonts/ has its width axis
+       pinned to 100 — see scripts/subset-fonts.mjs. */
     src: url("../fonts/archivo-variable-latin.woff2") format("woff2-variations");
   }
   @font-face {

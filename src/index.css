@@ -20,7 +20,11 @@
   font-style: normal;
   font-display: swap;
   font-weight: 100 900;
-  font-stretch: 62% 125%;
+  /* No font-stretch range: the subsetted font's width axis is pinned to
+     100 (scripts/subset-fonts.mjs) because nothing on the site ever set a
+     width other than the default. A stretch range on a font with no width
+     axis left would make the browser synthesize one — a visible
+     regression, not a no-op. */
   src: url("./assets/fonts/archivo-variable-latin.woff2") format("woff2-variations");
 }
 
