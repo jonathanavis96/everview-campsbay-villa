@@ -18,7 +18,10 @@ import {
   VIEW_W,
   type Floor,
   type Room,
+  isExterior,
+  type WallOpening,
 } from "@/data/floorPlan";
+import { wallSegments, type Segment } from "@/data/planGeometry";
 
 /** Room corners and edges, in the order the handles are drawn. */
 const HANDLES = ["nw", "n", "ne", "e", "se", "s", "sw", "w"] as const;
@@ -31,6 +34,57 @@ const EDGE_SNAP = 5;
 const MIN_SIDE = 8;
 
 type Rect = { x: number; y: number; w: number; h: number };
+
+/** What the editor is clicking on: room rectangles, or the walls between them. */
+type Mode = "rooms" | "walls";
+
+/**
+ * The kinds a wall cycles through, `null` being "let the derivation decide".
+ * A window only belongs in a wall that faces out.
+ */
+type Kind = Segment["kind"];
+const INTERIOR_CYCLE: (Kind | null)[] = [null, "door", "slider", "open", "wall"];
+const EXTERIOR_CYCLE: (Kind | null)[] = [null, "window", "door", "slider", "open", "wall"];
+const cycleFor = (seg: Segment) => (seg.b === "" ? EXTERIOR_CYCLE : INTERIOR_CYCLE);
+
+const WALL_COLOUR: Record<Kind | "auto", string> = {
+  auto: "rgba(120,120,120,0.45)",
+  door: "rgb(40,110,180)",
+  slider: "rgb(150,95,190)",
+  open: "rgb(45,150,110)",
+  window: "rgb(200,140,40)",
+  wall: "rgb(170,60,45)",
+};
+
+const wallKey = (seg: Segment) =>
+  seg.b === ""
+    ? ["out", seg.a, seg.side, seg.stretch].join("\u0000")
+    : [seg.a, seg.b].sort().join("\u0000") + "\u0000" + seg.axis;
+
+/** Does this authored opening govern the wall this segment is drawn on? */
+const governs = (o: WallOpening, seg: Segment) =>
+  isExterior(o)
+    ? seg.b === "" && o.room === seg.a && o.side === seg.side && (o.stretch ?? 0) === seg.stretch
+    : seg.b !== "" &&
+      [o.between[0], o.between[1]].sort().join("\u0000") === [seg.a, seg.b].sort().join("\u0000") &&
+      (o.axis === undefined || o.axis === seg.axis);
+
+/** A fresh authored entry for one wall, carrying over whatever it already had. */
+const entryFor = (seg: Segment, kind: Kind, previous?: WallOpening): WallOpening =>
+  seg.b === ""
+    ? {
+        ...(previous && isExterior(previous) ? previous : {}),
+        room: seg.a,
+        side: seg.side as NonNullable<Segment["side"]>,
+        stretch: seg.stretch,
+        kind,
+      }
+    : {
+        ...(previous && !isExterior(previous) ? previous : {}),
+        between: [seg.a, seg.b],
+        axis: seg.axis,
+        kind: kind === "window" ? "open" : kind,
+      };
 
 /**
  * Holds a rectangle inside the plan. A room dragged off the canvas is clipped
@@ -139,6 +193,8 @@ export default function PlanEditor() {
   const [floors, setFloors] = useState<Floor[]>(() => clone(INITIAL_FLOORS));
   const [floorIndex, setFloorIndex] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
+  const [mode, setMode] = useState<Mode>("rooms");
+  const [selectedWall, setSelectedWall] = useState<string | null>(null);
   const [grid, setGrid] = useState(2);
   const [snapEdges, setSnapEdges] = useState(true);
   const [dirty, setDirty] = useState(false);
@@ -159,6 +215,9 @@ export default function PlanEditor() {
 
   const floor = floors[floorIndex];
   const room = floor.rooms.find((r) => r.name === selected) ?? null;
+
+  const segments = useMemo(() => wallSegments(floor), [floor]);
+  const wall = segments.find((seg) => wallKey(seg) === selectedWall) ?? null;
 
   const commit = useCallback(
     (next: Floor[] | ((current: Floor[]) => Floor[])) => {
@@ -270,6 +329,71 @@ export default function PlanEditor() {
     drag.current = null;
   };
 
+  /**
+   * Rewrites the authored opening for one wall. `null` deletes it, which
+   * hands the wall back to the derivation.
+   */
+  const setOpening = (seg: Segment, next: WallOpening | null) => {
+    // An interior entry with no `axis` governs both walls a pair of rooms
+    // shares. Replacing it with an entry for the wall being edited would
+    // silently hand the other wall back to the derivation — a wall the user
+    // never touched, lost on Save. So the old entry is narrowed to the axis
+    // left alone rather than dropped, and only when that wall exists.
+    const other = seg.axis === "v" ? "h" : "v";
+    const otherExists = segments.some(
+      (s) =>
+        s.b !== "" &&
+        s.axis === other &&
+        [s.a, s.b].sort().join("\u0000") === [seg.a, seg.b].sort().join("\u0000")
+    );
+
+    commit((current) =>
+      current.map((f, i) => {
+        if (i !== floorIndex) return f;
+        const existing = f.openings ?? [];
+        const kept = existing.filter((o) => !governs(o, seg));
+        const narrowed = otherExists
+          ? existing
+              .filter((o) => governs(o, seg) && !isExterior(o) && o.axis === undefined)
+              .map((o) => ({ ...o, axis: other }) as WallOpening)
+          : [];
+        const openings = [...kept, ...narrowed, ...(next ? [next] : [])];
+        return { ...f, openings: openings.length ? openings : undefined };
+      })
+    );
+    setSelectedWall(wallKey(seg));
+  };
+
+  /** The authored entry for a wall, or undefined where it is still derived. */
+  const authored = (seg: Segment) => (floor.openings ?? []).find((o) => governs(o, seg));
+
+  const cycleWall = (seg: Segment) => {
+    const cycle = cycleFor(seg);
+    const current = authored(seg)?.kind ?? null;
+    const next = cycle[(cycle.indexOf(current) + 1) % cycle.length];
+    if (!next) return setOpening(seg, null);
+    setOpening(seg, entryFor(seg, next, authored(seg)));
+  };
+
+  /** Keeps openings pointing at rooms that still exist under the names they have. */
+  const renameInOpenings = (
+    openings: WallOpening[] | undefined,
+    from: string,
+    to: string | null
+  ): WallOpening[] =>
+    (openings ?? [])
+      .filter((o) => to !== null || !(isExterior(o) ? o.room === from : o.between.includes(from)))
+      .map((o) => {
+        if (isExterior(o)) return o.room === from ? { ...o, room: to as string } : o;
+        return o.between.includes(from)
+          ? {
+              ...o,
+              between: o.between.map((n) => (n === from ? (to as string) : n)) as [string, string],
+              into: o.into === from ? (to as string) : o.into,
+            }
+          : o;
+      });
+
   const addRoom = () => {
     let name = "New room";
     let n = 2;
@@ -303,7 +427,15 @@ export default function PlanEditor() {
     if (!room) return;
     commit((current) =>
       current.map((f, i) =>
-        i === floorIndex ? { ...f, rooms: f.rooms.filter((r) => r.name !== room.name) } : f
+        i === floorIndex
+          ? {
+              ...f,
+              rooms: f.rooms.filter((r) => r.name !== room.name),
+              openings: renameInOpenings(f.openings, room.name, null).length
+                ? renameInOpenings(f.openings, room.name, null)
+                : undefined,
+            }
+          : f
       )
     );
     setSelected(null);
@@ -413,7 +545,8 @@ export default function PlanEditor() {
       <header className="mb-4 flex flex-wrap items-center gap-3">
         <h1 className="text-[15px] uppercase tracking-[0.18em]">Plan editor</h1>
         <span className="text-[12px] text-stone-text">
-          drag to move · handles to resize · arrows nudge · alt+arrows resize · ctrl+z undo · ctrl+s save
+          rooms: drag to move · handles to resize · arrows nudge · alt+arrows resize ·
+          walls: click to select, click again to cycle · ctrl+z undo · ctrl+s save
         </span>
       </header>
 
@@ -455,6 +588,23 @@ export default function PlanEditor() {
 
         <span className="mx-2 h-4 w-px bg-line" />
 
+        {(["rooms", "walls"] as const).map((m) => (
+          <button
+            key={m}
+            type="button"
+            onClick={() => {
+              setMode(m);
+              setSelected(null);
+              setSelectedWall(null);
+            }}
+            className={`${button} ${mode === m ? "border-ink" : ""}`}
+          >
+            {m}
+          </button>
+        ))}
+
+        <span className="mx-2 h-4 w-px bg-line" />
+
         <button type="button" className={button} onClick={addRoom}>Add</button>
         <button type="button" className={button} onClick={duplicateRoom} disabled={!room}>Duplicate</button>
         <button type="button" className={button} onClick={deleteRoom} disabled={!room}>Delete</button>
@@ -480,7 +630,10 @@ export default function PlanEditor() {
           onPointerMove={onPointerMove}
           onPointerUp={endDrag}
           onPointerCancel={endDrag}
-          onPointerDown={() => setSelected(null)}
+          onPointerDown={() => {
+            setSelected(null);
+            setSelectedWall(null);
+          }}
         >
           <defs>
             <pattern id="plan-grid" width="10" height="10" patternUnits="userSpaceOnUse">
@@ -516,6 +669,7 @@ export default function PlanEditor() {
                   strokeDasharray={r.outdoor ? "4 3" : undefined}
                   opacity={r.service ? 0.55 : 1}
                   style={{ cursor: "move" }}
+                  pointerEvents={mode === "walls" ? "none" : undefined}
                   onPointerDown={(event) => beginDrag(event, r, "move")}
                 />
                 <text
@@ -530,6 +684,7 @@ export default function PlanEditor() {
                 </text>
 
                 {isSelected &&
+                  mode === "rooms" &&
                   HANDLES.map((handle) => {
                     const { x, y } = handlePosition(r, handle);
                     return (
@@ -550,10 +705,154 @@ export default function PlanEditor() {
               </g>
             );
           })}
+
+          {/* The walls between rooms, clickable in wall mode. Each is drawn
+              along the stretch the two rooms actually share, coloured by what
+              is in it, with the opening itself picked out in solid. */}
+          {mode === "walls" &&
+            segments.map((seg) => {
+              const key = wallKey(seg);
+              const colour = WALL_COLOUR[authored(seg)?.kind ?? "auto"];
+              const line = (from: number, to: number) => ({
+                x1: seg.axis === "v" ? seg.at : from,
+                y1: seg.axis === "v" ? from : seg.at,
+                x2: seg.axis === "v" ? seg.at : to,
+                y2: seg.axis === "v" ? to : seg.at,
+              });
+              return (
+                <g key={key}>
+                  <line
+                    {...line(seg.lo, seg.hi)}
+                    stroke={colour}
+                    strokeWidth={key === selectedWall ? 3 : 1.6}
+                    opacity={0.5}
+                  />
+                  {seg.kind !== "wall" && (
+                    <line {...line(seg.from, seg.to)} stroke={colour} strokeWidth="4" />
+                  )}
+                  <line
+                    {...line(seg.lo, seg.hi)}
+                    stroke="transparent"
+                    strokeWidth="10"
+                    style={{ cursor: "pointer" }}
+                    onPointerDown={(event) => {
+                      event.stopPropagation();
+                      if (key === selectedWall) cycleWall(seg);
+                      else setSelectedWall(key);
+                    }}
+                  />
+                </g>
+              );
+            })}
         </svg>
 
         <aside className="text-[13px]">
-          {room ? (
+          {mode === "walls" ? (
+            wall ? (
+              <div className="space-y-3">
+                <p className="text-[11px] uppercase tracking-wider text-stone-text">
+                  {wall.b === "" ? `${wall.a} / outside (${wall.side})` : `${wall.a} / ${wall.b}`}
+                </p>
+                <p className="text-stone-text">
+                  {wall.explicit ? "Set by hand." : "Derived — currently drawn as a "}
+                  {!wall.explicit && <strong className="text-ink">{wall.kind}</strong>}
+                  {!wall.explicit && "."}
+                </p>
+
+                <div className="flex flex-wrap gap-1">
+                  {cycleFor(wall).map((kind) => {
+                    const active = (authored(wall)?.kind ?? null) === kind;
+                    return (
+                      <button
+                        key={kind ?? "auto"}
+                        type="button"
+                        className={`${button} ${active ? "border-ink" : ""}`}
+                        onClick={() => setOpening(wall, kind ? entryFor(wall, kind, authored(wall)) : null)}
+                      >
+                        {kind ?? "auto"}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {wall.explicit && authored(wall)?.kind !== "wall" && (
+                  <>
+                    <label className="block">
+                      <span className="text-[11px] uppercase tracking-wider text-stone-text">
+                        Position along the wall
+                      </span>
+                      <input
+                        type="range"
+                        min={0}
+                        max={1}
+                        step={0.01}
+                        className="w-full"
+                        value={authored(wall)?.at ?? 0.5}
+                        onChange={(e) =>
+                          setOpening(wall, {
+                            ...(authored(wall) as WallOpening),
+                            at: Number(e.target.value),
+                          })
+                        }
+                      />
+                    </label>
+
+                    <label className="block">
+                      <span className="text-[11px] uppercase tracking-wider text-stone-text">
+                        Clear width (plan units)
+                      </span>
+                      <input
+                        className={field}
+                        type="number"
+                        value={Math.round(wall.to - wall.from)}
+                        onChange={(e) =>
+                          setOpening(wall, {
+                            ...(authored(wall) as WallOpening),
+                            span: Number(e.target.value) || undefined,
+                          })
+                        }
+                      />
+                    </label>
+
+                    {authored(wall)?.kind === "door" && (
+                      <label className="block">
+                        <span className="text-[11px] uppercase tracking-wider text-stone-text">
+                          Swings into
+                        </span>
+                        <select
+                          className={field}
+                          value={authored(wall)?.into ?? ""}
+                          onChange={(e) => {
+                            const previous = authored(wall) as WallOpening;
+                            setOpening(wall, { ...previous, into: e.target.value || undefined });
+                          }}
+                        >
+                          {wall.b === "" ? (
+                            <>
+                              <option value="">{wall.a}</option>
+                              <option value="outside">outside</option>
+                            </>
+                          ) : (
+                            <>
+                              <option value="">the larger room</option>
+                              <option value={wall.a}>{wall.a}</option>
+                              <option value={wall.b}>{wall.b}</option>
+                            </>
+                          )}
+                        </select>
+                      </label>
+                    )}
+                  </>
+                )}
+              </div>
+            ) : (
+              <p className="text-stone-text">
+                Click a wall to select it, then click again to cycle it. Inside walls go auto →
+                door → slider → open → wall; outside walls add a window. Auto hands the wall back
+                to the derivation.
+              </p>
+            )
+          ) : room ? (
             <div className="space-y-3">
               <label className="block">
                 <span className="text-[11px] uppercase tracking-wider text-stone-text">Name</span>
@@ -565,7 +864,19 @@ export default function PlanEditor() {
                     // The section keys rooms by name, and so does selection.
                     if (name !== room.name && floor.rooms.some((r) => r.name === name)) return;
                     const previous = room.name;
-                    patchRoom(previous, { name }, true);
+                    // Openings name their rooms, so a rename has to travel
+                    // into them or the wall silently reverts to derived.
+                    commit((current) =>
+                      current.map((f, i) =>
+                        i === floorIndex
+                          ? {
+                              ...f,
+                              rooms: f.rooms.map((r) => (r.name === previous ? { ...r, name } : r)),
+                              openings: f.openings && renameInOpenings(f.openings, previous, name),
+                            }
+                          : f
+                      )
+                    );
                     setSelected(name);
                   }}
                 />
@@ -645,7 +956,7 @@ export default function PlanEditor() {
 
           <div className="mt-6 border-t border-line pt-3 text-[12px] text-stone-text">
             <p className="mb-2">
-              {floor.rooms.length} rooms on this floor.
+              {floor.rooms.length} rooms, {(floor.openings ?? []).length} walls set by hand.
               {overlaps.size > 0 && (
                 <span className="text-[rgb(170,60,45)]"> {overlaps.size} overlapping.</span>
               )}

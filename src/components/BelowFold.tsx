@@ -13,6 +13,7 @@ import RateSection from "@/components/RateSection";
 import EnquiryComposer from "@/components/EnquiryComposer";
 import Footer from "@/components/Footer";
 import { RidgelineDivider } from "@/components/Ridgeline";
+import AtlanticBand from "@/components/Atlantic";
 
 /**
  * Everything the page renders below the hero fold, lazy-loaded as a single
@@ -23,35 +24,48 @@ import { RidgelineDivider } from "@/components/Ridgeline";
  * nothing else needs touching. The reasoning behind this particular order,
  * and a drag-and-drop way to try others, is in docs/section-order.html.
  *
+ * Each section names what follows it. Most take the skyline; the plan hands
+ * over to the Atlantic, because the water is south of the terrace and the
+ * plan no longer says so itself; the sunset photograph takes a plain rule,
+ * since a drawn mountain under a photograph of a mountain says it twice.
+ *
  * The order runs: what the house is, then the house itself, then where it
  * is, then the reassurances an overseas guest needs, then proof, then price,
  * then the practical detail, then the enquiry. The full plate index is an
  * appendix at the end — as the third section on the page it buried
  * everything after it.
  */
-const SECTIONS: Array<[string, ComponentType]> = [
+type Divider = "ridge" | "rule" | "atlantic";
+
+const SECTIONS: Array<[string, ComponentType, Divider?]> = [
   ["horizon", HorizonSection],
   ["beach-band", BeachBand],
   ["house", HouseLevelsSection],
   ["bedrooms", BedroomsSection],
-  ["plans", FloorPlanSection],
+  ["plans", FloorPlanSection, "atlantic"],
   ["camps-bay", CampsBaySection],
   ["power-water", PowerWaterSection],
   ["reviews", ReviewsSection],
-  ["sunset-band", SunsetBand],
+  ["sunset-band", SunsetBand, "rule"],
   ["rates", RateSection],
   ["arrival", ArrivalSection],
   ["enquire", EnquiryComposer],
   ["plates", PlatesSection],
 ];
 
+function SectionDivider({ kind }: { kind: Divider }) {
+  if (kind === "atlantic") return <AtlanticBand className="container py-4 md:py-6" />;
+  if (kind === "rule") return <div className="container py-2"><hr className="border-t border-line" /></div>;
+  return <RidgelineDivider className="container py-2" />;
+}
+
 export default function BelowFold() {
   return (
     <>
-      {SECTIONS.map(([key, Section]) => (
+      {SECTIONS.map(([key, Section, divider]) => (
         <div key={key}>
           <Section />
-          <RidgelineDivider className="container py-2" />
+          <SectionDivider kind={divider ?? "ridge"} />
         </div>
       ))}
       <Footer />
