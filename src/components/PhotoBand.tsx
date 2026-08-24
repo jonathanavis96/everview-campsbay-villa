@@ -14,6 +14,7 @@ import Reveal from "@/components/Reveal";
 export default function PhotoBand({
   src,
   leadSrc,
+  midSrc,
   alt,
   caption,
   width,
@@ -25,6 +26,10 @@ export default function PhotoBand({
   /** The 640px derivative. A band is full-bleed, so a phone would otherwise
    *  pull the whole plate down to paint a 390px-wide strip. */
   leadSrc?: string;
+  /** The 960px derivative — the srcset candidate between leadSrc and the
+   *  full plate, for a 2x-DPR phone rendering the band wider than 640
+   *  device-px can satisfy. */
+  midSrc?: string;
   alt: string;
   /** Optional line under the band, in the same register as a plate caption. */
   caption?: string;
@@ -39,7 +44,13 @@ export default function PhotoBand({
       <figure className="m-0">
         <img
           src={src}
-          srcSet={leadSrc ? `${leadSrc} 640w, ${src} ${width}w` : undefined}
+          srcSet={
+            leadSrc
+              ? midSrc
+                ? `${leadSrc} 640w, ${midSrc} 960w, ${src} ${width}w`
+                : `${leadSrc} 640w, ${src} ${width}w`
+              : undefined
+          }
           sizes={leadSrc ? "100vw" : undefined}
           alt={alt}
           loading="lazy"

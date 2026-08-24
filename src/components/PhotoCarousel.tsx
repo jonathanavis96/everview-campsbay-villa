@@ -83,7 +83,9 @@ export default function PhotoCarousel({
               src={i === 0 ? p.leadSrc || p.src : p.src}
               srcSet={
                 p.leadSrc && p.width
-                  ? `${p.leadSrc} 640w, ${p.src} ${p.width}w`
+                  ? p.midSrc
+                    ? `${p.leadSrc} 640w, ${p.midSrc} 960w, ${p.src} ${p.width}w`
+                    : `${p.leadSrc} 640w, ${p.src} ${p.width}w`
                   : undefined
               }
               sizes="(min-width: 768px) 50vw, calc(100vw - 48px)"

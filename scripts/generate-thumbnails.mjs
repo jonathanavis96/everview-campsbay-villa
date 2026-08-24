@@ -1,4 +1,4 @@
-// Generates three things from src/assets/everview_photos_webp/**:
+// Generates four things from src/assets/everview_photos_webp/**:
 //   1. src/assets/everview_photos_webp_thumb/** — 192px-wide WebP derivatives,
 //      for the 62x62 CSS thumbnail strips (HouseLevelsSection, BedroomsSection)
 //      that were downloading the full ~1200px plate per thumbnail (MIS-459).
@@ -6,7 +6,15 @@
 //      for the "lead" spread photo in each space/room, which renders at
 //      ~637 device-px on mobile but was shipping the full ~1200px plate
 //      (image-delivery-insight still flagged these after the thumb fix).
-//   3. src/utils/photoDimensions.json — intrinsic width/height of the
+//   3. src/assets/everview_photos_webp_mid/** — 960px-wide WebP derivatives,
+//      a middle srcset candidate between the 640w lead and the full plate.
+//      A 2x-DPR phone rendering a lead spread at ~390-480 CSS px needs
+//      ~780-960 device px; 640 falls below that, so the browser correctly
+//      rejected the lead candidate and fell through to the full ~1200px+
+//      plate (measured: panorama 317 KB, garden 246 KB, beach 149 KB, pool
+//      139 KB at 390px/DPR2). 960w gives the browser a candidate that
+//      satisfies that density without shipping the full-resolution plate.
+//   4. src/utils/photoDimensions.json — intrinsic width/height of the
 //      *original* plate, so components can set <img width height> and stop
 //      the unsized-images CLS risk.
 //
@@ -20,9 +28,11 @@ const ROOT = path.resolve(import.meta.dirname, "..");
 const SRC_DIR = path.join(ROOT, "src/assets/everview_photos_webp");
 const THUMB_DIR = path.join(ROOT, "src/assets/everview_photos_webp_thumb");
 const LEAD_DIR = path.join(ROOT, "src/assets/everview_photos_webp_lead");
+const MID_DIR = path.join(ROOT, "src/assets/everview_photos_webp_mid");
 const MANIFEST_PATH = path.join(ROOT, "src/utils/photoDimensions.json");
 const THUMB_WIDTH = 192; // ~3x a 64px (w-16) CSS box, covers up to 3x DPR
 const LEAD_WIDTH = 640; // matches the ~637 device-px width Lighthouse measured for lead spreads
+const MID_WIDTH = 960; // a 2x-DPR phone at ~390-480 CSS px needs ~780-960 device px; 640 falls short
 
 async function* walk(dir) {
   for (const entry of await readdir(dir, { withFileTypes: true })) {
@@ -59,8 +69,10 @@ async function main() {
 
     const thumbPath = path.join(THUMB_DIR, derivativeRel);
     const leadPath = path.join(LEAD_DIR, derivativeRel);
+    const midPath = path.join(MID_DIR, derivativeRel);
     await mkdir(path.dirname(thumbPath), { recursive: true });
     await mkdir(path.dirname(leadPath), { recursive: true });
+    await mkdir(path.dirname(midPath), { recursive: true });
 
     // Freshness is decided on the *content* of the original, not on its
     // modification time. Reordering a folder by renaming files swaps their
@@ -96,6 +108,15 @@ async function main() {
         .resize({ width: LEAD_WIDTH, withoutEnlargement: true })
         .webp({ quality: 75 })
         .toFile(leadPath);
+    }
+
+    // Skip the mid derivative when the original is already narrower than
+    // MID_WIDTH — withoutEnlargement would just copy it, wasting a file.
+    if ((meta.width ?? 0) > MID_WIDTH && (await needsGenerate(midPath))) {
+      await sharp(file)
+        .resize({ width: MID_WIDTH, withoutEnlargement: true })
+        .webp({ quality: 75 })
+        .toFile(midPath);
     }
 
     count += 1;

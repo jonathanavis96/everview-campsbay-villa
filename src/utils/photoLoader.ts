@@ -18,6 +18,7 @@ export type PhotoBase = {
   author?: string;     // preserved if you already set this elsewhere
   thumbSrc?: string;    // small derivative for 62-64px thumbnail strips (MIS-459)
   leadSrc?: string;     // 640px derivative for the full-width "lead" spread photo (MIS-459)
+  midSrc?: string;      // 960px derivative, the srcset candidate between leadSrc and the full plate
   width?: number;       // intrinsic pixel width of the full-size plate
   height?: number;      // intrinsic pixel height of the full-size plate
 };
@@ -69,6 +70,15 @@ const ALL_LEADS = import.meta.glob(
   { eager: true, as: "url" }
 ) as Record<string, string>;
 
+// 960px-wide derivatives, the srcset candidate between the 640px lead and the
+// full plate — a 2x-DPR phone needs ~780-960 device px for a lead spread, and
+// 640 falls short of that. Not every original has one — the generator skips
+// originals already narrower than 960px.
+const ALL_MIDS = import.meta.glob(
+  "/src/assets/everview_photos_webp_mid/**/*.webp",
+  { eager: true, as: "url" }
+) as Record<string, string>;
+
 function thumbKey(path: string, rootFolder: string) {
   const idx = path.indexOf(`/${rootFolder}/`);
   return idx >= 0 ? path.slice(idx + rootFolder.length + 2) : path;
@@ -85,6 +95,7 @@ function byKey(images: Record<string, string>, rootFolder: string): Record<strin
 
 const THUMBS_BY_KEY = byKey(ALL_THUMBS, "everview_photos_webp_thumb");
 const LEADS_BY_KEY = byKey(ALL_LEADS, "everview_photos_webp_lead");
+const MIDS_BY_KEY = byKey(ALL_MIDS, "everview_photos_webp_mid");
 
 function resolveDerivative(path: string, byKeyMap: Record<string, string>): string | undefined {
   const key = thumbKey(path, "everview_photos_webp").replace(/\.(webp|jpg|jpeg|png)$/i, "");
@@ -135,6 +146,7 @@ export function loadBasesFrom(subfolder: string, category?: string): PhotoBase[]
       folders: [subfolder],
       thumbSrc: resolveDerivative(path, THUMBS_BY_KEY),
       leadSrc: resolveDerivative(path, LEADS_BY_KEY),
+      midSrc: resolveDerivative(path, MIDS_BY_KEY),
       width: dims?.width,
       height: dims?.height,
       // author: leave undefined here; preserve your upstream logic if you set it
@@ -170,6 +182,7 @@ export function loadAllBasesAuto(): PhotoBase[] {
         folders,
         thumbSrc: resolveDerivative(path, THUMBS_BY_KEY),
         leadSrc: resolveDerivative(path, LEADS_BY_KEY),
+        midSrc: resolveDerivative(path, MIDS_BY_KEY),
         width: dims?.width,
         height: dims?.height,
         // author: leave undefined; your pipeline can still set it elsewhere
@@ -239,6 +252,7 @@ function baseFromEntry(path: string, url: string): PhotoBase {
     leafFolder: folders.length > 1 ? folders[folders.length - 1] : "",
     thumbSrc: resolveDerivative(path, THUMBS_BY_KEY),
     leadSrc: resolveDerivative(path, LEADS_BY_KEY),
+    midSrc: resolveDerivative(path, MIDS_BY_KEY),
     width: dims?.width,
     height: dims?.height,
   };
