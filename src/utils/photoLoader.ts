@@ -15,6 +15,7 @@ export type PhotoBase = {
   folders?: string[];  // all folder segments under the root
   author?: string;     // preserved if you already set this elsewhere
   thumbSrc?: string;    // small derivative for 62-64px thumbnail strips (MIS-459)
+  leadSrc?: string;     // 640px derivative for the full-width "lead" spread photo (MIS-459)
   width?: number;       // intrinsic pixel width of the full-size plate
   height?: number;      // intrinsic pixel height of the full-size plate
 };
@@ -58,20 +59,34 @@ const ALL_THUMBS = import.meta.glob(
   { eager: true, as: "url" }
 ) as Record<string, string>;
 
+// 640px-wide derivatives for the full-width "lead" spread photo in each
+// space/room (HouseLevelsSection, BedroomsSection). Not every original has
+// one — the generator skips originals already narrower than 640px.
+const ALL_LEADS = import.meta.glob(
+  "/src/assets/everview_photos_webp_lead/**/*.webp",
+  { eager: true, as: "url" }
+) as Record<string, string>;
+
 function thumbKey(path: string, rootFolder: string) {
   const idx = path.indexOf(`/${rootFolder}/`);
   return idx >= 0 ? path.slice(idx + rootFolder.length + 2) : path;
 }
 
-const THUMBS_BY_KEY: Record<string, string> = {};
-for (const [path, url] of Object.entries(ALL_THUMBS)) {
-  const key = thumbKey(path, "everview_photos_webp_thumb").replace(/\.webp$/i, "");
-  THUMBS_BY_KEY[key] = url;
+function byKey(images: Record<string, string>, rootFolder: string): Record<string, string> {
+  const map: Record<string, string> = {};
+  for (const [path, url] of Object.entries(images)) {
+    const key = thumbKey(path, rootFolder).replace(/\.webp$/i, "");
+    map[key] = url;
+  }
+  return map;
 }
 
-function resolveThumbSrc(path: string): string | undefined {
+const THUMBS_BY_KEY = byKey(ALL_THUMBS, "everview_photos_webp_thumb");
+const LEADS_BY_KEY = byKey(ALL_LEADS, "everview_photos_webp_lead");
+
+function resolveDerivative(path: string, byKeyMap: Record<string, string>): string | undefined {
   const key = thumbKey(path, "everview_photos_webp").replace(/\.(webp|jpg|jpeg|png)$/i, "");
-  return THUMBS_BY_KEY[key];
+  return byKeyMap[key];
 }
 
 /**
@@ -116,7 +131,8 @@ export function loadBasesFrom(subfolder: string, category?: string): PhotoBase[]
       category: effectiveCategory,
       subfolder,
       folders: [subfolder],
-      thumbSrc: resolveThumbSrc(path),
+      thumbSrc: resolveDerivative(path, THUMBS_BY_KEY),
+      leadSrc: resolveDerivative(path, LEADS_BY_KEY),
       width: dims?.width,
       height: dims?.height,
       // author: leave undefined here; preserve your upstream logic if you set it
@@ -150,7 +166,8 @@ export function loadAllBasesAuto(): PhotoBase[] {
         category: toTitleCase(primary),
         subfolder: primary,
         folders,
-        thumbSrc: resolveThumbSrc(path),
+        thumbSrc: resolveDerivative(path, THUMBS_BY_KEY),
+        leadSrc: resolveDerivative(path, LEADS_BY_KEY),
         width: dims?.width,
         height: dims?.height,
         // author: leave undefined; your pipeline can still set it elsewhere

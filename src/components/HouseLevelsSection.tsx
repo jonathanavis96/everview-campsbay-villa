@@ -132,7 +132,9 @@ function SpaceSpread({ space, index }: { space: Space; index: number }) {
         aria-label={`Open ${space.name} photographs`}
       >
         <img
-          src={lead.src}
+          src={lead.leadSrc || lead.src}
+          srcSet={lead.leadSrc && lead.width ? `${lead.leadSrc} 640w, ${lead.src} ${lead.width}w` : undefined}
+          sizes="(min-width: 768px) 50vw, 100vw"
           alt={lead.description || `${space.name} at Everview`}
           loading="lazy"
           width={lead.width}
