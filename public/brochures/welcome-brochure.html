@@ -202,11 +202,12 @@
     section, figure { break-inside: avoid; }
     /* On A4 a page has 182mm of width and 269mm of usable height. A
        full-width plate at the photographs' 1.4:1 renders about 130mm tall, so
-       the two on the music pages would need 260mm on their own and the second
-       would spill onto another sheet. Capping the height keeps a page's pair
-       plus its instructions on one sheet; the screen keeps the full size. */
-    .plate img {
-      max-height: 78mm;
+       two on the music pages would need 260mm on their own, and the pool-room
+       figure lands under a page that is already nearly full. Capping every
+       page-level figure keeps each sheet whole; the screen keeps full size. */
+    figure img.tall { max-height: 88mm; }
+    .page > figure img {
+      max-height: 66mm;
       width: auto;
       max-width: 100%;
       margin: 0 auto;
@@ -435,7 +436,16 @@
       <li>For any technical issue or support with the alarm system, contact the property manager on the number on the card in the house.</li>
     </ul>
 
-    <div class="grid-2" style="margin-top:6mm">
+  </section>
+</article>
+
+<!-- ────────────────────── PAGE 4 (continued) ────────────────────── -->
+<article class="page">
+  <p class="label">Alarm and security</p>
+  <hr class="rule" />
+
+  <section>
+    <div class="grid-2">
       <figure>
         <img class="tall" src="img/ajax-app-dark.webp" alt="The Ajax app showing the Avis hub disarmed, with Arm and Disarm controls" />
         <figcaption>The Ajax app — Android</figcaption>
@@ -497,6 +507,13 @@
       off the grid.
     </p>
   </section>
+
+</article>
+
+<!-- ────────────────────── PAGE 5 (continued) ────────────────────── -->
+<article class="page">
+  <p class="label">The house day to day</p>
+  <hr class="rule" />
 
   <section>
     <h2>The lift</h2>
@@ -676,6 +693,11 @@
     </figure>
   </section>
 
+</article>
+
+<!-- ─────────────────────────── PAGE 10 ─────────────────────────── -->
+<article class="page">
+  <p class="label">Camps Bay</p>
   <hr class="rule" />
 
   <section>
