@@ -50,8 +50,13 @@ export default function AtlanticBand({ className = "" }: { className?: string })
     <div className={className} aria-hidden="true">
       <p className="text-label text-stone-text mb-3 text-center">Atlantic Ocean</p>
       {/* The strip is twice as wide as the tile and slides one tile left, so
-          the loop closes on itself and never snaps back visibly. */}
-      <div className="overflow-hidden">
+          the loop closes on itself and never snaps back visibly.
+
+          On a phone it breaks out of the container's 1.5rem gutter and runs
+          edge to edge — Jonathan's call, and the right one: an ocean that
+          stops short of the screen reads as a diagram of an ocean. On desktop
+          it keeps the page's margin like everything else. */}
+      <div className="-mx-6 overflow-hidden md:mx-0">
         <svg
           viewBox={`0 0 ${TILE} ${HEIGHT}`}
           preserveAspectRatio="none"

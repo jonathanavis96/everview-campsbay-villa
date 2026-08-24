@@ -421,15 +421,25 @@
     stroke-width: 2.4;
   }
 
-  /* Below the md breakpoint the plan is scrolled sideways at a fixed 620px,
-     so the labels are sized up to stay readable at that width. */
+  /* Below the md breakpoint the plan fits the screen rather than scrolling,
+     so it is drawn at roughly a third of its desktop size and the labels have
+     to be sized up in plan units to survive the reduction. The square metres
+     go: at phone scale that second line lands under 8 device pixels, which is
+     decoration rather than information, and dropping it lets the room name
+     take the middle of the room. */
   @media (max-width: 767px) {
     .ev-room-name {
-      font-size: 11.5px;
+      font-size: 14px;
+      stroke-width: 3.4px;
     }
 
     .ev-room-area {
-      font-size: 9px;
+      font-size: 11px;
+      stroke-width: 3.4px;
+    }
+
+    .ev-room-metric {
+      display: none;
     }
   }
 }

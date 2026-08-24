@@ -25,7 +25,15 @@
 // `openings` list overrides it for one pair of rooms — closing a door the
 // derivation invented, opening a wall it kept, or turning either into a
 // slider — and the plan editor writes those by clicking the wall.
-import { isExterior, type Floor, type Room, type Side, type WallOpening } from "@/data/floorPlan";
+import {
+  isExterior,
+  VIEW_H,
+  VIEW_W,
+  type Floor,
+  type Room,
+  type Side,
+  type WallOpening,
+} from "@/data/floorPlan";
 
 /** Poché thickness, in plan units. */
 export const WALL = 3.6;
@@ -434,6 +442,54 @@ export function floorGeometry(floor: Floor): FloorGeometry {
   }
 
   return { walls, openings };
+}
+
+/**
+ * The tightest box that holds everything drawn on a floor.
+ *
+ * The plan's coordinate space is 600x440 for both floors, but neither floor
+ * fills it: the living level stops well short on the left of the terrace and
+ * on the right of the guest bath, and the bedroom level has a wide margin
+ * beside the patio. Drawn in the full box, that emptiness is dead width —
+ * and on a phone it is the difference between a plan that fits the screen
+ * and one that has to be scrolled. So each floor is drawn in its own box.
+ *
+ * Walls sit centred on a room's edge and a door can swing outwards, so the
+ * bounds take in half a wall and every swing rather than the rectangles
+ * alone.
+ */
+export function planBounds(floor: Floor, pad = 6) {
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+  const grow = (x: number, y: number) => {
+    minX = Math.min(minX, x);
+    minY = Math.min(minY, y);
+    maxX = Math.max(maxX, x);
+    maxY = Math.max(maxY, y);
+  };
+
+  for (const room of floor.rooms) {
+    grow(room.x - WALL / 2, room.y - WALL / 2);
+    grow(room.x + room.w + WALL / 2, room.y + room.h + WALL / 2);
+  }
+
+  // A leaf and its arc reach one door-width off the wall they hang on.
+  for (const o of floorGeometry(floor).openings) {
+    if (o.kind !== "door") continue;
+    const reach = (o.to - o.from) * (o.into ?? 1);
+    if (o.axis === "v") grow(o.at + reach, o.from);
+    else grow(o.from, o.at + reach);
+  }
+
+  if (!Number.isFinite(minX)) return { x: 0, y: 0, width: VIEW_W, height: VIEW_H };
+  return {
+    x: minX - pad,
+    y: minY - pad,
+    width: maxX - minX + pad * 2,
+    height: maxY - minY + pad * 2,
+  };
 }
 
 /** The quarter-circle swing and leaf for one door. */

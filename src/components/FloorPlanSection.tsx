@@ -32,8 +32,8 @@
 // Motion is always on for this site — no prefers-reduced-motion branch.
 import { useMemo, useState } from "react";
 import Reveal from "@/components/Reveal";
-import { FLOORS, VIEW_H, VIEW_TOP, VIEW_W, type Floor, type Room } from "@/data/floorPlan";
-import { WALL, doorPath, fixture, floorGeometry } from "@/data/planGeometry";
+import { FLOORS, type Floor, type Room } from "@/data/floorPlan";
+import { WALL, doorPath, fixture, floorGeometry, planBounds } from "@/data/planGeometry";
 
 /** Rooms narrower or shorter than this get their label outside the shape. */
 const LABEL_MIN_W = 62;
@@ -52,7 +52,7 @@ function roomLabel(room: Room) {
             {room.name}
           </text>
           {room.area && (
-            <text x={cx} y={cy + 11} textAnchor="middle" className="ev-room-area">
+            <text x={cx} y={cy + 11} textAnchor="middle" className="ev-room-area ev-room-metric">
               {room.area} m²
             </text>
           )}
@@ -69,18 +69,22 @@ function roomLabel(room: Room) {
 function FloorPlan({ floor }: { floor: Floor }) {
   const [hovered, setHovered] = useState<Room | null>(null);
   const { walls, openings } = useMemo(() => floorGeometry(floor), [floor]);
+  // Each floor is drawn in its own box rather than the shared 600x440 one:
+  // the empty margins either side were dead width, and on a phone they were
+  // the reason the plan had to be scrolled instead of fitting the screen.
+  const box = useMemo(() => planBounds(floor), [floor]);
   // A gap is punched slightly wider than the wall so no sliver of poché is
   // left standing across a door or a window.
   const punch = WALL + 0.8;
 
   return (
     <div>
-      {/* On a phone the plan is wider than the screen: it scrolls sideways
-          rather than shrinking its labels to nothing. */}
-      <div className="ev-plan-scroll -mx-6 px-6 overflow-x-auto md:mx-0 md:px-0 md:overflow-visible">
+      {/* Trimmed to its own bounds, the plan fits a phone at full width. The
+          labels are sized up below the md breakpoint to survive that. */}
+      <div>
       <svg
-        viewBox={`0 ${VIEW_TOP} ${VIEW_W} ${VIEW_H - VIEW_TOP}`}
-        className="ev-plan w-full h-auto text-ink min-w-[620px]"
+        viewBox={`${box.x} ${box.y} ${box.width} ${box.height}`}
+        className="ev-plan w-full h-auto text-ink"
         role="img"
         aria-label={`Simplified plan of the ${floor.label.toLowerCase()} at Everview`}
       >
