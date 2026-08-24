@@ -10,6 +10,8 @@ import { useEffect, useRef, useState } from "react";
 import { MapPin } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import mapPoster from "@/assets/map/camps-bay-map-poster.webp";
+import panorama from "@/assets/everview_photos_webp/views/2-view-camps-bay-panorama.webp";
+import panoramaLead from "@/assets/everview_photos_webp_lead/views/2-view-camps-bay-panorama.webp";
 
 const MAP_EMBED_SRC =
   "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d361.5336953869003!2d18.3857876684248!3d-33.952026148004215!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f120!3m3!1m2!1s0x1dcc67added5d659%3A0x6777a5740e47b06d!2s14%20Cramond%20Rd%2C%20Camps%20Bay%2C%20Cape%20Town%2C%208040!5e0!3m2!1sen!2sza!4v1756208341188!5m2!1sen!2sza";
@@ -227,6 +229,29 @@ export default function CampsBaySection() {
             the Atlantic Seaboard's landmarks are all close, without the
             noise of being on top of them.
           </p>
+
+          <Reveal className="mb-10">
+            <figure className="m-0">
+              <span className="photo-frame block">
+                {/* A phone painting this at 390px wide has no business
+                    fetching the 2400px plate. */}
+                <img
+                  src={panorama}
+                  srcSet={`${panoramaLead} 640w, ${panorama} 2400w`}
+                  sizes="(min-width: 1280px) 1200px, 100vw"
+                  alt="Panorama from Everview looking down the closed end of Cramond Road, with Camps Bay, the beach and the Atlantic beyond and the Twelve Apostles away to the left"
+                  loading="lazy"
+                  decoding="async"
+                  width={2400}
+                  height={1039}
+                />
+              </span>
+              <figcaption className="text-body text-ink/70 pt-3">
+                Looking down the closed end of Cramond Road from the house: the
+                bay, the beach, and the Twelve Apostles away to the left.
+              </figcaption>
+            </figure>
+          </Reveal>
 
           <Reveal>
             <MapPanel />

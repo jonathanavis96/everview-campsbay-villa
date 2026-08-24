@@ -146,11 +146,14 @@ const FIXED_BOTTOM = { title: "Footer", why: "Contact details and the legal line
 
 const RECOMMENDED = [
   { key: "horizon",     title: "What the house is",        why: "One paragraph and the spec row. Answers “what am I looking at” before anything else." },
+  { key: "beach-band",  title: "Photo band — the beach",     why: "Full bleed, no frame. A breath straight after the opening statement, before the detail starts." },
   { key: "house",       title: "The house, level by level", why: "The reason someone books: the living level, the terrace, the pool." },
   { key: "bedrooms",    title: "The four bedrooms",         why: "The second real question — will we all fit, and who gets which room." },
+  { key: "plans",       title: "How the house is laid out",  why: "The plan, once the rooms have been seen. It answers what adjoins what, which no photograph does." },
   { key: "camps-bay",   title: "Camps Bay",                 why: "Where it is, once they want it. Map, drive times, restaurants." },
   { key: "power-water", title: "Power and water",           why: "Reassurance, not a headline. It matters to an overseas guest only after they care about the house." },
   { key: "reviews",     title: "What guests say",           why: "Social proof lands hardest immediately before the price." },
+  { key: "sunset-band", title: "Photo band — sunset",        why: "The second and last band, and the only other one. Late, between the proof and the price." },
   { key: "rates",       title: "Rates",                     why: "The number, once the case for it has been made." },
   { key: "arrival",     title: "Arrival and house rules",   why: "The practical detail a guest wants settled just before they enquire." },
   { key: "enquire",     title: "Enquire",                   why: "The action, at the point of highest intent." },
@@ -220,8 +223,12 @@ function render() {
   saveOrder(order);
 }
 
+// Every key in RECOMMENDED needs an entry here, or the generated array drops
+// that section silently — which is how the floor plan and the two photo bands
+// went missing from a pasted SECTIONS block (Codex, PR #30).
 const COMPONENTS = {
   horizon: "HorizonSection", house: "HouseLevelsSection", bedrooms: "BedroomsSection",
+  plans: "FloorPlanSection", "beach-band": "BeachBand", "sunset-band": "SunsetBand",
   "camps-bay": "CampsBaySection", "power-water": "PowerWaterSection",
   reviews: "ReviewsSection", rates: "RateSection", arrival: "ArrivalSection",
   enquire: "EnquiryComposer", plates: "PlatesSection"

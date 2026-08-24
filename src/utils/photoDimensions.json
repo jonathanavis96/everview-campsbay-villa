@@ -129,6 +129,11 @@
     "height": 853,
     "hash": "4e4f8f352f589361"
   },
+  "4-garden-pool": {
+    "width": 1280,
+    "height": 960,
+    "hash": "42b68d939a3007e5"
+  },
   "1-living-bar": {
     "width": 1200,
     "height": 800,
@@ -308,5 +313,20 @@
     "width": 1200,
     "height": 800,
     "hash": "482fb508a83fd3d2"
+  },
+  "2-view-camps-bay-panorama": {
+    "width": 2400,
+    "height": 1039,
+    "hash": "4f3505649d4b9737"
+  },
+  "3-view-sunset": {
+    "width": 1600,
+    "height": 1200,
+    "hash": "5f93e9b6c07b9773"
+  },
+  "4-view-camps-bay-beach": {
+    "width": 1280,
+    "height": 960,
+    "hash": "a180bc3b780330fc"
   }
 }

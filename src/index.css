@@ -348,3 +348,65 @@
      clock as the water in the pipe — see BoreholeDiagram. A CSS animation
      starts when its class lands, which cannot be phase-locked to SMIL. */
 }
+
+@layer utilities {
+  /*
+   * The traced floor plans (FloorPlanSection). Same hairline register as the
+   * ridgeline and the power/water diagrams: paper fill, one-pixel ink stroke,
+   * and a warm wash that only appears under the pointer. No fill colour is
+   * carried by the plan itself — a room is told apart by its label, not by
+   * being tinted, which is what stops the drawing reading as a diagram of
+   * something else.
+   */
+  .ev-plan {
+    /* The plan is drawn at 600 units wide; type is sized in those units so it
+       scales with the drawing instead of fighting it. */
+    font-family: inherit;
+  }
+
+  .ev-room {
+    cursor: default;
+    outline: none;
+  }
+
+  .ev-room-name {
+    font-size: 9.5px;
+    letter-spacing: 0.01em;
+    fill: currentColor;
+  }
+
+  .ev-room-area {
+    font-size: 7.5px;
+    letter-spacing: 0.04em;
+    fill: var(--stone-text, #67655e);
+  }
+
+  /* The hover wash. Painted over the room fill, under the labels. */
+  .ev-room-wash {
+    opacity: 0;
+    transition: opacity 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+  }
+
+  .ev-room:hover .ev-room-wash,
+  .ev-room:focus-visible .ev-room-wash,
+  .ev-room[data-active="true"] .ev-room-wash {
+    opacity: 0.14;
+  }
+
+  .ev-room:focus-visible rect:first-of-type {
+    stroke-width: 2.4;
+  }
+
+  /* Below the md breakpoint the plan is scrolled sideways at a fixed 620px,
+     so the labels are sized up to stay readable at that width. */
+  @media (max-width: 767px) {
+    .ev-room-name {
+      font-size: 11.5px;
+    }
+
+    .ev-room-area {
+      font-size: 9px;
+    }
+  }
+}
