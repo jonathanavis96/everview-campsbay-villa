@@ -7,13 +7,16 @@
 // room, so neither belongs in the folder-addressed level sections.
 import PhotoBand from "@/components/PhotoBand";
 import beach from "@/assets/everview_photos_webp/views/4-view-camps-bay-beach.webp";
+import beachLead from "@/assets/everview_photos_webp_lead/views/4-view-camps-bay-beach.webp";
 import sunset from "@/assets/everview_photos_webp/views/3-view-sunset.webp";
+import sunsetLead from "@/assets/everview_photos_webp_lead/views/3-view-sunset.webp";
 
 /** The daytime bay, straight after the opening statement. */
 export function BeachBand() {
   return (
     <PhotoBand
       src={beach}
+      leadSrc={beachLead}
       width={1280}
       height={960}
       position="center 62%"
@@ -28,6 +31,7 @@ export function SunsetBand() {
   return (
     <PhotoBand
       src={sunset}
+      leadSrc={sunsetLead}
       width={1600}
       height={1200}
       position="center 45%"

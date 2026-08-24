@@ -32,6 +32,22 @@ const MIN_SIDE = 8;
 
 type Rect = { x: number; y: number; w: number; h: number };
 
+/**
+ * Holds a rectangle inside the plan. A room dragged off the canvas is clipped
+ * by the section's viewBox on the site, and one dragged *entirely* off cannot
+ * be clicked again to bring it back — so it is never allowed to leave.
+ */
+function clampToCanvas(rect: Rect): Rect {
+  const w = Math.min(Math.max(rect.w, MIN_SIDE), VIEW_W);
+  const h = Math.min(Math.max(rect.h, MIN_SIDE), VIEW_H);
+  return {
+    w,
+    h,
+    x: Math.min(Math.max(rect.x, 0), VIEW_W - w),
+    y: Math.min(Math.max(rect.y, 0), VIEW_H - h),
+  };
+}
+
 const clone = (floors: Floor[]): Floor[] =>
   floors.map((f) => ({ ...f, rooms: f.rooms.map((r) => ({ ...r })) }));
 
@@ -69,7 +85,7 @@ function applyDrag(
     const x = snap(start.x + dx, [...xEdges, ...xEdges.map((e) => e - start.w)], grid, EDGE_SNAP);
     const y = snap(start.y + dy, [...yEdges, ...yEdges.map((e) => e - start.h)], grid, EDGE_SNAP);
     // The size is carried through untouched, whichever edge snapped.
-    return { ...start, x, y };
+    return clampToCanvas({ ...start, x, y });
   }
 
   let { x, y, w, h } = start;
@@ -95,7 +111,7 @@ function applyDrag(
     h = nb - y;
   }
 
-  return { x, y, w, h };
+  return clampToCanvas({ x, y, w, h });
 }
 
 const HANDLE_CURSOR: Record<Handle, string> = {
@@ -354,13 +370,9 @@ export default function PlanEditor() {
       event.preventDefault();
       // Alt turns a nudge into a resize of the bottom-right corner.
       if (event.altKey) {
-        patchRoom(
-          room.name,
-          { w: Math.max(MIN_SIDE, room.w + nudge[0]), h: Math.max(MIN_SIDE, room.h + nudge[1]) },
-          true
-        );
+        patchRoom(room.name, clampToCanvas({ ...room, w: room.w + nudge[0], h: room.h + nudge[1] }), true);
       } else {
-        patchRoom(room.name, { x: room.x + nudge[0], y: room.y + nudge[1] }, true);
+        patchRoom(room.name, clampToCanvas({ ...room, x: room.x + nudge[0], y: room.y + nudge[1] }), true);
       }
     };
     window.addEventListener("keydown", onKeyDown);
@@ -596,7 +608,13 @@ export default function PlanEditor() {
                       className={field}
                       type="number"
                       value={room[key]}
-                      onChange={(e) => patchRoom(room.name, { [key]: Number(e.target.value) }, true)}
+                      onChange={(e) =>
+                        patchRoom(
+                          room.name,
+                          clampToCanvas({ ...room, [key]: Number(e.target.value) || 0 }),
+                          true
+                        )
+                      }
                     />
                   </label>
                 ))}

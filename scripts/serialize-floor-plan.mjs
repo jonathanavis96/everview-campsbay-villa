@@ -15,6 +15,10 @@ const ROOM_KEYS = ["name", "planName", "area", "x", "y", "w", "h", "outdoor", "s
 
 const isFiniteNumber = (v) => typeof v === "number" && Number.isFinite(v);
 
+/** The plan's coordinate space, mirroring VIEW_W / VIEW_H in floorPlan.ts. */
+const VIEW_W = 600;
+const VIEW_H = 440;
+
 /**
  * Accepts only the shape the plan uses, and returns a clean copy. Anything
  * else throws: this runs on a POST body, and the result is written to a source
@@ -60,6 +64,13 @@ export function validateFloors(data) {
       // is invisible on the plan and cannot be grabbed to fix.
       if (out.w <= 0 || out.h <= 0) {
         throw new Error(`${where}: width and height must round to at least 1`);
+      }
+      // A room outside the canvas is clipped by the section's viewBox, and one
+      // fully outside cannot be clicked in the editor to drag it back.
+      if (out.x < 0 || out.y < 0 || out.x + out.w > VIEW_W || out.y + out.h > VIEW_H) {
+        throw new Error(
+          `${where}: "${room.name}" falls outside the ${VIEW_W}x${VIEW_H} plan`
+        );
       }
       if (typeof room.planName === "string" && room.planName.trim()) out.planName = room.planName;
       if (room.area !== undefined && room.area !== null && room.area !== "") {

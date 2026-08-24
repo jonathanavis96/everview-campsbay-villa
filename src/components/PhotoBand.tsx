@@ -13,6 +13,7 @@ import Reveal from "@/components/Reveal";
 
 export default function PhotoBand({
   src,
+  leadSrc,
   alt,
   caption,
   width,
@@ -21,6 +22,9 @@ export default function PhotoBand({
   position = "center",
 }: {
   src: string;
+  /** The 640px derivative. A band is full-bleed, so a phone would otherwise
+   *  pull the whole plate down to paint a 390px-wide strip. */
+  leadSrc?: string;
   alt: string;
   /** Optional line under the band, in the same register as a plate caption. */
   caption?: string;
@@ -35,6 +39,8 @@ export default function PhotoBand({
       <figure className="m-0">
         <img
           src={src}
+          srcSet={leadSrc ? `${leadSrc} 640w, ${src} ${width}w` : undefined}
+          sizes={leadSrc ? "100vw" : undefined}
           alt={alt}
           loading="lazy"
           decoding="async"
