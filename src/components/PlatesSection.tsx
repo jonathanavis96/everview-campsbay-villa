@@ -94,8 +94,7 @@ export default function PlatesSection() {
         ))}
 
         <p className="text-body text-ink/80 pt-6 border-t border-line">
-          This is the complete photo set for now — see the brochure below, or
-          enquire for more.
+          This is the complete photo set for now — enquire for more.
         </p>
       </div>
     </section>
