@@ -1,20 +1,18 @@
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import Navigation from "@/components/Navigation";
 import HeroSection from "@/components/HeroSection";
-import HorizonSection from "@/components/HorizonSection";
-import HouseLevelsSection from "@/components/HouseLevelsSection";
-import BedroomsSection from "@/components/BedroomsSection";
-import PowerWaterSection from "@/components/PowerWaterSection";
-import CampsBaySection from "@/components/CampsBaySection";
-import ArrivalSection from "@/components/ArrivalSection";
-import PlatesSection from "@/components/PlatesSection";
-import ReviewsSection from "@/components/ReviewsSection";
-import RateSection from "@/components/RateSection";
-import EnquiryComposer from "@/components/EnquiryComposer";
-import EnquiryBar from "@/components/EnquiryBar";
-import Footer from "@/components/Footer";
 import { RidgelineDivider } from "@/components/Ridgeline";
 import { hasPlaceholderReviews } from "@/lib/reviews";
+
+// Everything below the hero fold is lazy-loaded as one chunk. The initial
+// bundle was 675 KB (278 KB gzip) of JS the browser had to fetch, parse and
+// execute on Slow 4G before React could even mount the hero <img> — that
+// bundle-size-gated mount, not image discovery, was the deployed PSI
+// mobile LCP/FCP deficit (MIS-459). Splitting the below-fold sections out
+// lets the hero paint as soon as the small initial chunk is ready; nothing
+// above the fold moves when the lazy chunk resolves, so this carries no CLS
+// risk.
+const BelowFold = lazy(() => import("@/components/BelowFold"));
 
 // design-direction §14.2's guard: search engines must never index invented
 // testimonial text. Added/removed on mount rather than baked into
@@ -46,28 +44,9 @@ const Index = () => {
       <Navigation />
       <HeroSection />
       <RidgelineDivider from={360} to={560} className="container py-2" />
-      <HorizonSection />
-      <RidgelineDivider from={560} to={760} className="container py-2" />
-      <HouseLevelsSection />
-      <RidgelineDivider from={760} to={960} className="container py-2" />
-      <BedroomsSection />
-      <RidgelineDivider from={960} to={1060} className="container py-2" />
-      <PowerWaterSection />
-      <RidgelineDivider from={1060} to={1140} className="container py-2" />
-      <CampsBaySection />
-      <RidgelineDivider from={1140} to={1160} className="container py-2" />
-      <ArrivalSection />
-      <RidgelineDivider from={1160} to={1180} className="container py-2" />
-      <PlatesSection />
-      <RidgelineDivider from={1180} to={1200} className="container py-2" />
-      <ReviewsSection />
-      <RidgelineDivider from={1200} to={1220} className="container py-2" />
-      <RateSection />
-      <RidgelineDivider from={1220} to={1240} className="container py-2" />
-      <EnquiryComposer />
-      <RidgelineDivider from={1240} to={2400} className="container py-2" />
-      <Footer />
-      <EnquiryBar />
+      <Suspense fallback={null}>
+        <BelowFold />
+      </Suspense>
     </div>
   );
 };
