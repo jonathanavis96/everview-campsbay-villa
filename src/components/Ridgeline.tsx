@@ -70,26 +70,37 @@ export function RidgelineMark({
 }
 
 /**
- * A section divider: a hairline rule with a small Table Mountain glyph set
- * on it.
+ * A section divider: one unbroken hairline that runs in from the left, over
+ * the Table Mountain table, and out to the right.
  *
- * This replaces an earlier idea where each divider drew a different stretch
- * of the skyline path across the full width of the page. It was a nice
- * conceit and it looked like a squiggle: stretched to 1350px, a 200-unit
- * slice of a mountain is just a wobbly line with no readable shape. The
- * mountain reads at small size, in one piece, or not at all — so the rule
- * carries the width and the glyph carries the motif.
+ * It is drawn as three paths sharing endpoints rather than one, because the
+ * three stretches animate at different speeds: the flats draw inwards from
+ * the page edges in 320ms, then the mountain draws left to right over 600ms.
+ * Visually it is a single line — the seams sit exactly on the baseline.
  *
  * `from`/`to` are kept in the signature so callers do not all have to change
  * at once; they are no longer used to pick a stretch of path.
  */
+export const RIDGE_GLYPH_WIDTH = 132;
+export const RIDGE_GLYPH_HEIGHT = 26;
+/** The table itself, lifted out of RIDGELINE_PATH_D and normalised so both
+ *  ends sit exactly on the baseline — the rule runs into the mountain and
+ *  out the other side as one unbroken line. */
+export const RIDGE_GLYPH_PATH_D =
+  "M0.0,26.0 L4.8,25.2 L13.0,20.1 L17.9,11.9 L28.0,6.4 L31.4,0.0 L39.6,0.9 L42.2,4.3 L44.9,1.7 L52.4,0.0 L101.8,1.7 L103.6,6.0 L112.2,9.8 L115.2,16.3 L117.8,17.5 L124.5,24.4 L132.0,26.0";
+
 export function RidgelineDivider({ className = "" }: { from?: number; to?: number; className?: string }) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(false);
+  const [width, setWidth] = useState(0);
 
   useEffect(() => {
     const el = wrapperRef.current;
     if (!el) return;
+    const measure = () => setWidth(el.getBoundingClientRect().width);
+    measure();
+    const resize = new ResizeObserver(measure);
+    resize.observe(el);
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -100,40 +111,59 @@ export function RidgelineDivider({ className = "" }: { from?: number; to?: numbe
       { threshold: 0.4 }
     );
     observer.observe(el);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      resize.disconnect();
+    };
   }, []);
+
+  const height = RIDGE_GLYPH_HEIGHT + 8;
+  const baseline = height - 4;
+  const glyphX = Math.max(0, (width - RIDGE_GLYPH_WIDTH) / 2);
+  const glyphEnd = glyphX + RIDGE_GLYPH_WIDTH;
+  const ready = width > 0;
+
+  // pathLength=1 makes every segment animate on the same 0..1 scale whatever
+  // its real length, so the two flats keep the same speed as the viewport
+  // changes width. The flats draw inwards from the outer edges (fast), then
+  // the mountain draws left to right over 0.6s.
+  const flat = (drawn: boolean, reverse: boolean) => ({
+    strokeDasharray: 1,
+    strokeDashoffset: drawn ? 0 : reverse ? -1 : 1,
+    transition: "stroke-dashoffset 320ms cubic-bezier(0.4, 0, 0.2, 1)",
+  });
 
   return (
     <div ref={wrapperRef} className={className} aria-hidden="true">
-      <div className="flex items-center gap-5">
-        <span
-          className="h-px flex-1 bg-line origin-right transition-transform duration-700 ease-out"
-          style={{ transform: inView ? "scaleX(1)" : "scaleX(0)" }}
-        />
-        <svg
-          viewBox="0 20 2400 370"
-          preserveAspectRatio="xMidYMid meet"
-          className="h-4 w-11 shrink-0 text-stone transition-all duration-700 ease-out"
-          style={{
-            opacity: inView ? 1 : 0,
-            transform: inView ? "translateY(0)" : "translateY(6px)",
-            transitionDelay: "160ms",
-          }}
-        >
-          <path
-            d={RIDGELINE_PATH_D}
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={18}
-            strokeLinejoin="round"
-            strokeLinecap="round"
-          />
+      {ready && (
+        <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="block">
+          <g fill="none" stroke="currentColor" strokeWidth={1} strokeLinejoin="round" strokeLinecap="round">
+            <path
+              stroke="#DAD8D2"
+              pathLength={1}
+              d={`M0,${baseline} L${glyphX},${baseline}`}
+              style={flat(inView, false)}
+            />
+            <path
+              stroke="#8C857A"
+              pathLength={1}
+              d={RIDGE_GLYPH_PATH_D}
+              transform={`translate(${glyphX}, 4)`}
+              style={{
+                strokeDasharray: 1,
+                strokeDashoffset: inView ? 0 : 1,
+                transition: "stroke-dashoffset 600ms cubic-bezier(0.33, 0, 0.15, 1) 300ms",
+              }}
+            />
+            <path
+              stroke="#DAD8D2"
+              pathLength={1}
+              d={`M${glyphEnd},${baseline} L${width},${baseline}`}
+              style={flat(inView, true)}
+            />
+          </g>
         </svg>
-        <span
-          className="h-px flex-1 bg-line origin-left transition-transform duration-700 ease-out"
-          style={{ transform: inView ? "scaleX(1)" : "scaleX(0)" }}
-        />
-      </div>
+      )}
     </div>
   );
 }

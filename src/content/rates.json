@@ -2,8 +2,8 @@
   "fxUpdated": "2026-08-24",
   "base": "ZAR",
   "seasonal": {
-    "inSeason": 45000,
-    "outOfSeason": 25000
+    "inSeason": 30000,
+    "outOfSeason": 15000
   },
   "currencies": {
     "USD": { "rate": 0.0546, "symbol": "$" },

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Everview: the divider motif at icon size — a hairline running in from
+       each edge and over the Table Mountain table. Same traced line as the
+       wordmark. Replaces the Lovable default icon. -->
+  <rect width="64" height="64" rx="12" fill="#F4F1EB"/>
+  <g fill="none" stroke="#1B1A17" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M1,42 L6,42"/>
+    <path d="M6.0,42.0 L7.9,41.2 L11.1,36.1 L13.1,27.9 L17.0,22.4 L18.4,16.0 L21.6,16.9 L22.6,20.3 L23.7,17.7 L26.6,16.0 L46.1,17.7 L46.8,22.0 L50.2,25.8 L51.4,32.3 L52.4,33.5 L55.0,40.4 L58.0,42.0"/>
+    <path d="M58,42 L63,42"/>
+  </g>
+</svg>

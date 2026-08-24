@@ -53,7 +53,7 @@ export default function ArrivalSection() {
               {ARRIVAL_TIMES.map((a) => (
                 <div key={a.label} className="flex items-baseline gap-3">
                   <dt className="text-label text-stone-text w-24 shrink-0">{a.label}</dt>
-                  <dd className="text-body text-ink">{a.value}</dd>
+                  <dd className="text-body text-ink/80">{a.value}</dd>
                 </div>
               ))}
             </dl>
