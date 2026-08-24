@@ -11,7 +11,8 @@
 //      the unsized-images CLS risk.
 //
 // Re-run after adding/removing photos under src/assets/everview_photos_webp.
-import { readdir, mkdir, stat, writeFile } from "node:fs/promises";
+import { readdir, mkdir, readFile, stat, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import path from "node:path";
 import sharp from "sharp";
 
@@ -36,6 +37,14 @@ async function* walk(dir) {
 
 async function main() {
   const manifest = {};
+  // The previous manifest carries each photograph's content hash, which is
+  // what tells us whether a derivative is stale.
+  let previous = {};
+  try {
+    previous = JSON.parse(await readFile(MANIFEST_PATH, "utf8"));
+  } catch {
+    previous = {};
+  }
   let count = 0;
 
   for await (const file of walk(SRC_DIR)) {
@@ -53,12 +62,21 @@ async function main() {
     await mkdir(path.dirname(thumbPath), { recursive: true });
     await mkdir(path.dirname(leadPath), { recursive: true });
 
-    const srcStat = await stat(file);
+    // Freshness is decided on the *content* of the original, not on its
+    // modification time. Reordering a folder by renaming files swaps their
+    // contents while carrying the old mtimes along, so an mtime check happily
+    // leaves every derivative pointing at the photograph that used to have
+    // that name — thumbnails that silently show the wrong room (2026-08-24).
+    const srcBytes = await readFile(file);
+    const srcHash = createHash("sha1").update(srcBytes).digest("hex").slice(0, 16);
+    const previousHash = previous[slug]?.hash;
+    manifest[slug].hash = srcHash;
 
     async function needsGenerate(outPath) {
+      if (previousHash !== srcHash) return true;
       try {
-        const outStat = await stat(outPath);
-        return srcStat.mtimeMs > outStat.mtimeMs;
+        await stat(outPath);
+        return false;
       } catch {
         return true;
       }

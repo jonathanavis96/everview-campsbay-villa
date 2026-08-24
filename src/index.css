@@ -312,30 +312,15 @@
     animation: ev-wave 5s ease-in-out infinite;
   }
 
-  /* A bubble of water climbing the bore and out of shot. */
-  @keyframes ev-rise {
-    0% {
-      transform: translateY(0);
-      opacity: 0;
-    }
-    12% {
-      opacity: 0.55;
-    }
-    88% {
-      opacity: 0.55;
-    }
-    100% {
-      transform: translateY(-96px);
-      opacity: 0;
-    }
-  }
-
-  .ev-rise {
+  /* The droplets carried along the supply path are positioned by
+     <animateMotion>; all CSS has to do is keep them out of sight until the
+     drawing is live. */
+  .ev-carried {
     opacity: 0;
   }
 
-  .is-live .ev-rise {
-    animation: ev-rise 3s linear infinite;
+  .is-live .ev-carried {
+    opacity: 0.9;
   }
 
   /* Each filter stage lighting in turn as the water passes through it. */

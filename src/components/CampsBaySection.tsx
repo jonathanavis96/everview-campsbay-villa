@@ -15,9 +15,13 @@ const MAP_EMBED_SRC =
   "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d361.5336953869003!2d18.3857876684248!3d-33.952026148004215!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f120!3m3!1m2!1s0x1dcc67added5d659%3A0x6777a5740e47b06d!2s14%20Cramond%20Rd%2C%20Camps%20Bay%2C%20Cape%20Town%2C%208040!5e0!3m2!1sen!2sza!4v1756208341188!5m2!1sen!2sza";
 
 // Every place below links to Google Maps directions *from the house*, so the
-// guest gets a live time for the day they are actually travelling. The times
-// printed here are typical off-peak ones and are labelled as approximate:
-// the Waterfront and the airport both double in the afternoon peak.
+// guest gets a live time for the day they are actually travelling.
+//
+// The printed times and distances were read off Google Maps on 2026-08-24 by
+// opening each of these links and taking the fastest route, rather than
+// estimated. Two corrections came out of that: the beach is a 20-minute walk,
+// not eight — the house is well up the slope — and the airport is 25 km, with
+// the drive running to 45 minutes or more in the afternoon peak.
 const HOUSE_ADDRESS = "14 Cramond Road, Camps Bay, Cape Town, 8005";
 
 function directionsTo(destination: string) {
@@ -33,38 +37,38 @@ const DISTANCES = [
   {
     name: "Camps Bay Beach",
     destination: "Camps Bay Beach, Camps Bay, Cape Town",
-    time: "8 min walk",
-    distance: "600 m",
+    time: "4 min drive · 20 min walk",
+    distance: "1.6 km",
   },
   {
     name: "Camps Bay restaurant strip",
-    destination: "Victoria Road, Camps Bay, Cape Town",
-    time: "12 min walk · 3 min drive",
-    distance: "1.0 km",
+    destination: "The Promenade, Victoria Road, Camps Bay, Cape Town",
+    time: "4 min drive · 19 min walk",
+    distance: "1.5 km",
   },
   {
     name: "Table Mountain cable car",
     destination: "Table Mountain Aerial Cableway, Tafelberg Road, Cape Town",
-    time: "12 min drive",
-    distance: "4.5 km",
-  },
-  {
-    name: "V&A Waterfront",
-    destination: "V&A Waterfront, Cape Town",
-    time: "20 min drive",
-    distance: "9 km",
+    time: "8 min drive",
+    distance: "4.2 km",
   },
   {
     name: "Cape Town city centre",
     destination: "Cape Town City Centre, Cape Town",
+    time: "12 min drive",
+    distance: "6.3 km",
+  },
+  {
+    name: "V&A Waterfront",
+    destination: "V&A Waterfront, Cape Town",
     time: "15 min drive",
-    distance: "7 km",
+    distance: "6.9 km",
   },
   {
     name: "Cape Town International",
     destination: "Cape Town International Airport",
-    time: "30 min drive",
-    distance: "26 km",
+    time: "30–45 min drive",
+    distance: "25 km",
   },
 ];
 
@@ -72,32 +76,32 @@ const RESTAURANTS = [
   {
     name: "Camps Bay Retreat",
     destination: "Camps Bay Retreat, 7 Chilworth Road, Camps Bay",
-    note: "3 min drive · 900 m",
+    note: "3 min drive · 1.4 km",
   },
   {
     name: "Codfather Seafood & Sushi",
     destination: "The Codfather Seafood and Sushi, 37 The Drive, Camps Bay",
-    note: "12 min walk · 1.0 km",
+    note: "3 min drive · 1.4 km",
   },
   {
     name: "The Hussar Grill Camps Bay",
     destination: "The Hussar Grill Camps Bay, Victoria Road, Camps Bay",
-    note: "13 min walk · 1.1 km",
+    note: "3 min drive · 1.7 km",
   },
   {
     name: "Paranga Restaurant",
     destination: "Paranga Restaurant, The Promenade, Victoria Road, Camps Bay",
-    note: "14 min walk · 1.2 km",
+    note: "4 min drive · 1.6 km",
   },
   {
     name: "The Roundhouse Restaurant",
     destination: "The Roundhouse Restaurant, Roundhouse Road, Camps Bay",
-    note: "6 min drive · 2.5 km",
+    note: "8 min drive · 3.3 km",
   },
   {
     name: "Azure Restaurant",
     destination: "Azure Restaurant, Twelve Apostles Hotel, Victoria Road, Camps Bay",
-    note: "7 min drive · 3.0 km",
+    note: "9 min drive · 5.6 km",
   },
 ];
 

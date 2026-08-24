@@ -12,6 +12,10 @@
 // spec, which was a single wrapping line under a rule, now stands in that
 // space as a column of facts: the section balances, and the numbers are
 // scannable instead of being read as prose.
+//
+// The facts are set on ink, not on the stone tint they started in: nine short
+// mono lines in a 3.2:1 grey is exactly the contrast failure Lighthouse
+// flags, and Jonathan could not comfortably read them either.
 import Reveal from "@/components/Reveal";
 
 const SPEC = [
@@ -44,7 +48,7 @@ export default function HorizonSection() {
 
           <Reveal delayMs={120} className="md:w-56 md:border-l md:border-line md:pl-8">
             <p className="text-label text-stone-text mb-3">The house</p>
-            <ul className="text-data text-stone-text columns-2 md:columns-1">
+            <ul className="text-data text-ink columns-2 md:columns-1">
               {SPEC.map((item) => (
                 <li key={item} className="py-1">
                   {item}

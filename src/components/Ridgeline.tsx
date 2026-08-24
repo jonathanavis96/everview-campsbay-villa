@@ -71,23 +71,27 @@ export function RidgelineMark({
 
 /**
  * A section divider: one unbroken hairline that runs in from the left, over
- * the Table Mountain table, and out to the right.
+ * the Table Mountain skyline, and out to the right.
+ *
+ * The glyph is the *same path as the wordmark* in the top left of every view
+ * — Devil's Peak, the table, Kloof Nek and Lion's Head — not a table-only
+ * simplification, and it is sized at 17% of the divider's width, the
+ * proportion in Jonathan's reference image.
  *
  * It is drawn as three paths sharing endpoints rather than one, because the
- * three stretches animate at different speeds: the flats draw inwards from
- * the page edges in 320ms, then the mountain draws left to right over 600ms.
- * Visually it is a single line — the seams sit exactly on the baseline.
+ * three stretches animate in sequence and at different speeds: the left flat
+ * draws in 0.4s, then the skyline over 1s, then the right flat in 0.4s — so
+ * the right-hand line cannot appear before the mountain it comes out of.
+ * Nothing starts until the divider is actually in the guest's view.
  *
  * `from`/`to` are kept in the signature so callers do not all have to change
  * at once; they are no longer used to pick a stretch of path.
  */
-export const RIDGE_GLYPH_WIDTH = 132;
-export const RIDGE_GLYPH_HEIGHT = 26;
-/** The table itself, lifted out of RIDGELINE_PATH_D and normalised so both
- *  ends sit exactly on the baseline — the rule runs into the mountain and
- *  out the other side as one unbroken line. */
-export const RIDGE_GLYPH_PATH_D =
-  "M0.0,26.0 L4.8,25.2 L13.0,20.1 L17.9,11.9 L28.0,6.4 L31.4,0.0 L39.6,0.9 L42.2,4.3 L44.9,1.7 L52.4,0.0 L101.8,1.7 L103.6,6.0 L112.2,9.8 L115.2,16.3 L117.8,17.5 L124.5,24.4 L132.0,26.0";
+const GLYPH_WIDTH_FRACTION = 0.17;
+/** The wordmark path, with both ends pulled onto one baseline so the rule
+ *  runs into it and out the other side without a step. */
+const RIDGE_BASELINE = 372;
+const RIDGE_TOP = 40;
 
 export function RidgelineDivider({ className = "" }: { from?: number; to?: number; className?: string }) {
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -108,7 +112,10 @@ export function RidgelineDivider({ className = "" }: { from?: number; to?: numbe
           observer.disconnect();
         }
       },
-      { threshold: 0.4 }
+      // The divider is a few pixels tall, so "half of it" is meaningless as a
+      // trigger; what matters is that it is inside the viewport proper, which
+      // is what a zero root margin and any intersection at all give us.
+      { threshold: 0 }
     );
     observer.observe(el);
     return () => {
@@ -117,20 +124,25 @@ export function RidgelineDivider({ className = "" }: { from?: number; to?: numbe
     };
   }, []);
 
-  const height = RIDGE_GLYPH_HEIGHT + 8;
-  const baseline = height - 4;
-  const glyphX = Math.max(0, (width - RIDGE_GLYPH_WIDTH) / 2);
-  const glyphEnd = glyphX + RIDGE_GLYPH_WIDTH;
+  const glyphWidth = Math.max(96, width * GLYPH_WIDTH_FRACTION);
+  const scale = glyphWidth / RIDGE_VIEWBOX_WIDTH;
+  const glyphHeight = (RIDGE_BASELINE - RIDGE_TOP) * scale;
+  const height = Math.ceil(glyphHeight) + 6;
+  const baseline = height - 3;
+  const glyphX = Math.max(0, (width - glyphWidth) / 2);
+  const glyphEnd = glyphX + glyphWidth;
   const ready = width > 0;
 
-  // pathLength=1 makes every segment animate on the same 0..1 scale whatever
-  // its real length, so the two flats keep the same speed as the viewport
-  // changes width. The flats draw inwards from the outer edges (fast), then
-  // the mountain draws left to right over 0.6s.
-  const flat = (drawn: boolean, reverse: boolean) => ({
+  // The wordmark path, translated and scaled so its two end points land on
+  // the rule's baseline.
+  const glyphTransform = `translate(${glyphX}, ${baseline - RIDGE_BASELINE * scale}) scale(${scale})`;
+
+  // pathLength=1 puts every segment on the same 0..1 scale whatever its real
+  // length, so the flats keep their timing as the viewport changes width.
+  const draw = (durationMs: number, delayMs: number, reverse = false) => ({
     strokeDasharray: 1,
-    strokeDashoffset: drawn ? 0 : reverse ? -1 : 1,
-    transition: "stroke-dashoffset 320ms cubic-bezier(0.4, 0, 0.2, 1)",
+    strokeDashoffset: inView ? 0 : reverse ? -1 : 1,
+    transition: `stroke-dashoffset ${durationMs}ms cubic-bezier(0.33, 0, 0.15, 1) ${delayMs}ms`,
   });
 
   return (
@@ -140,31 +152,31 @@ export function RidgelineDivider({ className = "" }: { from?: number; to?: numbe
           height={height}
           viewBox={`0 0 ${width} ${height}`}
           preserveAspectRatio="none"
-          className="block w-full"
+          className="block w-full text-stone"
         >
-          <g fill="none" stroke="currentColor" strokeWidth={1} strokeLinejoin="round" strokeLinecap="round">
+          <g
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={1}
+            strokeLinejoin="round"
+            strokeLinecap="round"
+          >
             <path
-              stroke="#DAD8D2"
               pathLength={1}
               d={`M0,${baseline} L${glyphX},${baseline}`}
-              style={flat(inView, false)}
+              style={draw(400, 0)}
             />
             <path
-              stroke="#8C857A"
               pathLength={1}
-              d={RIDGE_GLYPH_PATH_D}
-              transform={`translate(${glyphX}, 4)`}
-              style={{
-                strokeDasharray: 1,
-                strokeDashoffset: inView ? 0 : 1,
-                transition: "stroke-dashoffset 600ms cubic-bezier(0.33, 0, 0.15, 1) 300ms",
-              }}
+              d={RIDGELINE_PATH_D}
+              transform={glyphTransform}
+              vectorEffect="non-scaling-stroke"
+              style={draw(1000, 400)}
             />
             <path
-              stroke="#DAD8D2"
               pathLength={1}
               d={`M${glyphEnd},${baseline} L${width},${baseline}`}
-              style={flat(inView, true)}
+              style={draw(400, 1400, true)}
             />
           </g>
         </svg>

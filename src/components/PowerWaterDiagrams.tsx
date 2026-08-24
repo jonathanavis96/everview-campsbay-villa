@@ -132,16 +132,24 @@ export function SolarDiagram({ className = "" }: { className?: string }) {
 /**
  * Borehole → filtration → tap.
  *
- * The water reads as water: every moving part of it is on the water blue,
- * never on ink. It climbs the bore, runs the riser and passes through each
- * filter in turn as a marching dashed line, then leaves the *tap* — not the
- * first filter, which is where the drop used to appear — and falls slowly
- * into a glass that is already part full, splashing as it lands on the
- * surface.
+ * The water is one continuous thing. A droplet enters at the water table,
+ * climbs the bore, turns the corner, runs the full length of the riser
+ * *through* all three filter bodies and reaches the tap — one element on one
+ * path, using SVG motion along that path, so it never fades out at the top of
+ * the bore and never reappears a metre further along the top line, which is
+ * what the two separate animations used to do (Jonathan, 2026-08-24).
+ *
+ * From the tap's spout a second droplet falls slowly into a glass that is
+ * already part full, and splashes on the surface. Everything that moves is on
+ * the water blue; nothing that moves is on ink.
  */
 export function BoreholeDiagram({ className = "" }: { className?: string }) {
   const { ref, inView } = useInView<HTMLDivElement>();
   const WATER = "var(--water)";
+
+  // The one path the water takes: up out of the water table, along the riser,
+  // through every filter body, to the back of the tap.
+  const SUPPLY_PATH = "M72 146 L72 52 L254 52";
 
   return (
     <div ref={ref} className={className}>
@@ -183,23 +191,7 @@ export function BoreholeDiagram({ className = "" }: { className?: string }) {
           opacity="0.6"
         />
 
-        {/* Water climbing the bore */}
-        {[0, 1, 2].map((i) => (
-          <circle
-            key={i}
-            className="ev-rise"
-            cx="72"
-            cy="146"
-            r="2.5"
-            fill={WATER}
-            style={{ animationDelay: `${i * 1000}ms` }}
-          />
-        ))}
-
-        {/* Riser: out of the ground, along the top, through all three filter
-            bodies and on to the tap. Drawn as one path in ink, with the same
-            path repeated in water blue on top as a marching dashed line, so
-            the flow is visibly the same water the whole way. */}
+        {/* The riser, in ink, with the supply drawn over it in water blue */}
         <path
           d="M72 76 L72 52 L254 52"
           fill="none"
@@ -210,13 +202,29 @@ export function BoreholeDiagram({ className = "" }: { className?: string }) {
         />
         <path
           className="ev-flow"
-          d="M72 76 L72 52 L254 52"
+          d={SUPPLY_PATH}
           fill="none"
           stroke={WATER}
           strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
+          opacity="0.75"
         />
+
+        {/* Three droplets on that one path, evenly spaced along the cycle */}
+        {[0, 1, 2].map((i) => (
+          <circle key={i} r="2.6" fill={WATER} className="ev-carried">
+            <animateMotion
+              dur="6s"
+              begin={inView ? `${i * 2}s` : "indefinite"}
+              repeatCount="indefinite"
+              path={SUPPLY_PATH}
+              keyPoints="0;1"
+              keyTimes="0;1"
+              calcMode="linear"
+            />
+          </circle>
+        ))}
 
         {/* Three filtration stages, threaded on the riser */}
         {[0, 1, 2].map((i) => (
@@ -249,7 +257,6 @@ export function BoreholeDiagram({ className = "" }: { className?: string }) {
 
         {/* Glass, already part full */}
         <path
-          className="ev-glass-water"
           d="M269.6 126 L294.4 126 L293 144 L271 144 Z"
           fill={WATER}
           opacity="0.28"
@@ -263,8 +270,7 @@ export function BoreholeDiagram({ className = "" }: { className?: string }) {
           opacity="0.55"
         />
 
-        {/* The drop: leaves the tap's spout and falls the 48 units to the
-            water surface at y=126. Two of them, half a cycle apart. */}
+        {/* The drop: leaves the spout and falls to the surface at y=126 */}
         {[0, 1].map((i) => (
           <ellipse
             key={i}
@@ -278,31 +284,12 @@ export function BoreholeDiagram({ className = "" }: { className?: string }) {
           />
         ))}
 
-        {/* The splash, on the surface, timed to the moment the drop lands */}
+        {/* The splash, timed to the moment the drop lands */}
         {[0, 1].map((i) => (
           <g key={i} className="ev-splash" style={{ animationDelay: `${i * 1900 + 1750}ms` }}>
-            <path
-              d="M275 126 q 3 -6 5 -1"
-              fill="none"
-              stroke={WATER}
-              strokeWidth="1.25"
-              strokeLinecap="round"
-            />
-            <path
-              d="M289 126 q -3 -6 -5 -1"
-              fill="none"
-              stroke={WATER}
-              strokeWidth="1.25"
-              strokeLinecap="round"
-            />
-            <path
-              className="ev-ripple"
-              d="M273 126 q 9 5 18 0"
-              fill="none"
-              stroke={WATER}
-              strokeWidth="1"
-              strokeLinecap="round"
-            />
+            <path d="M275 126 q 3 -6 5 -1" fill="none" stroke={WATER} strokeWidth="1.25" strokeLinecap="round" />
+            <path d="M289 126 q -3 -6 -5 -1" fill="none" stroke={WATER} strokeWidth="1.25" strokeLinecap="round" />
+            <path d="M273 126 q 9 5 18 0" fill="none" stroke={WATER} strokeWidth="1" strokeLinecap="round" />
           </g>
         ))}
       </svg>
