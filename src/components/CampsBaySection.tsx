@@ -270,6 +270,13 @@ export default function CampsBaySection() {
 
             <div>
               <h3 className="text-display-m text-ink mb-4">Restaurants nearby</h3>
+              {/* A note of the same shape as the one under "Getting around",
+                  so the two lists start on the same line rather than one
+                  sitting two lines above the other. */}
+              <p className="text-body text-ink/60 mb-4">
+                Drive times are off-peak; tap a name for live directions from
+                the house.
+              </p>
               <ul className="text-body text-ink/80 space-y-2">
                 {RESTAURANTS.map((r) => (
                   <li

@@ -55,33 +55,41 @@ export default function ArrivalSection() {
         <p className="text-label text-stone-text mb-4">Arrival</p>
 
         <div className="border-t border-line pt-8 md:pt-12">
-          <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_auto] md:items-start md:gap-16">
-            <Reveal className="max-w-2xl">
-              <h2 className="text-display-l text-ink mb-4">A well-run house</h2>
-              <p className="text-lede text-ink">
-                Someone looks after this house every day, and it shows in the
-                small things: the beds turned down, the lift working through a
-                power cut, the alarm already set up for you when you walk in.
-              </p>
-            </Reveal>
+          <Reveal className="max-w-3xl">
+            <h2 className="text-display-l text-ink mb-4">A well-run house</h2>
+            <p className="text-lede text-ink">
+              Someone looks after this house every day, and it shows in the
+              small things: the beds turned down, the lift working through a
+              power cut, the alarm already set up for you when you walk in.
+            </p>
+          </Reveal>
 
-            <Reveal delayMs={100} className="md:w-64 md:border-l md:border-line md:pl-8">
-              <dl className="space-y-3">
-                {ARRIVAL_TIMES.map((a) => (
-                  <div key={a.label}>
-                    <dt className="text-label text-stone-text mb-1">{a.label}</dt>
-                    <dd className="text-body text-ink/80">{a.value}</dd>
-                  </div>
-                ))}
-              </dl>
-            </Reveal>
-          </div>
+          {/* The three times used to sit in a narrow rail at the far right,
+              which left a third of the row empty between them and the lede and
+              wrapped "Arrange with the property manager" onto two lines. They
+              run the full width now, three across on one rule, so each value
+              has the room to sit on a single line. */}
+          <Reveal delayMs={100} as="div" className="mt-8 border-t border-line pt-6 md:mt-10">
+            <dl className="grid gap-6 sm:grid-cols-3 md:gap-12">
+              {ARRIVAL_TIMES.map((a) => (
+                <div key={a.label}>
+                  <dt className="text-label text-stone-text mb-1">{a.label}</dt>
+                  <dd className="text-body text-ink/80">{a.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </Reveal>
 
           <Reveal as="div" className="mt-10 grid gap-8 md:grid-cols-2 md:gap-12">
             <div>
-              <ul className="grid gap-x-8 gap-y-5 sm:grid-cols-2">
+              {/* Headed and hairline-separated, like the house rules opposite:
+                  the four facts used to float under nothing while the column
+                  beside them carried a heading, which is most of why the row
+                  looked unfinished. */}
+              <h3 className="text-display-m text-ink mb-4">How the house runs</h3>
+              <ul className="grid gap-x-8 sm:grid-cols-2">
                 {HOW_IT_RUNS.map((item) => (
-                  <li key={item.heading}>
+                  <li key={item.heading} className="border-t border-line pb-4 pt-3">
                     <h3 className="text-label text-stone-text mb-1">{item.heading}</h3>
                     <p className="text-body text-ink/80">{item.body}</p>
                   </li>
@@ -92,24 +100,17 @@ export default function ArrivalSection() {
                 href={BROCHURE_HREF}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-8 inline-flex items-center gap-3 border border-ink px-6 py-3 text-label text-ink transition-colors hover:bg-ink hover:text-paper"
+                className="mt-6 inline-flex items-center gap-3 border border-ink px-6 py-3 text-label text-ink transition-colors hover:bg-ink hover:text-paper"
               >
                 Read the welcome brochure
               </a>
-              <p className="text-caption text-stone-text mt-3">
-                The lift, the AV system, the music, the emergency numbers — all
-                of it, and a printed copy waits in the house.
-              </p>
             </div>
 
             <div>
               <h3 className="text-display-m text-ink mb-4">House rules</h3>
-              <ul className="text-body text-ink/80 space-y-2">
+              <ul className="text-body text-ink/80 space-y-2 pb-1">
                 {HOUSE_RULES.map((rule) => (
-                  <li
-                    key={rule}
-                    className="border-t border-line pt-2 first:border-t-0 first:pt-0"
-                  >
+                  <li key={rule} className="border-t border-line pt-2">
                     {rule}
                   </li>
                 ))}

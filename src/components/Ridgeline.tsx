@@ -79,15 +79,45 @@ export function RidgelineMark({
  * proportion in Jonathan's reference image.
  *
  * It is drawn as three paths sharing endpoints rather than one, because the
- * three stretches animate in sequence and at different speeds: the left flat
- * draws in 0.4s, then the skyline over 1s, then the right flat in 0.4s — so
- * the right-hand line cannot appear before the mountain it comes out of.
- * Nothing starts until the divider is actually in the guest's view.
+ * three stretches animate in sequence and at different speeds — see
+ * DIVIDER_SPEED below for the timing and how to change it. The right-hand
+ * line cannot appear before the mountain it comes out of, and nothing starts
+ * until the divider is actually in the guest's view.
  *
  * `from`/`to` are kept in the signature so callers do not all have to change
  * at once; they are no longer used to pick a stretch of path.
  */
 const GLYPH_WIDTH_FRACTION = 0.17;
+
+/* ── The divider's timing ───────────────────────────────────────────────────
+ *
+ * Two dials, and nothing else needs touching. Every duration and every delay
+ * is derived from them, so the three stretches stay one continuous streak
+ * whatever they are set to.
+ *
+ *   DIVIDER_SPEED   the whole thing. 1 is the reference drawing — 0.4s in,
+ *                   1s over the skyline, 0.4s out, 1.8s in all. 2 is twice as
+ *                   fast, 3 three times, 0.5 half.
+ *   SKYLINE_SPEED   the middle, on top of DIVIDER_SPEED. 1 leaves the skyline
+ *                   at its reference second; 3 draws it three times faster
+ *                   again while the flats keep whatever DIVIDER_SPEED gave
+ *                   them.
+ *
+ * So "twice as fast overall, and the middle three times faster than that" is
+ * DIVIDER_SPEED = 2, SKYLINE_SPEED = 3.
+ */
+export const DIVIDER_SPEED = 2;
+export const SKYLINE_SPEED = 1;
+
+/** The reference drawing, at DIVIDER_SPEED = SKYLINE_SPEED = 1. */
+const FLAT_REFERENCE_MS = 400;
+const SKYLINE_REFERENCE_MS = 1000;
+
+const FLAT_MS = FLAT_REFERENCE_MS / DIVIDER_SPEED;
+const SKYLINE_MS = SKYLINE_REFERENCE_MS / (DIVIDER_SPEED * SKYLINE_SPEED);
+/** Each stretch begins on the frame the one before it ends. */
+const SKYLINE_DELAY_MS = FLAT_MS;
+const RIGHT_FLAT_DELAY_MS = FLAT_MS + SKYLINE_MS;
 /**
  * The wordmark path with its right-hand end pulled the last four units down
  * onto the same y as its left-hand end. Without it the skyline finishes at
@@ -171,7 +201,7 @@ export function RidgelineDivider({ className = "" }: { from?: number; to?: numbe
             <path
               pathLength={1}
               d={`M0,${baseline} L${glyphX},${baseline}`}
-              style={draw(400, 0)}
+              style={draw(FLAT_MS, 0)}
             />
             {/* No `vector-effect: non-scaling-stroke` here, and this is not a
                 style choice. With it, Chrome resolves the dash pattern in
@@ -190,12 +220,12 @@ export function RidgelineDivider({ className = "" }: { from?: number; to?: numbe
               d={RIDGELINE_PATH_D_LEVEL}
               transform={glyphTransform}
               strokeWidth={1 / scale}
-              style={draw(1000, 400)}
+              style={draw(SKYLINE_MS, SKYLINE_DELAY_MS)}
             />
             <path
               pathLength={1}
               d={`M${glyphEnd},${baseline} L${width},${baseline}`}
-              style={draw(400, 1400)}
+              style={draw(FLAT_MS, RIGHT_FLAT_DELAY_MS)}
             />
           </g>
         </svg>
