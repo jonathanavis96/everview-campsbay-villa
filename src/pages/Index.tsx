@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import Navigation from "@/components/Navigation";
 import HeroSection from "@/components/HeroSection";
 import HorizonSection from "@/components/HorizonSection";
@@ -7,14 +8,38 @@ import PowerWaterSection from "@/components/PowerWaterSection";
 import CampsBaySection from "@/components/CampsBaySection";
 import ArrivalSection from "@/components/ArrivalSection";
 import PlatesSection from "@/components/PlatesSection";
+import ReviewsSection from "@/components/ReviewsSection";
 import EnquiryComposer from "@/components/EnquiryComposer";
 import EnquiryBar from "@/components/EnquiryBar";
 import Footer from "@/components/Footer";
 import { RidgelineDivider } from "@/components/Ridgeline";
+import { hasPlaceholderReviews } from "@/lib/reviews";
+
+// design-direction §14.2's guard: search engines must never index invented
+// testimonial text. Added/removed on mount rather than baked into
+// index.html because the placeholder state is data-driven (src/content/
+// reviews.json), and this is a static client-rendered build with no server
+// step to branch the HTML on.
+function useNoindexWhilePlaceholderReviews() {
+  useEffect(() => {
+    if (!hasPlaceholderReviews) return;
+
+    const meta = document.createElement("meta");
+    meta.name = "robots";
+    meta.content = "noindex";
+    document.head.appendChild(meta);
+
+    return () => {
+      document.head.removeChild(meta);
+    };
+  }, []);
+}
 
 // The 0–360 range belongs to the wordmark (Ridgeline.tsx), so section
 // dividers start at 360.
 const Index = () => {
+  useNoindexWhilePlaceholderReviews();
+
   return (
     <div className="min-h-screen bg-paper">
       <Navigation />
@@ -34,8 +59,10 @@ const Index = () => {
       <RidgelineDivider from={1160} to={1180} className="container py-2" />
       <PlatesSection />
       <RidgelineDivider from={1180} to={1200} className="container py-2" />
+      <ReviewsSection />
+      <RidgelineDivider from={1200} to={1220} className="container py-2" />
       <EnquiryComposer />
-      <RidgelineDivider from={1200} to={2400} className="container py-2" />
+      <RidgelineDivider from={1220} to={2400} className="container py-2" />
       <Footer />
       <EnquiryBar />
     </div>
