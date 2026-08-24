@@ -84,16 +84,6 @@ function FloorPlan({ floor }: { floor: Floor }) {
         role="img"
         aria-label={`Simplified plan of the ${floor.label.toLowerCase()} at Everview`}
       >
-        {/* The ocean side, marked so the plan orients itself without a key. */}
-        <g className="ev-plan-edge" opacity="0.6">
-          <line x1="10" y1="46" x2="10" y2="420" stroke="currentColor" strokeWidth="1" />
-          <line x1="10" y1="46" x2="16" y2="52" stroke="currentColor" strokeWidth="1" />
-          <line x1="10" y1="46" x2="4" y2="52" stroke="currentColor" strokeWidth="1" />
-          <text x="0" y="24" className="ev-room-area" textAnchor="start">
-            Atlantic, this way
-          </text>
-        </g>
-
         {/* 1 — the floor itself, and the wash under whichever room is live. */}
         <g>
           {floor.rooms.map((room) => (
@@ -251,18 +241,6 @@ function FloorPlan({ floor }: { floor: Floor }) {
       </svg>
       </div>
 
-      {/* One live line under the plan, so a tap on a phone says something. */}
-      <p className="text-body text-ink/70 mt-3 min-h-[1.6em]" aria-live="polite">
-        {hovered ? (
-          <>
-            <span className="text-ink">{hovered.name}</span>
-            {hovered.area ? ` · ${hovered.area} m²` : ""}
-            {hovered.planName ? ` · \u201c${hovered.planName}\u201d on the architect's drawing` : ""}
-          </>
-        ) : (
-          "Hover or tap a room."
-        )}
-      </p>
     </div>
   );
 }
@@ -280,7 +258,14 @@ export default function FloorPlanSection() {
           <Reveal>
             <h2 className="text-display-l text-ink mb-4">How the house is laid out</h2>
 
-            <div className="flex gap-2 mb-4" role="tablist" aria-label="Floor">
+            {/* One bordered group with the live level filled: two outlined
+                words read as decoration, and Jonathan watched people miss
+                that the plan had a second floor at all. */}
+            <div
+              className="mb-6 inline-flex overflow-hidden rounded-sm border border-ink"
+              role="tablist"
+              aria-label="Floor"
+            >
               {FLOORS.map((f) => (
                 <button
                   key={f.id}
@@ -288,10 +273,10 @@ export default function FloorPlanSection() {
                   role="tab"
                   aria-selected={f.id === floorId}
                   onClick={() => setFloorId(f.id)}
-                  className={`text-label px-4 py-2 border transition-colors ${
+                  className={`text-label px-5 py-3 transition-colors ${
                     f.id === floorId
-                      ? "border-ink text-ink"
-                      : "border-line text-stone-text hover:text-ink"
+                      ? "bg-ink text-paper"
+                      : "bg-paper text-stone-text hover:bg-ink/5 hover:text-ink"
                   }`}
                 >
                   {f.label}
@@ -306,12 +291,6 @@ export default function FloorPlanSection() {
             <FloorPlan key={floor.id} floor={floor} />
           </Reveal>
 
-          <p className="text-body text-ink/60 mt-6 max-w-2xl">
-            Redrawn from the architect's working drawings. Proportions and
-            adjoining rooms are true to them; the areas are the ones printed on
-            the drawing. It is here to understand the house by, not to build
-            from.
-          </p>
         </div>
       </div>
     </section>

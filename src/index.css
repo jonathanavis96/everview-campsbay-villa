@@ -141,6 +141,18 @@
     letter-spacing: 0.02em;
   }
 
+  /* The spec facts beside the opening paragraph. Mono at 14px was too quiet
+     against a lede that runs to 28px — Jonathan asked for "about half to
+     two-thirds" of it, drawn from his own mockup. 16px sits at 57% of the
+     lede at its widest and stays a quiet register. */
+  .text-data-l {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.75;
+    letter-spacing: 0.02em;
+  }
+
   .text-caption {
     font-family: "IBM Plex Mono", ui-monospace, monospace;
     font-weight: 400;
@@ -420,4 +432,23 @@
       font-size: 9px;
     }
   }
+}
+
+/* The Atlantic band's swells. Each path is drawn two tiles wide and slid one
+   tile to the left, so the loop closes on itself with no visible snap. The
+   duration is set per swell in `Atlantic.tsx`, which is what makes the three
+   lines read as depth rather than as one shape. */
+@keyframes ev-swell-drift {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-600px);
+  }
+}
+
+.ev-swell {
+  animation-name: ev-swell-drift;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
 }

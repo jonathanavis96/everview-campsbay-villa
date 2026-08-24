@@ -1,7 +1,6 @@
 import { useEffect, lazy, Suspense } from "react";
 import Navigation from "@/components/Navigation";
 import HeroSection from "@/components/HeroSection";
-import { RidgelineDivider } from "@/components/Ridgeline";
 import { hasPlaceholderReviews } from "@/lib/reviews";
 
 // Everything below the hero fold is lazy-loaded as one chunk. The initial
@@ -40,8 +39,10 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-paper">
       <Navigation />
+      {/* No divider under the hero: the photograph runs straight into the
+          opening paragraph, and the ridgeline is already in the wordmark
+          above it. */}
       <HeroSection />
-      <RidgelineDivider className="container py-2" />
       <Suspense fallback={null}>
         <BelowFold />
       </Suspense>
