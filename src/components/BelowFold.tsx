@@ -2,6 +2,8 @@ import type { ComponentType } from "react";
 import HorizonSection from "@/components/HorizonSection";
 import HouseLevelsSection from "@/components/HouseLevelsSection";
 import BedroomsSection from "@/components/BedroomsSection";
+import FloorPlanSection from "@/components/FloorPlanSection";
+import { BeachBand, SunsetBand } from "@/components/Bands";
 import PowerWaterSection from "@/components/PowerWaterSection";
 import CampsBaySection from "@/components/CampsBaySection";
 import ArrivalSection from "@/components/ArrivalSection";
@@ -29,11 +31,14 @@ import { RidgelineDivider } from "@/components/Ridgeline";
  */
 const SECTIONS: Array<[string, ComponentType]> = [
   ["horizon", HorizonSection],
+  ["beach-band", BeachBand],
   ["house", HouseLevelsSection],
   ["bedrooms", BedroomsSection],
+  ["plans", FloorPlanSection],
   ["camps-bay", CampsBaySection],
   ["power-water", PowerWaterSection],
   ["reviews", ReviewsSection],
+  ["sunset-band", SunsetBand],
   ["rates", RateSection],
   ["arrival", ArrivalSection],
   ["enquire", EnquiryComposer],
