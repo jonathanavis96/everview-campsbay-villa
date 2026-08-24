@@ -173,11 +173,23 @@ export function RidgelineDivider({ className = "" }: { from?: number; to?: numbe
               d={`M0,${baseline} L${glyphX},${baseline}`}
               style={draw(400, 0)}
             />
+            {/* No `vector-effect: non-scaling-stroke` here, and this is not a
+                style choice. With it, Chrome resolves the dash pattern in
+                screen space while `pathLength` normalises the path in user
+                space, and the two disagree so completely that the whole
+                skyline renders as drawn on the first frame of its transition
+                and then sits still for the remaining ~990ms — the line
+                "draws to the right side of the mountain, stops, then the
+                other line draws" (Jonathan, 2026-08-24). Measured: pen at
+                791px from t=500ms through t=1395ms while the dash offset ran
+                0.9 to 0.005. The hairline is kept by dividing the stroke
+                width by the glyph's scale instead, which leaves the dash
+                pattern in the user space `pathLength` normalises. */}
             <path
               pathLength={1}
               d={RIDGELINE_PATH_D_LEVEL}
               transform={glyphTransform}
-              vectorEffect="non-scaling-stroke"
+              strokeWidth={1 / scale}
               style={draw(1000, 400)}
             />
             <path
