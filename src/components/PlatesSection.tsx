@@ -37,6 +37,12 @@ export default function PlatesSection() {
 
   const all = useMemo(() => loadAndResolveAll("gallery"), []);
 
+  const indexBySrc = useMemo(() => {
+    const m = new Map<string, number>();
+    all.forEach((p, i) => m.set(p.src, i));
+    return m;
+  }, [all]);
+
   const groups = useMemo(() => {
     const byFolder = new Map<string, typeof all>();
     for (const p of all) {
@@ -62,7 +68,7 @@ export default function PlatesSection() {
             <h3 className="text-display-m text-ink mb-4">{labelFor(folder)}</h3>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
               {photos.map((p) => {
-                const globalIndex = all.indexOf(p);
+                const globalIndex = indexBySrc.get(p.src) ?? 0;
                 return (
                   <button
                     key={p.src}
