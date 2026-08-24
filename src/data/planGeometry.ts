@@ -67,6 +67,22 @@ function subtract(spans: Span[], cut: Span): Span[] {
   return out.filter(([a, b]) => b - a > TOL);
 }
 
+/**
+ * How many doors a room may have.
+ *
+ * A bathroom has one door. So does a closet, a dressing room and a scullery —
+ * a room you go into and come back out of. Circulation is the opposite: a
+ * corridor, a stair or a landing exists to be walked through, so it takes as
+ * many as it touches. Everything else takes two, which is what a through room
+ * in this house actually has.
+ */
+function doorLimit(room: Room): number {
+  const label = `${room.name} ${room.planName ?? ""}`;
+  if (/bath|closet|dressing|toilet|wc|pantry|scullery/i.test(label)) return 1;
+  if (room.service || /corridor|stair|landing|entrance|hall/i.test(label)) return 4;
+  return 2;
+}
+
 /** A leaf cannot swing further than the shallower of the two rooms it serves. */
 function doorWidth(span: Span, depth: number): number {
   return Math.min(DOOR_W, (span[1] - span[0]) * 0.6, depth * 0.45);
@@ -111,7 +127,25 @@ export function floorGeometry(floor: Floor): FloorGeometry {
     );
   }
 
-  // Doors, one per pair of rooms that share a long enough wall.
+  // Doors. Every pair of rooms sharing a long enough wall is a *candidate*,
+  // not a door: taking them all gave a bathroom four doors, one to each
+  // neighbour it happened to touch (Jonathan, 2026-08-24). A room gets as
+  // many doors as its use allows — one for a bathroom or a closet, more for
+  // circulation — and the widest shared walls win, since that is where a
+  // door actually goes. A room with candidates always keeps at least one,
+  // so nothing on the plan is drawn as unreachable.
+  type Candidate = {
+    a: Room;
+    b: Room;
+    axis: "v" | "h";
+    at: number;
+    lo: number;
+    hi: number;
+    depth: number;
+    into: 1 | -1;
+  };
+  const candidates: Candidate[] = [];
+
   for (let i = 0; i < indoor.length; i += 1) {
     for (let j = i + 1; j < indoor.length; j += 1) {
       const a = indoor[i];
@@ -127,24 +161,83 @@ export function floorGeometry(floor: Floor): FloorGeometry {
       // TOL on both at once — the editor lets rooms overlap, it only warns —
       // and an `else if` there would drop a perfectly good door on the second
       // axis whenever the first one's shared stretch came up short.
-      if (meetsV !== null && Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y) >= MIN_DOOR_SPAN) {
+      if (meetsV !== null) {
         const lo = Math.max(a.y, b.y);
         const hi = Math.min(a.y + a.h, b.y + b.h);
-        const [from, to] = centred([lo, hi], doorWidth([lo, hi], Math.min(a.w, b.w)));
-        // Into the larger room, which is the one with space for the leaf.
-        const left = a.x < b.x ? a : b;
-        const right = left === a ? b : a;
-        openings.push({ kind: "door", axis: "v", at: meetsV, from, to, into: area(right) >= area(left) ? 1 : -1 });
+        if (hi - lo >= MIN_DOOR_SPAN) {
+          // The leaf opens into the larger room, which is the one with space
+          // for it.
+          const left = a.x < b.x ? a : b;
+          const right = left === a ? b : a;
+          candidates.push({
+            a, b, axis: "v", at: meetsV, lo, hi,
+            depth: Math.min(a.w, b.w),
+            into: area(right) >= area(left) ? 1 : -1,
+          });
+        }
       }
-      if (meetsH !== null && Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x) >= MIN_DOOR_SPAN) {
+      if (meetsH !== null) {
         const lo = Math.max(a.x, b.x);
         const hi = Math.min(a.x + a.w, b.x + b.w);
-        const [from, to] = centred([lo, hi], doorWidth([lo, hi], Math.min(a.h, b.h)));
-        const top = a.y < b.y ? a : b;
-        const bottom = top === a ? b : a;
-        openings.push({ kind: "door", axis: "h", at: meetsH, from, to, into: area(bottom) >= area(top) ? 1 : -1 });
+        if (hi - lo >= MIN_DOOR_SPAN) {
+          const top = a.y < b.y ? a : b;
+          const bottom = top === a ? b : a;
+          candidates.push({
+            a, b, axis: "h", at: meetsH, lo, hi,
+            depth: Math.min(a.h, b.h),
+            into: area(bottom) >= area(top) ? 1 : -1,
+          });
+        }
       }
     }
+  }
+
+  // Through rooms first, then the widest shared wall. A door belongs on the
+  // wall two rooms actually share most of rather than the corner they clip —
+  // but a stretch of wall shared with a bathroom is the last place to put
+  // one, however wide it is, or the master bedroom ends up entered through
+  // the en-suite.
+  const rank = (c: Candidate) => (doorLimit(c.a) === 1 ? 1 : 0) + (doorLimit(c.b) === 1 ? 1 : 0);
+  candidates.sort((p, q) => rank(p) - rank(q) || q.hi - q.lo - (p.hi - p.lo));
+
+  const doors = new Map<Room, number>();
+  const taken = new Set<Candidate>();
+  const accept = (c: Candidate) => {
+    taken.add(c);
+    doors.set(c.a, (doors.get(c.a) ?? 0) + 1);
+    doors.set(c.b, (doors.get(c.b) ?? 0) + 1);
+  };
+
+  for (const c of candidates) {
+    if ((doors.get(c.a) ?? 0) >= doorLimit(c.a) || (doors.get(c.b) ?? 0) >= doorLimit(c.b)) continue;
+    accept(c);
+  }
+  // A room the caps shut out entirely still needs its way in, and may take a
+  // neighbour one door over its limit to get it — but never a bathroom or a
+  // closet, which have their one door already and are not a way through.
+  for (const room of indoor) {
+    if (!walkable(room) || (doors.get(room) ?? 0) > 0) continue;
+    const best = candidates.find((c) => {
+      if (taken.has(c) || (c.a !== room && c.b !== room)) return false;
+      const other = c.a === room ? c.b : c.a;
+      return doorLimit(other) > 1;
+    });
+    if (best) accept(best);
+  }
+  // Last resort: a room whose only neighbour is a bathroom or a closet takes
+  // that door anyway. An en-suite reached through the dressing room is how
+  // this house is actually arranged, and a room with no door at all reads as
+  // a mistake in the drawing.
+  for (const room of indoor) {
+    if (!walkable(room) || (doors.get(room) ?? 0) > 0) continue;
+    const best = candidates.find((c) => !taken.has(c) && (c.a === room || c.b === room));
+    if (best) accept(best);
+  }
+
+  for (const c of candidates) {
+    if (!taken.has(c)) continue;
+    const [from, to] = centred([c.lo, c.hi], doorWidth([c.lo, c.hi], c.depth));
+    openings.push({ kind: "door", axis: c.axis, at: c.at, from, to, into: c.into });
   }
 
   // Windows, one in the longest outward stretch of each side.
