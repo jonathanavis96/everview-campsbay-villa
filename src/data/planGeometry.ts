@@ -123,19 +123,22 @@ export function floorGeometry(floor: Floor): FloorGeometry {
       const meetsH =
         Math.abs(a.y + a.h - b.y) <= TOL ? a.y + a.h : Math.abs(b.y + b.h - a.y) <= TOL ? b.y + b.h : null;
 
-      if (meetsV !== null) {
+      // Both axes are tested, not one or the other: two rooms can be within
+      // TOL on both at once — the editor lets rooms overlap, it only warns —
+      // and an `else if` there would drop a perfectly good door on the second
+      // axis whenever the first one's shared stretch came up short.
+      if (meetsV !== null && Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y) >= MIN_DOOR_SPAN) {
         const lo = Math.max(a.y, b.y);
         const hi = Math.min(a.y + a.h, b.y + b.h);
-        if (hi - lo < MIN_DOOR_SPAN) continue;
         const [from, to] = centred([lo, hi], doorWidth([lo, hi], Math.min(a.w, b.w)));
         // Into the larger room, which is the one with space for the leaf.
         const left = a.x < b.x ? a : b;
         const right = left === a ? b : a;
         openings.push({ kind: "door", axis: "v", at: meetsV, from, to, into: area(right) >= area(left) ? 1 : -1 });
-      } else if (meetsH !== null) {
+      }
+      if (meetsH !== null && Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x) >= MIN_DOOR_SPAN) {
         const lo = Math.max(a.x, b.x);
         const hi = Math.min(a.x + a.w, b.x + b.w);
-        if (hi - lo < MIN_DOOR_SPAN) continue;
         const [from, to] = centred([lo, hi], doorWidth([lo, hi], Math.min(a.h, b.h)));
         const top = a.y < b.y ? a : b;
         const bottom = top === a ? b : a;
