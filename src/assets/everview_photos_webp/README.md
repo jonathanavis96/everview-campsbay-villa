@@ -1,59 +1,59 @@
-# Photographs — where a file sits decides where it appears
+# Photographs
 
-The folder tree mirrors the house. Nothing on the site matches keywords
-against filenames any more: a photograph appears in a section because it sits
-in that section's folder, and nowhere else. Moving a file is the whole
-editing interface.
+**Where a file sits decides where it appears on the site.** There is no
+filename keyword-matching anywhere in the code any more — a photograph shows
+up under "The kitchen" because it is in `living-level/kitchen/`, and for no
+other reason. To move a photograph from one part of the page to another, move
+the file.
+
+## Naming
 
 ```
-everview_photos_webp/
-  bedroom-level/            <- loose files here: "More of the bedroom level"
-    master-suite/           <- Master Suite spread
-    ocean-king/             <- Ocean King spread
-    garden-king/            <- Garden King spread
-    bathrooms/              <- The bathrooms spread
-    pool-room/              <- Pool room (billiards, media corner)
-    study/                  <- The study
-  living-level/
-    kitchen/
-    indoor-dining/
-    living-room/
-    bar-and-cellar/
-    terrace/                <- the covered front patio
-    ground-king/            <- Ground Floor King spread
-  garden-level/
-    pool/
-    garden/
-  exterior/                 <- the house from outside
-  views/
+{order}-{floor}-{roomName}.webp
 ```
 
-Every photograph, wherever it sits, is also published in "The plates" index at
-the foot of the page, grouped by its folder.
+- `{order}` — the position the photo takes within its folder, `1` first. It is
+  a display order, not a floor number.
+- `{floor}` — `bedroom`, `living`, `garden`, `exterior`, `view`.
+- `{roomName}` — camelCase when it is more than one word: `masterSuite`,
+  `indoorDining`, `formalLivingRoom`.
 
-## Adding, moving or removing a photograph
+Examples: `1-living-kitchen.webp`, `3-bedroom-masterSuite.webp`,
+`2-living-formalLivingRoom.webp`.
 
-1. Put the file in the right folder (or move it between folders).
-2. Run `node scripts/generate-thumbnails.mjs`.
+The filename never reaches the page — it is for you, not for guests. Captions
+come from the component that renders the folder.
 
-That regenerates the 192px and 640px derivatives in
-`everview_photos_webp_thumb/` and `everview_photos_webp_lead/`, which mirror
-this tree exactly, and rewrites `src/utils/photoDimensions.json`. Skipping it
-means a moved photograph loads at full size, or not at all.
+## The tree
 
-## Two rules worth keeping
+```
+bedroom-level/
+  master-suite/     ocean-king/      garden-king/
+  bathrooms/        pool-room/       study/
+  *.webp            loose files here show as "More of the bedroom level"
+living-level/
+  kitchen/          indoor-dining/   formal-living-room/
+  outside-lounge/   sunbeds/         wine-cellar/
+  terrace/          ground-king/
+garden-level/
+  pool/             garden/
+exterior/
+views/
+```
 
-**Filenames never reach the page.** They are internal. The site identifies
-photographs by their group and a plate number, so a file called
-`covered-patio-dining-sea.webp` is fine as a filename and never appears as a
-caption.
+A folder with no files in it renders nothing — no empty carousel, no gap. A
+folder that does not exist at all (e.g. `entrance/`) renders its copy without
+photographs, which is deliberate.
 
-**A folder with no photographs shows no photographs.** A space with an empty
-folder renders as a line of text under its level. It must never borrow a
-frame from another folder to fill the gap.
+## After moving or adding a file
 
-## Creating a new space
+```sh
+node scripts/generate-thumbnails.mjs
+```
 
-Add the folder here, then add one line naming it in
-`src/components/HouseLevelsSection.tsx` — the folder path, the name guests
-see, and a sentence of copy.
+Run it from the repository root. It writes the `_thumb` (192px) and `_lead`
+(640px) derivatives beside each photo and rebuilds
+`src/utils/photoDimensions.json`, which is what stops the page reflowing while
+images load. **A photo without derivatives will still display, but it will
+ship the full-size file to a phone.** Commit the derivatives along with the
+photo.

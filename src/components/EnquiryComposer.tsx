@@ -85,7 +85,7 @@ export default function EnquiryComposer() {
                   type="date"
                   value={fields.arriving}
                   onChange={field("arriving")}
-                  className="w-full border border-line bg-transparent px-3 py-2 text-data rounded-sm focus:border-ink"
+                  className="w-full border border-line bg-transparent px-3 py-2 text-data text-[16px] rounded-sm focus:border-ink"
                 />
               </label>
               <label className="block">
@@ -96,7 +96,7 @@ export default function EnquiryComposer() {
                   type="date"
                   value={fields.leaving}
                   onChange={field("leaving")}
-                  className="w-full border border-line bg-transparent px-3 py-2 text-data rounded-sm focus:border-ink"
+                  className="w-full border border-line bg-transparent px-3 py-2 text-data text-[16px] rounded-sm focus:border-ink"
                 />
               </label>
               <label className="block">
@@ -106,7 +106,7 @@ export default function EnquiryComposer() {
                 <select
                   value={fields.guests}
                   onChange={field("guests")}
-                  className="w-full border border-line bg-transparent px-3 py-2 text-data rounded-sm focus:border-ink"
+                  className="w-full border border-line bg-transparent px-3 py-2 text-data text-[16px] rounded-sm focus:border-ink"
                 >
                   <option value="">—</option>
                   {GUEST_OPTIONS.map((n) => (

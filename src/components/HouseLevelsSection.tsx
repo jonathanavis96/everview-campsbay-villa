@@ -50,14 +50,24 @@ const LEVELS: Level[] = [
         "A formal table for eight under the chandelier, with the ocean through the glass."
       ),
       space(
-        "living-level/living-room",
-        "Open living lounge",
-        "Two seating groups, a fireplace, and the Atlantic filling the far wall."
+        "living-level/formal-living-room",
+        "The formal living room",
+        "A fireplace, deep seating, and the Atlantic filling the far wall."
       ),
       space(
-        "living-level/bar-and-cellar",
-        "Wine cellar & bar",
-        "A wine cellar and a proper bar, next to the second television room, for evenings that run late."
+        "living-level/outside-lounge",
+        "The outside lounge",
+        "The seating that lives outdoors, between the living room and the view."
+      ),
+      space(
+        "living-level/sunbeds",
+        "The sunbeds",
+        "Off the kitchen: loungers and a reading nook, for the part of the day nobody wants to be indoors."
+      ),
+      space(
+        "living-level/wine-cellar",
+        "Wine cellar & TV room",
+        "A wine cellar and a proper bar alongside the television room, for evenings that run late."
       ),
       space(
         "living-level/terrace",
@@ -102,11 +112,15 @@ const LEVELS: Level[] = [
     ],
   },
   {
-    heading: "Basement",
+    heading: "Entrance",
     intro: "",
-    folder: "basement",
+    folder: "entrance",
     spaces: [
-      space("basement/garage", "Garage", "Secure off-street parking beneath the house, with room for six cars."),
+      space(
+        "entrance/entrance",
+        "Street level",
+        "The house is entered at street level, off a driveway with room for six cars. There is further parking in the cul-de-sac itself, which carries no through traffic."
+      ),
     ],
   },
 ];

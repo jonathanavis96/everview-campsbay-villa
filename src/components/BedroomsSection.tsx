@@ -85,7 +85,8 @@ export default function BedroomsSection() {
             <div>
               <h3 className="text-display-m text-ink mb-3">The bathrooms</h3>
               <p className="text-body text-ink/80">
-                Four and a half bathrooms, one en-suite to every bedroom.
+                An en-suite to every bedroom, plus a guest toilet upstairs and
+                another downstairs.
               </p>
             </div>
           </Reveal>
@@ -93,7 +94,7 @@ export default function BedroomsSection() {
 
         <Reveal className="py-8 border-t border-line text-center">
           <p className="text-body text-ink/80 mx-auto">
-            4 queen beds · 4.5 bathrooms · sleeps 8
+            4 queen beds · 4 en-suites &middot; 2 guest toilets · sleeps 8
           </p>
         </Reveal>
       </div>

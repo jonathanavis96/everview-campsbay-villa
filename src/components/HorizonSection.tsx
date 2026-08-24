@@ -28,7 +28,7 @@ export default function HorizonSection() {
 
         <Reveal delayMs={120}>
           <p className="text-data text-stone-text">
-            4 bedrooms &middot; 4.5 bathrooms &middot; sleeps 8 &middot; heated
+            4 bedrooms &middot; 4 en-suites &middot; 2 guest toilets &middot; sleeps 8 &middot; heated
             pool &middot; lift to all levels &middot; parking for 6
           </p>
         </Reveal>

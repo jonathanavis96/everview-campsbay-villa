@@ -9,7 +9,6 @@ import PlatesSection from "@/components/PlatesSection";
 import ReviewsSection from "@/components/ReviewsSection";
 import RateSection from "@/components/RateSection";
 import EnquiryComposer from "@/components/EnquiryComposer";
-import EnquiryBar from "@/components/EnquiryBar";
 import Footer from "@/components/Footer";
 import { RidgelineDivider } from "@/components/Ridgeline";
 
@@ -41,29 +40,16 @@ const SECTIONS: Array<[string, ComponentType]> = [
   ["plates", PlatesSection],
 ];
 
-// The 0-360 stretch of the skyline belongs to the wordmark, and 360-560 to
-// the divider under the hero (src/pages/Index.tsx). Everything from 560 to
-// the end of the path is shared out evenly between the sections below, so
-// scrolling the page walks the mountain from Devil's Peak down to the sea.
-const RIDGE_START = 560;
-const RIDGE_END = 2400;
-const RIDGE_STEP = (RIDGE_END - RIDGE_START) / SECTIONS.length;
-
 export default function BelowFold() {
   return (
     <>
-      {SECTIONS.map(([key, Section], i) => (
+      {SECTIONS.map(([key, Section]) => (
         <div key={key}>
           <Section />
-          <RidgelineDivider
-            from={RIDGE_START + i * RIDGE_STEP}
-            to={RIDGE_START + (i + 1) * RIDGE_STEP}
-            className="container py-2"
-          />
+          <RidgelineDivider className="container py-2" />
         </div>
       ))}
       <Footer />
-      <EnquiryBar />
     </>
   );
 }

@@ -6,7 +6,7 @@
 // The map is the single biggest Lighthouse hazard in this issue if it loads
 // eagerly: it does not render until the guest clicks the poster, so an
 // embedded Google Maps iframe never sits on the page's critical path.
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MapPin } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import mapPoster from "@/assets/map/camps-bay-map-poster.webp";
@@ -30,19 +30,77 @@ const RESTAURANTS = [
   "Paranga Restaurant",
 ];
 
+// Google's map hosts, warmed up as the panel comes into view.
+//
+// This is deliberately preconnect and DNS-prefetch only, never a prefetch of
+// the embed itself: the embed pulls megabytes of script and tiles, and
+// fetching that speculatively is exactly what tanks a Lighthouse score. What
+// this buys is the DNS lookup, the TCP handshake and the TLS negotiation to
+// three hosts — a few hundred milliseconds of the wait, at a cost of zero
+// bytes of payload.
+const MAP_ORIGINS = [
+  "https://www.google.com",
+  "https://maps.gstatic.com",
+  "https://fonts.gstatic.com",
+];
+
+function warmMapOrigins() {
+  for (const href of MAP_ORIGINS) {
+    if (document.head.querySelector(`link[rel="preconnect"][href="${href}"]`)) continue;
+    const link = document.createElement("link");
+    link.rel = "preconnect";
+    link.href = href;
+    link.crossOrigin = "";
+    document.head.appendChild(link);
+  }
+}
+
 function MapPanel() {
   const [loaded, setLoaded] = useState(false);
+  const [ready, setReady] = useState(false);
+  const panelRef = useRef<HTMLElement | null>(null);
+
+  // Warm the connections once the guest has scrolled the map into reach, so
+  // the click has less to wait for.
+  useEffect(() => {
+    const el = panelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          warmMapOrigins();
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "600px 0px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   if (loaded) {
+    // The poster stays underneath and fades out only once the iframe reports
+    // it has loaded, so the panel never goes blank mid-load.
     return (
-      <div className="photo-frame relative w-full overflow-hidden" style={{ paddingTop: "56%" }}>
+      <div ref={(el) => { panelRef.current = el; }} className="photo-frame relative w-full overflow-hidden" style={{ paddingTop: "56%" }}>
+        <img
+          src={mapPoster}
+          alt=""
+          aria-hidden="true"
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${
+            ready ? "opacity-0" : "opacity-100"
+          }`}
+        />
         <iframe
           src={MAP_EMBED_SRC}
-          loading="lazy"
+          loading="eager"
+          onLoad={() => setReady(true)}
           referrerPolicy="no-referrer-when-downgrade"
           allowFullScreen
           title="Map showing Everview's location at 14 Cramond Road, Camps Bay"
-          className="absolute inset-0 h-full w-full border-0"
+          className={`absolute inset-0 h-full w-full border-0 transition-opacity duration-500 ${
+            ready ? "opacity-100" : "opacity-0"
+          }`}
         />
       </div>
     );
@@ -54,6 +112,7 @@ function MapPanel() {
   // grey box was a poor stand-in for a map, so the poster is the map.
   return (
     <button
+      ref={(el) => { panelRef.current = el; }}
       type="button"
       onClick={() => setLoaded(true)}
       className="photo-frame group relative block w-full overflow-hidden text-left"
