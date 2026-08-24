@@ -214,7 +214,9 @@ export function sharedWalls(floor: Floor): Segment[] {
         const spec = specFor(a.name, b.name, "v");
         // A wall short of the minimum is still listed when someone asked for
         // an opening in it. They can see the plan; the threshold is a guess.
-        if (hi - lo >= MIN_DOOR_SPAN || spec) {
+        // A wall of no length is not: two rooms meeting at a corner share a
+        // point, and an authored entry there would put a door on nothing.
+        if (hi - lo >= MIN_DOOR_SPAN || (spec && hi - lo > TOL)) {
           // The leaf opens into the larger room, which is the one with space.
           const left = a.x < b.x ? a : b;
           const right = left === a ? b : a;
@@ -231,7 +233,7 @@ export function sharedWalls(floor: Floor): Segment[] {
         const lo = Math.max(a.x, b.x);
         const hi = Math.min(a.x + a.w, b.x + b.w);
         const spec = specFor(a.name, b.name, "h");
-        if (hi - lo >= MIN_DOOR_SPAN || spec) {
+        if (hi - lo >= MIN_DOOR_SPAN || (spec && hi - lo > TOL)) {
           const top = a.y < b.y ? a : b;
           const bottom = top === a ? b : a;
           candidates.push({

@@ -334,11 +334,27 @@ export default function PlanEditor() {
    * hands the wall back to the derivation.
    */
   const setOpening = (seg: Segment, next: WallOpening | null) => {
+    // An interior entry with no `axis` governs both walls a pair of rooms
+    // shares. Replacing it with an entry for the wall being edited would
+    // silently hand the other wall back to the derivation — a wall the user
+    // never touched, lost on Save. So the old entry is narrowed to the axis
+    // left alone rather than dropped, and only when that wall exists.
+    const other = seg.axis === "v" ? "h" : "v";
+    const otherExists = segments.some(
+      (s) => s.b !== "" && s.axis === other && [s.a, s.b].sort().join() === [seg.a, seg.b].sort().join()
+    );
+
     commit((current) =>
       current.map((f, i) => {
         if (i !== floorIndex) return f;
-        const kept = (f.openings ?? []).filter((o) => !governs(o, seg));
-        const openings = next ? [...kept, next] : kept;
+        const existing = f.openings ?? [];
+        const kept = existing.filter((o) => !governs(o, seg));
+        const narrowed = otherExists
+          ? existing
+              .filter((o) => governs(o, seg) && !isExterior(o) && o.axis === undefined)
+              .map((o) => ({ ...o, axis: other }) as WallOpening)
+          : [];
+        const openings = [...kept, ...narrowed, ...(next ? [next] : [])];
         return { ...f, openings: openings.length ? openings : undefined };
       })
     );
