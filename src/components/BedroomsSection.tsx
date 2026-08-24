@@ -44,6 +44,8 @@ function BedroomSpread({ room, index }: { room: Bedroom; index: number }) {
           src={lead.src}
           alt={lead.description || `${room.name} at Everview, shown at its true size, uncropped`}
           loading="lazy"
+          width={lead.width}
+          height={lead.height}
           className="w-full h-auto rounded-sm object-contain"
         />
       </button>
@@ -64,7 +66,14 @@ function BedroomSpread({ room, index }: { room: Bedroom; index: number }) {
                 className="w-16 h-16 overflow-hidden rounded-sm border border-line"
                 aria-label={`Open photograph ${i + 2} of ${room.name}`}
               >
-                <img src={p.src} alt="" loading="lazy" className="w-full h-full object-cover" />
+                <img
+                  src={p.thumbSrc || p.src}
+                  alt=""
+                  loading="lazy"
+                  width={64}
+                  height={64}
+                  className="w-full h-full object-cover"
+                />
               </button>
             ))}
           </div>

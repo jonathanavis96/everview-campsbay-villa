@@ -84,6 +84,8 @@ export default function PlatesSection() {
                       src={p.src}
                       alt={p.description || p.title || labelFor(folder)}
                       loading={globalIndex < 3 ? undefined : "lazy"}
+                      width={p.width}
+                      height={p.height}
                       className="w-full h-auto rounded-sm"
                     />
                   </button>
