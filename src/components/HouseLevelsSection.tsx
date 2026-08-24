@@ -5,10 +5,9 @@
 // one sofa appearing under six captions.
 //
 // Levels are named, not numbered (§14.6 withdraws §6.3's Level 3/2/1). The
-// Garden Level and the Basement are left out entirely for now: there is no
-// `garden/` photo folder yet (it lands with the 2026-08-24 photo drop
-// ingestion, tracked separately), and the garage has no photographs at all.
-// A folder with no photographs becomes nothing, not a padded spread.
+// Basement (garage) has no photographs at all, so it is a line of text, not
+// a spread — a folder with no photographs must not borrow a frame from
+// another folder.
 import { getResolvedByFolder, resolveManyForSection, type ResolvedPhoto } from "@/utils/photoCatalog";
 import { loadAllBasesFrom } from "@/utils/photoLoader";
 import { useLightbox } from "@/components/lightbox/LightboxProvider";
@@ -77,6 +76,22 @@ const LEVELS: Level[] = [
         "Pool & sun deck",
         "A heated pool and sun deck looking out over the garden and the ocean beyond."
       ),
+    ],
+  },
+  {
+    heading: "Garden level",
+    spaces: [
+      spaceFromFolder(
+        "garden",
+        "Roof garden & koi pond",
+        "A roof garden over the garage, with a koi pond and Lion's Head on the skyline at dusk."
+      ),
+    ],
+  },
+  {
+    heading: "Basement",
+    spaces: [
+      spaceFromFolder("garage", "Garage", "Secure off-street parking beneath the house."),
     ],
   },
 ];
