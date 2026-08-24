@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import {
   EMPTY_ENQUIRY,
   SEND_ON_WHATSAPP_LABEL,
+  buildMailtoUrl,
   buildWhatsAppUrl,
   composeEnquiryMessage,
   type EnquiryIntent,
@@ -14,6 +15,7 @@ export default function EnquiryComposer() {
 
   const message = useMemo(() => composeEnquiryMessage(fields), [fields]);
   const whatsappUrl = useMemo(() => buildWhatsAppUrl(fields), [fields]);
+  const mailtoUrl = useMemo(() => buildMailtoUrl(fields), [fields]);
 
   const setIntent = (intent: EnquiryIntent) =>
     setFields((f) => ({ ...f, intent }));
@@ -142,14 +144,19 @@ export default function EnquiryComposer() {
               </p>
             </div>
 
-            <a
-              href={whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center bg-ink text-paper px-8 py-4 text-body font-medium rounded-sm hover:bg-ink/90 transition-colors"
-            >
-              {SEND_ON_WHATSAPP_LABEL}
-            </a>
+            <div className="flex items-center gap-4">
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center bg-ink text-paper px-8 py-4 text-body font-medium rounded-sm hover:bg-ink/90 transition-colors"
+              >
+                {SEND_ON_WHATSAPP_LABEL}
+              </a>
+              <a href={mailtoUrl} className="text-body text-stone-text hover:text-ink hover:underline">
+                or email this enquiry
+              </a>
+            </div>
           </form>
         </div>
       </div>
