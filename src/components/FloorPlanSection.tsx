@@ -15,8 +15,14 @@
 //
 // What is kept from the drawings: which rooms exist, what adjoins what, which
 // side the ocean is on, and the areas in square metres printed on each room.
-// What is dropped: wall thicknesses, dimension strings, window and door
-// schedules, levels, and every construction note.
+// What is dropped: dimension strings, window and door schedules, levels, and
+// every construction note.
+//
+// It is drawn the way an architect draws: walls have thickness (poché), doors
+// are a gap with a swing, windows are a gap with glazing, stairs have treads.
+// None of that is in the data — a person editing this plan should not have to
+// draw a wall junction — so `planGeometry.ts` derives all of it from the room
+// rectangles, and it follows the data when the data moves.
 //
 // Rooms carry the names used on the rest of this site, not the architect's
 // 2013 labels, so that a guest reading "Ocean King" upstairs finds the same
@@ -24,70 +30,25 @@
 // `planName` and is shown in the detail line.
 //
 // Motion is always on for this site — no prefers-reduced-motion branch.
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Reveal from "@/components/Reveal";
 import { FLOORS, VIEW_H, VIEW_TOP, VIEW_W, type Floor, type Room } from "@/data/floorPlan";
+import { WALL, doorPath, fixture, floorGeometry } from "@/data/planGeometry";
 
 /** Rooms narrower or shorter than this get their label outside the shape. */
 const LABEL_MIN_W = 62;
 const LABEL_MIN_H = 44;
 
-function RoomShape({
-  room,
-  active,
-  onEnter,
-}: {
-  room: Room;
-  active: boolean;
-  onEnter: (room: Room | null) => void;
-}) {
+function roomLabel(room: Room) {
   const cx = room.x + room.w / 2;
   const cy = room.y + room.h / 2;
   const roomy = room.w >= LABEL_MIN_W && room.h >= LABEL_MIN_H;
 
   return (
-    <g
-      className="ev-room"
-      data-active={active ? "true" : undefined}
-      onMouseEnter={() => onEnter(room)}
-      onMouseLeave={() => onEnter(null)}
-      onFocus={() => onEnter(room)}
-      onBlur={() => onEnter(null)}
-      tabIndex={0}
-      role="button"
-      aria-label={
-        room.area ? `${room.name}, ${room.area} square metres` : room.name
-      }
-    >
-      <rect
-        x={room.x}
-        y={room.y}
-        width={room.w}
-        height={room.h}
-        rx="1.5"
-        fill="var(--paper)"
-        stroke="currentColor"
-        strokeWidth={room.outdoor ? 1 : 1.4}
-        strokeDasharray={room.outdoor ? "4 3" : undefined}
-        opacity={room.service ? 0.45 : 1}
-      />
-      <rect
-        className="ev-room-wash"
-        x={room.x}
-        y={room.y}
-        width={room.w}
-        height={room.h}
-        rx="1.5"
-        fill="var(--sun)"
-      />
-      {roomy && (
+    <g key={room.name} className="ev-room-label">
+      {roomy ? (
         <>
-          <text
-            x={cx}
-            y={room.area ? cy - 3 : cy + 3}
-            textAnchor="middle"
-            className="ev-room-name"
-          >
+          <text x={cx} y={room.area ? cy - 3 : cy + 3} textAnchor="middle" className="ev-room-name">
             {room.name}
           </text>
           {room.area && (
@@ -96,8 +57,7 @@ function RoomShape({
             </text>
           )}
         </>
-      )}
-      {!roomy && (
+      ) : (
         <text x={cx} y={cy + 3} textAnchor="middle" className="ev-room-area">
           {room.name}
         </text>
@@ -108,6 +68,10 @@ function RoomShape({
 
 function FloorPlan({ floor }: { floor: Floor }) {
   const [hovered, setHovered] = useState<Room | null>(null);
+  const { walls, openings } = useMemo(() => floorGeometry(floor), [floor]);
+  // A gap is punched slightly wider than the wall so no sliver of poché is
+  // left standing across a door or a window.
+  const punch = WALL + 0.8;
 
   return (
     <div>
@@ -130,14 +94,135 @@ function FloorPlan({ floor }: { floor: Floor }) {
           </text>
         </g>
 
-        {floor.rooms.map((room) => (
-          <RoomShape
-            key={room.name}
-            room={room}
-            active={hovered?.name === room.name}
-            onEnter={setHovered}
-          />
-        ))}
+        {/* 1 — the floor itself, and the wash under whichever room is live. */}
+        <g>
+          {floor.rooms.map((room) => (
+            <rect
+              key={room.name}
+              x={room.x}
+              y={room.y}
+              width={room.w}
+              height={room.h}
+              fill="var(--paper)"
+              opacity={room.outdoor ? 0.6 : 1}
+            />
+          ))}
+          {hovered && (
+            <rect
+              className="ev-room-wash-live"
+              x={hovered.x}
+              y={hovered.y}
+              width={hovered.w}
+              height={hovered.h}
+              fill="var(--sun)"
+            />
+          )}
+        </g>
+
+        {/* 2 — outdoor spaces keep the dashed outline: no wall, no roof. */}
+        <g fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="4 3" opacity="0.65">
+          {floor.rooms
+            .filter((room) => room.outdoor)
+            .map((room) => (
+              <rect key={room.name} x={room.x} y={room.y} width={room.w} height={room.h} />
+            ))}
+        </g>
+
+        {/* 3 — poché. Every wall is centred on its line, so two rooms that
+            abut share one wall rather than drawing two. */}
+        <g stroke="currentColor" strokeWidth={WALL} strokeLinecap="square">
+          {walls.map((w, i) => (
+            <line
+              key={i}
+              x1={w.axis === "v" ? w.at : w.from}
+              y1={w.axis === "v" ? w.from : w.at}
+              x2={w.axis === "v" ? w.at : w.to}
+              y2={w.axis === "v" ? w.to : w.at}
+            />
+          ))}
+        </g>
+
+        {/* 4 — the openings, cut back out of the wall. */}
+        <g>
+          {openings.map((o, i) => (
+            <rect
+              key={i}
+              x={o.axis === "v" ? o.at - punch / 2 : o.from}
+              y={o.axis === "v" ? o.from : o.at - punch / 2}
+              width={o.axis === "v" ? punch : o.to - o.from}
+              height={o.axis === "v" ? o.to - o.from : punch}
+              fill="var(--paper)"
+            />
+          ))}
+        </g>
+
+        {/* 5 — what goes in the openings: glazing lines, leaves and swings. */}
+        <g fill="none" stroke="currentColor" strokeWidth="1">
+          {openings.map((o, i) => {
+            if (o.kind === "window") {
+              const offset = WALL / 3;
+              return (
+                <g key={i}>
+                  {[-offset, offset].map((d) => (
+                    <line
+                      key={d}
+                      x1={o.axis === "v" ? o.at + d : o.from}
+                      y1={o.axis === "v" ? o.from : o.at + d}
+                      x2={o.axis === "v" ? o.at + d : o.to}
+                      y2={o.axis === "v" ? o.to : o.at + d}
+                    />
+                  ))}
+                </g>
+              );
+            }
+            const { leaf, arc } = doorPath(o);
+            return (
+              <g key={i}>
+                <path d={leaf} strokeWidth="1.6" />
+                <path d={arc} opacity="0.45" />
+              </g>
+            );
+          })}
+        </g>
+
+        {/* 6 — stair treads and the lift shaft. */}
+        <g fill="none" stroke="currentColor" strokeWidth="1" opacity="0.55">
+          {floor.rooms.map((room) => {
+            const f = fixture(room);
+            if (!f) return null;
+            return (
+              <g key={room.name}>
+                {[...f.treads, ...f.shaft].map((d) => (
+                  <path key={d} d={d} />
+                ))}
+              </g>
+            );
+          })}
+        </g>
+
+        {/* 7 — labels, then the transparent targets that drive the hover. */}
+        <g>{floor.rooms.map(roomLabel)}</g>
+
+        <g>
+          {floor.rooms.map((room) => (
+            <rect
+              key={room.name}
+              className="ev-room-hit"
+              x={room.x}
+              y={room.y}
+              width={room.w}
+              height={room.h}
+              fill="transparent"
+              tabIndex={0}
+              role="button"
+              aria-label={room.area ? `${room.name}, ${room.area} square metres` : room.name}
+              onMouseEnter={() => setHovered(room)}
+              onMouseLeave={() => setHovered(null)}
+              onFocus={() => setHovered(room)}
+              onBlur={() => setHovered(null)}
+            />
+          ))}
+        </g>
       </svg>
       </div>
 
@@ -147,7 +232,7 @@ function FloorPlan({ floor }: { floor: Floor }) {
           <>
             <span className="text-ink">{hovered.name}</span>
             {hovered.area ? ` · ${hovered.area} m²` : ""}
-            {hovered.planName ? ` · “${hovered.planName}” on the architect's drawing` : ""}
+            {hovered.planName ? ` · \u201c${hovered.planName}\u201d on the architect's drawing` : ""}
           </>
         ) : (
           "Hover or tap a room."

@@ -364,9 +364,15 @@
     font-family: inherit;
   }
 
-  .ev-room {
-    cursor: default;
-    outline: none;
+  /* Both label lines carry a paper halo, painted under the glyphs, so a
+     name stays readable where it crosses a stair tread or a lift shaft. */
+  .ev-room-name,
+  .ev-room-area {
+    paint-order: stroke;
+    stroke: var(--paper);
+    stroke-width: 2.6px;
+    stroke-linejoin: round;
+    pointer-events: none;
   }
 
   .ev-room-name {
@@ -381,20 +387,25 @@
     fill: var(--stone-text, #67655e);
   }
 
-  /* The hover wash. Painted over the room fill, under the labels. */
-  .ev-room-wash {
-    opacity: 0;
-    transition: opacity 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  /* The hover wash, painted over the floor and under the walls. It is one
+     rect that follows the live room rather than one per room, because the
+     drawing now has six layers between the floor and the labels and a
+     per-room wash would have to sit in all of them. */
+  .ev-room-wash-live {
+    opacity: 0.16;
     pointer-events: none;
   }
 
-  .ev-room:hover .ev-room-wash,
-  .ev-room:focus-visible .ev-room-wash,
-  .ev-room[data-active="true"] .ev-room-wash {
-    opacity: 0.14;
+  /* The targets. Transparent, on top of everything, so a hover lands on the
+     room and not on whichever wall or door swing happens to be under the
+     pointer. */
+  .ev-room-hit {
+    cursor: default;
+    outline: none;
   }
 
-  .ev-room:focus-visible rect:first-of-type {
+  .ev-room-hit:focus-visible {
+    stroke: currentColor;
     stroke-width: 2.4;
   }
 
