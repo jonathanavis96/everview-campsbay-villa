@@ -341,7 +341,10 @@ export default function PlanEditor() {
     // left alone rather than dropped, and only when that wall exists.
     const other = seg.axis === "v" ? "h" : "v";
     const otherExists = segments.some(
-      (s) => s.b !== "" && s.axis === other && [s.a, s.b].sort().join() === [seg.a, seg.b].sort().join()
+      (s) =>
+        s.b !== "" &&
+        s.axis === other &&
+        [s.a, s.b].sort().join("\u0000") === [seg.a, seg.b].sort().join("\u0000")
     );
 
     commit((current) =>
