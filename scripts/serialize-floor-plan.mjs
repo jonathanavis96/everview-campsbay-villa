@@ -14,8 +14,10 @@ export const MARKER =
 const ROOM_KEYS = ["name", "planName", "area", "x", "y", "w", "h", "outdoor", "service"];
 
 /** Opening keys, likewise. */
-const OPENING_KEYS = ["between", "kind", "axis", "at", "span", "into"];
-const OPENING_KINDS = ["wall", "door", "slider", "open"];
+const OPENING_KEYS = ["between", "room", "side", "stretch", "kind", "axis", "at", "span", "into"];
+const INTERIOR_KINDS = ["wall", "door", "slider", "open"];
+const EXTERIOR_KINDS = ["wall", "window", "door", "slider", "open"];
+const SIDES = ["l", "r", "t", "b"];
 
 const isFiniteNumber = (v) => typeof v === "number" && Number.isFinite(v);
 
@@ -91,6 +93,40 @@ export function validateFloors(data) {
     // file and silently stops overriding anything.
     const openings = (floor.openings ?? []).map((opening, j) => {
       const where = `floor ${floor.id}, opening ${j}`;
+
+      // An exterior opening names one room and a side of it; an interior one
+      // names the two rooms it sits between.
+      if (opening && opening.between === undefined) {
+        if (!seen.has(opening.room)) throw new Error(`${where}: no room named "${opening.room}"`);
+        if (!SIDES.includes(opening.side)) {
+          throw new Error(`${where}: side must be one of ${SIDES.join(", ")}`);
+        }
+        if (!EXTERIOR_KINDS.includes(opening.kind)) {
+          throw new Error(`${where}: kind must be one of ${EXTERIOR_KINDS.join(", ")}`);
+        }
+        const out = { room: opening.room, side: opening.side, kind: opening.kind };
+        if (opening.stretch) {
+          if (!Number.isInteger(opening.stretch) || opening.stretch < 0) {
+            throw new Error(`${where}: stretch must be a whole number`);
+          }
+          out.stretch = opening.stretch;
+        }
+        if (opening.at !== undefined && opening.at !== null) {
+          if (!isFiniteNumber(opening.at) || opening.at < 0 || opening.at > 1) {
+            throw new Error(`${where}: at must be between 0 and 1`);
+          }
+          out.at = Math.round(opening.at * 100) / 100;
+        }
+        if (opening.span !== undefined && opening.span !== null) {
+          if (!isFiniteNumber(opening.span) || opening.span <= 0) {
+            throw new Error(`${where}: span must be a positive number`);
+          }
+          out.span = Math.round(opening.span);
+        }
+        if (opening.into === "outside") out.into = "outside";
+        return out;
+      }
+
       const between = opening?.between;
       if (!Array.isArray(between) || between.length !== 2) {
         throw new Error(`${where}: between must be a pair of room names`);
@@ -99,8 +135,8 @@ export function validateFloors(data) {
         if (!seen.has(name)) throw new Error(`${where}: no room named "${name}"`);
       }
       if (between[0] === between[1]) throw new Error(`${where}: a room cannot open onto itself`);
-      if (!OPENING_KINDS.includes(opening.kind)) {
-        throw new Error(`${where}: kind must be one of ${OPENING_KINDS.join(", ")}`);
+      if (!INTERIOR_KINDS.includes(opening.kind)) {
+        throw new Error(`${where}: kind must be one of ${INTERIOR_KINDS.join(", ")}`);
       }
 
       const out = { between: [between[0], between[1]], kind: opening.kind };
@@ -131,9 +167,12 @@ export function validateFloors(data) {
     // order, which is not something anyone can see in the editor.
     const claimed = new Set();
     for (const o of openings) {
-      const key = [...o.between].sort().join("\u0000") + "\u0000" + (o.axis ?? "*");
+      const key = o.between
+        ? [...o.between].sort().join("\u0000") + "\u0000" + (o.axis ?? "*")
+        : [o.room, o.side, o.stretch ?? 0].join("\u0000");
       if (claimed.has(key)) {
-        throw new Error(`floor ${floor.id}: two openings claim ${o.between.join(" / ")}`);
+        const what = o.between ? o.between.join(" / ") : `${o.room} (${o.side})`;
+        throw new Error(`floor ${floor.id}: two openings claim ${what}`);
       }
       claimed.add(key);
     }

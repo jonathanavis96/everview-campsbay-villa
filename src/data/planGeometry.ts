@@ -25,7 +25,7 @@
 // `openings` list overrides it for one pair of rooms — closing a door the
 // derivation invented, opening a wall it kept, or turning either into a
 // slider — and the plan editor writes those by clicking the wall.
-import type { Floor, Room, WallOpening } from "@/data/floorPlan";
+import { isExterior, type Floor, type Room, type Side, type WallOpening } from "@/data/floorPlan";
 
 /** Poché thickness, in plan units. */
 export const WALL = 3.6;
@@ -126,13 +126,17 @@ function outwardSpans(room: Room, rooms: Room[], side: "l" | "r" | "t" | "b"): S
  */
 export type Segment = {
   a: string;
+  /** The room on the far side, or "" where that side is the outside. */
   b: string;
+  /** Exterior walls only: which side of `a`, and which run along it. */
+  side?: Side;
+  stretch?: number;
   axis: "v" | "h";
   at: number;
   /** The full shared stretch, before the opening is centred in it. */
   lo: number;
   hi: number;
-  kind: WallOpening["kind"];
+  kind: "wall" | "window" | "door" | "slider" | "open";
   explicit: boolean;
   /** The opening itself, within [lo, hi]. */
   from: number;
@@ -158,8 +162,9 @@ const pairKey = (a: string, b: string, axis: string) => [a, b].sort().join("\u00
  */
 export function sharedWalls(floor: Floor): Segment[] {
   const indoor = floor.rooms.filter(isIndoor);
-  const specs = new Map<string, WallOpening>();
+  const specs = new Map<string, Extract<WallOpening, { between: unknown }>>();
   for (const o of floor.openings ?? []) {
+    if (isExterior(o)) continue;
     specs.set(pairKey(o.between[0], o.between[1], o.axis ?? "*"), o);
   }
   const specFor = (a: string, b: string, axis: "v" | "h") =>
@@ -176,7 +181,7 @@ export function sharedWalls(floor: Floor): Segment[] {
     /** The room on the far side of the wall in the positive direction. */
     positive: Room;
     into: 1 | -1;
-    spec?: WallOpening;
+    spec?: Extract<WallOpening, { between: unknown }>;
   };
   const candidates: Candidate[] = [];
 
@@ -284,7 +289,7 @@ export function sharedWalls(floor: Floor): Segment[] {
   }
 
   return candidates.map((c) => {
-    const kind: WallOpening["kind"] = c.spec ? c.spec.kind : taken.has(c) ? "door" : "wall";
+    const kind: Segment["kind"] = c.spec ? c.spec.kind : taken.has(c) ? "door" : "wall";
     const stretch = c.hi - c.lo;
     const want = c.spec?.span ?? doorWidth([c.lo, c.hi], c.depth);
     const width = Math.max(TOL, Math.min(want, Math.max(stretch - 2 * TOL, TOL)));
@@ -309,6 +314,84 @@ export function sharedWalls(floor: Floor): Segment[] {
       into,
     };
   });
+}
+
+/** The key an exterior opening is filed under. */
+const outerKey = (room: string, side: Side, stretch: number) =>
+  [room, side, stretch].join("\u0000");
+
+const SIDES: Side[] = ["l", "r", "t", "b"];
+
+/**
+ * Every stretch of wall on a floor that faces no indoor room — the street,
+ * the garden, a terrace — resolved to what is drawn in it.
+ *
+ * The derivation puts one window in the longest stretch of each side, which
+ * is where a room's window goes when nobody has said otherwise. An authored
+ * `ExteriorOpening` replaces that for one stretch, and can put a door or a
+ * slider there instead: this house opens onto its terraces, and a stacking
+ * door is not a window.
+ */
+export function outerWalls(floor: Floor): Segment[] {
+  const rooms = floor.rooms;
+  const specs = new Map<string, Extract<WallOpening, { room: string }>>();
+  for (const o of floor.openings ?? []) {
+    if (isExterior(o)) specs.set(outerKey(o.room, o.side, o.stretch ?? 0), o);
+  }
+
+  const out: Segment[] = [];
+  for (const room of rooms.filter(isIndoor)) {
+    if (!walkable(room)) continue;
+    for (const side of SIDES) {
+      // Sorted, because `stretch` counts along the wall and the subtraction
+      // that produced these does not promise an order.
+      const spans = outwardSpans(room, rooms, side).sort((p, q) => p[0] - q[0]);
+      let longest = -1;
+      spans.forEach((span, i) => {
+        if (longest === -1 || span[1] - span[0] > spans[longest][1] - spans[longest][0]) longest = i;
+      });
+
+      spans.forEach((span, i) => {
+        const spec = specs.get(outerKey(room.name, side, i));
+        const length = span[1] - span[0];
+        const derived = i === longest && length >= MIN_WINDOW_SPAN ? "window" : "wall";
+        const kind: Segment["kind"] = spec ? spec.kind : derived;
+
+        const want = spec?.span ?? Math.min(MAX_WINDOW, length * 0.6);
+        const width = Math.max(TOL, Math.min(want, Math.max(length - 2 * TOL, TOL)));
+        const centre = span[0] + length * (spec?.at ?? 0.5);
+        const from = Math.min(Math.max(centre - width / 2, span[0]), span[1] - width);
+
+        // A leaf swings into the room unless someone asked for it to swing
+        // out, which is what a door onto a narrow terrace actually does.
+        const inward: 1 | -1 = side === "l" || side === "t" ? 1 : -1;
+        const at =
+          side === "l" ? room.x : side === "r" ? room.x + room.w : side === "t" ? room.y : room.y + room.h;
+
+        out.push({
+          a: room.name,
+          b: "",
+          side,
+          stretch: i,
+          axis: side === "l" || side === "r" ? "v" : "h",
+          at,
+          lo: span[0],
+          hi: span[1],
+          kind,
+          explicit: Boolean(spec),
+          from,
+          to: from + width,
+          into: spec?.into === "outside" ? ((inward * -1) as 1 | -1) : inward,
+        });
+      });
+    }
+  }
+  return out;
+}
+
+/** Every wall on a floor that something could go in, inside and out. */
+export function wallSegments(floor: Floor): Segment[] {
+  return [...sharedWalls(floor), ...outerWalls(floor)];
 }
 
 export function floorGeometry(floor: Floor): FloorGeometry {
@@ -338,19 +421,16 @@ export function floorGeometry(floor: Floor): FloorGeometry {
     });
   }
 
-  // Windows, one in the longest outward stretch of each side.
-  for (const room of indoor) {
-    if (!walkable(room)) continue;
-    for (const side of ["l", "r", "t", "b"] as const) {
-      const spans = outwardSpans(room, rooms, side);
-      const longest = spans.reduce<Span | null>((best, s) => (!best || s[1] - s[0] > best[1] - best[0] ? s : best), null);
-      if (!longest || longest[1] - longest[0] < MIN_WINDOW_SPAN) continue;
-      const width = Math.min(MAX_WINDOW, (longest[1] - longest[0]) * 0.6);
-      const [from, to] = centred(longest, width);
-      const at =
-        side === "l" ? room.x : side === "r" ? room.x + room.w : side === "t" ? room.y : room.y + room.h;
-      openings.push({ kind: "window", axis: side === "l" || side === "r" ? "v" : "h", at, from, to });
-    }
+  for (const seg of outerWalls(floor)) {
+    if (seg.kind === "wall") continue;
+    openings.push({
+      kind: seg.kind,
+      axis: seg.axis,
+      at: seg.at,
+      from: seg.from,
+      to: seg.to,
+      into: seg.into,
+    });
   }
 
   return { walls, openings };
