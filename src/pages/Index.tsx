@@ -5,6 +5,7 @@ import HouseLevelsSection from "@/components/HouseLevelsSection";
 import BedroomsSection from "@/components/BedroomsSection";
 import PowerWaterSection from "@/components/PowerWaterSection";
 import CampsBaySection from "@/components/CampsBaySection";
+import ArrivalSection from "@/components/ArrivalSection";
 import PlatesSection from "@/components/PlatesSection";
 import EnquiryComposer from "@/components/EnquiryComposer";
 import EnquiryBar from "@/components/EnquiryBar";
@@ -29,10 +30,12 @@ const Index = () => {
       <RidgelineDivider from={1060} to={1140} className="container py-2" />
       <CampsBaySection />
       <RidgelineDivider from={1140} to={1160} className="container py-2" />
+      <ArrivalSection />
+      <RidgelineDivider from={1160} to={1180} className="container py-2" />
       <PlatesSection />
-      <RidgelineDivider from={1160} to={1200} className="container py-2" />
+      <RidgelineDivider from={1180} to={1200} className="container py-2" />
       <EnquiryComposer />
-      <RidgelineDivider from={1160} to={2400} className="container py-2" />
+      <RidgelineDivider from={1200} to={2400} className="container py-2" />
       <Footer />
       <EnquiryBar />
     </div>
