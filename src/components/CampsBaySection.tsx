@@ -260,7 +260,11 @@ export default function CampsBaySection() {
                           {d.name}
                         </a>
                       </th>
-                      <td className="py-2 pr-4 text-stone-text whitespace-nowrap">{d.time}</td>
+                      {/* Deliberately allowed to wrap: "4 min drive · 20 min
+                          walk" is wider than the column this table gets on a
+                          320px phone, and holding it on one line pushed the
+                          page into a horizontal scroll. */}
+                      <td className="py-2 pr-4 text-stone-text">{d.time}</td>
                       <td className="py-2 text-stone-text whitespace-nowrap text-right">{d.distance}</td>
                     </tr>
                   ))}
