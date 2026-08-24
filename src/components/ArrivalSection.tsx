@@ -60,9 +60,7 @@ export default function ArrivalSection() {
               request. The lift carries up to six people between the
               basement and the upper level, and keeps running through
               load-shedding on days the battery bank has had sun to charge.
-              The property is monitored 24/7 by ADT Security, with armed
-              response, and by day the house runs largely on its own solar
-              power.
+              By day the house runs largely on its own solar power.
             </p>
             <dl className="space-y-2">
               {ARRIVAL_TIMES.map((a) => (
