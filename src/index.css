@@ -40,6 +40,10 @@
     --stone: #8c857a;
     --line: #dad8d2;
     --sun: #d98a3d;
+    /* Darker than --sun: 4.65:1 on --paper (--sun itself is 2.4:1, fails
+       WCAG for text). Use this, not --sun, whenever the accent colours
+       text rather than a background/icon. */
+    --sun-text: #9c5c1f;
   }
 
   * {
