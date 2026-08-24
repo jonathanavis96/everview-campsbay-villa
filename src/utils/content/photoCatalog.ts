@@ -45,4 +45,43 @@ export const PHOTO_CATALOG: Record<string, CatalogEntry> = {
         "The Ground Floor King bedroom, opening directly onto the garden with a private outlook.",
     },
   },
+  "bedroom-chandelier-terrace-sunset": {
+    default: {
+      title: "Bedroom at Sunset",
+      description: "A bedroom with a chandelier, its doors open onto a terrace at sunset.",
+    },
+  },
+  "bedroom-sliding-doors-ocean-sunset": {
+    default: {
+      title: "Bedroom, Ocean Sunset",
+      description: "A bedroom with full-width sliding doors open onto an ocean sunset.",
+    },
+  },
+  "gardenking_bathroom_1": {
+    default: { description: "The Garden King en-suite bathroom." },
+  },
+  "gardenking_bathroom_2": {
+    default: { description: "The Garden King en-suite bathroom, a second view." },
+  },
+  "oceanking_bathroom": {
+    default: { description: "The Ocean King en-suite bathroom." },
+  },
+  "evening_front_of_house_1": {
+    default: {
+      title: "The House at Dusk",
+      description: "The house from the street, lit from within as evening falls.",
+    },
+  },
+  "study_work_upstairs_area": {
+    default: { description: "A study and work area on the upper level." },
+  },
+  "study_work_upstairs_area_2": {
+    default: { description: "The upstairs study and work area, a second view." },
+  },
+  "view_1": {
+    default: {
+      title: "The View",
+      description: "The ocean view from the house, looking out over Camps Bay.",
+    },
+  },
 };

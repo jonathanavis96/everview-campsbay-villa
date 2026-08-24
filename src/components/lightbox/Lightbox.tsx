@@ -110,7 +110,7 @@ export default function Lightbox({
         ref={closeButtonRef}
         aria-label="Close"
         onClick={onClose}
-        className="absolute right-3 top-3 z-10 p-3 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md"
+        className="absolute right-3 top-3 z-10 p-3 rounded-full bg-white/10 hover:bg-white/20"
       >
         <X className="h-6 w-6" />
       </button>
@@ -121,14 +121,14 @@ export default function Lightbox({
           <button
             onClick={onPrev}
             aria-label="Previous photo"
-            className="absolute left-3 top-1/2 -translate-y-1/2 z-10 p-4 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md"
+            className="absolute left-3 top-1/2 -translate-y-1/2 z-10 p-4 rounded-full bg-white/10 hover:bg-white/20"
           >
             <ChevronLeft className="h-7 w-7" />
           </button>
           <button
             onClick={onNext}
             aria-label="Next photo"
-            className="absolute right-3 top-1/2 -translate-y-1/2 z-10 p-4 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md"
+            className="absolute right-3 top-1/2 -translate-y-1/2 z-10 p-4 rounded-full bg-white/10 hover:bg-white/20"
           >
             <ChevronRight className="h-7 w-7" />
           </button>
@@ -158,20 +158,20 @@ export default function Lightbox({
           {/* Info bar (same width as image) */}
           {(photo.title || photo.description || photo.category) && (
             <div className="w-full mt-4 pb-[max(12px,env(safe-area-inset-bottom))]">
-              <div className="w-full bg-white/25 backdrop-blur-md rounded-2xl p-5 text-ever-ink flex items-center justify-between gap-4">
+              <div className="w-full bg-paper rounded-sm p-5 text-ink flex items-center justify-between gap-4">
                 <div className="min-w-0">
                   {photo.title && (
-                    <h3 className="text-2xl font-semibold truncate">{photo.title}</h3>
+                    <h3 className="text-display-m truncate">{photo.title}</h3>
                   )}
                   {photo.description && (
-                    <p className="text-ever-ink/80 mt-1 break-words">
+                    <p className="text-body text-ink/80 mt-1 break-words">
                       {photo.description}
                     </p>
                   )}
                 </div>
 
                 {photo.category && (
-                  <span className="shrink-0 px-4 py-2 rounded-full bg-ever-blue text-white text-sm">
+                  <span className="shrink-0 text-label text-stone-text whitespace-nowrap">
                     {photo.category}
                   </span>
                 )}
