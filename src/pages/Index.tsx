@@ -1,4 +1,4 @@
-import { useEffect, lazy, Suspense } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import Navigation from "@/components/Navigation";
 import HeroSection from "@/components/HeroSection";
 import { hasPlaceholderReviews } from "@/lib/reviews";
@@ -12,6 +12,55 @@ import { hasPlaceholderReviews } from "@/lib/reviews";
 // above the fold moves when the lazy chunk resolves, so this carries no CLS
 // risk.
 const BelowFold = lazy(() => import("@/components/BelowFold"));
+
+/**
+ * Holds the below-fold chunk back until the hero has actually painted.
+ *
+ * Splitting the chunk out was only half the job: it still began downloading
+ * the moment React mounted, and with it came the sections' photographs — the
+ * panorama alone is 310 KB. Measured on the deployed site, 2026-08-24: the
+ * 181 KB chunk landed at 725 ms and about 600 KB of images followed it before
+ * the hero was on screen, giving an LCP element render delay of 2.17 s and a
+ * mobile performance score of 79 against a ≥90 gate.
+ *
+ * So the chunk waits for the load event and then an idle callback — and no
+ * longer, because anything scroll-gated risks a crawler never seeing the page
+ * at all. A scroll, a pointer or a key press jumps the queue, so a visitor who
+ * moves before it fires never waits for it.
+ */
+function useAfterHero() {
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    let done = false;
+    const start = () => {
+      if (done) return;
+      done = true;
+      setReady(true);
+    };
+
+    const idle = () => {
+      const ric = window.requestIdleCallback;
+      if (ric) ric(start, { timeout: 1200 });
+      else window.setTimeout(start, 200);
+    };
+
+    if (document.readyState === "complete") idle();
+    else window.addEventListener("load", idle, { once: true });
+
+    const events = ["scroll", "pointerdown", "keydown", "wheel", "touchstart"] as const;
+    for (const type of events) {
+      window.addEventListener(type, start, { once: true, passive: true });
+    }
+
+    return () => {
+      window.removeEventListener("load", idle);
+      for (const type of events) window.removeEventListener(type, start);
+    };
+  }, []);
+
+  return ready;
+}
 
 // design-direction §14.2's guard: search engines must never index invented
 // testimonial text. Added/removed on mount rather than baked into
@@ -35,6 +84,7 @@ function useNoindexWhilePlaceholderReviews() {
 
 const Index = () => {
   useNoindexWhilePlaceholderReviews();
+  const belowFoldReady = useAfterHero();
 
   return (
     <div className="min-h-screen bg-paper">
@@ -43,9 +93,7 @@ const Index = () => {
           opening paragraph, and the ridgeline is already in the wordmark
           above it. */}
       <HeroSection />
-      <Suspense fallback={null}>
-        <BelowFold />
-      </Suspense>
+      <Suspense fallback={null}>{belowFoldReady && <BelowFold />}</Suspense>
     </div>
   );
 };
