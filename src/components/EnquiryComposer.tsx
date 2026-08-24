@@ -35,14 +35,13 @@ export default function EnquiryComposer() {
           </p>
 
           <div
-            role="tablist"
+            role="group"
             aria-label="Enquiry type"
             className="flex gap-2 mb-8"
           >
             <button
               type="button"
-              role="tab"
-              aria-selected={fields.intent === "check-dates"}
+              aria-pressed={fields.intent === "check-dates"}
               onClick={() => setIntent("check-dates")}
               className={`text-label px-4 py-2 border rounded-sm transition-colors ${
                 fields.intent === "check-dates"
@@ -54,8 +53,7 @@ export default function EnquiryComposer() {
             </button>
             <button
               type="button"
-              role="tab"
-              aria-selected={fields.intent === "ask-question"}
+              aria-pressed={fields.intent === "ask-question"}
               onClick={() => setIntent("ask-question")}
               className={`text-label px-4 py-2 border rounded-sm transition-colors ${
                 fields.intent === "ask-question"
