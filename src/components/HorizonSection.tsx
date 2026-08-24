@@ -24,17 +24,27 @@
 // column is the left one and the block reads down before it reads across.
 import Reveal from "@/components/Reveal";
 
-/** The counts, then what the house has. One column each. */
-const SPEC: [string[], string[]] = [
-  ["4 bedrooms", "4 en-suites", "2 guest toilets", "Sleeps 8"],
-  ["Heated pool", "Lift to all levels", "Parking for 6", "Solar powered", "Safe and secure"],
+/**
+ * Nine facts, filled column by column into five rows — so both columns keep
+ * the same rhythm, which two separately-spread lists of four and five do not.
+ */
+const SPEC = [
+  "4 bedrooms",
+  "4 en-suites",
+  "2 guest toilets",
+  "Sleeps 8",
+  "Heated pool",
+  "Lift to all levels",
+  "Parking for 6",
+  "Solar powered",
+  "Safe and secure",
 ];
 
 export default function HorizonSection() {
   return (
     <section id="horizon" className="pt-12 md:pt-20 pb-14 md:pb-20">
       <div className="container">
-        <div className="grid max-w-6xl gap-10 md:grid-cols-[minmax(0,1fr)_auto] md:items-start md:gap-16">
+        <div className="grid max-w-6xl gap-10 md:grid-cols-[minmax(0,1fr)_auto] md:items-stretch md:gap-16">
           <Reveal className="max-w-2xl">
             <p className="text-lede text-ink">
               A four-bedroom house on a slope above the Atlantic, at the closed
@@ -54,25 +64,18 @@ export default function HorizonSection() {
               flush left, because the rail is wider than either of them. */}
           <Reveal
             delayMs={120}
-            className="md:w-[28rem] md:border-l md:border-line md:pl-10"
+            className="flex flex-col md:w-[28rem] md:border-l md:border-line md:pl-10"
           >
             <p className="text-lede text-stone-text mb-0 text-center uppercase tracking-[0.16em]">
               The house
             </p>
-            <div className="grid grid-cols-2 gap-x-8">
-              {SPEC.map((column) => (
-                <ul
-                  key={column[0]}
-                  className="text-data-l list-disc pl-5 leading-[calc(clamp(1.25rem,2.2vw,1.75rem)*1.45)] text-ink marker:text-stone-text"
-                >
-                  {column.map((item) => (
-                    <li key={item} className="leading-[calc(clamp(1.25rem,2.2vw,1.75rem)*1.45)]">
-                      {item}
-                    </li>
-                  ))}
-                </ul>
+            <ul className="text-data-l grid flex-1 grid-flow-col grid-cols-2 grid-rows-5 content-between gap-x-6 whitespace-nowrap pl-5 text-ink marker:text-stone-text">
+              {SPEC.map((item) => (
+                <li key={item} className="list-disc leading-[calc(clamp(1.25rem,2.2vw,1.75rem)*1.45)]">
+                  {item}
+                </li>
               ))}
-            </div>
+            </ul>
           </Reveal>
         </div>
       </div>
