@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { RidgelineMark } from "@/components/Ridgeline";
+import { scrollToSection } from "@/lib/belowFold";
 
 // Before the first scroll the bar sits over the hero photograph, where white
 // type on a bright sunset sky was effectively invisible. It now carries its
@@ -22,7 +23,7 @@ export default function Navigation() {
   };
 
   const scrollToEnquiry = () => {
-    document.getElementById("enquire")?.scrollIntoView({ behavior: "smooth" });
+    scrollToSection("enquire");
   };
 
   return (
