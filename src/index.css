@@ -369,6 +369,12 @@
 
   .ev-drop {
     opacity: 0;
+    /* Without a fill-box origin the keyframes' `scale()` is taken about the
+       SVG's 0,0, which throws the drop tens of units up and to the left of
+       the spout — it read as the drop jumping across the diagram rather than
+       falling out of the tap (Jonathan, 2026-08-24). */
+    transform-box: fill-box;
+    transform-origin: center;
   }
 
   .is-live .ev-drop {

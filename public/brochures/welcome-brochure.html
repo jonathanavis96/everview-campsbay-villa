@@ -106,6 +106,10 @@
   }
   section { margin-bottom: 9mm; }
   .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm; }
+  /* Text on the left, the photograph held to the top of the right column. */
+  .split { display: grid; grid-template-columns: 1.15fr 1fr; gap: 8mm; align-items: start; }
+  .split .split-text > h2 { margin-top: 0; }
+  .split-figure { align-self: start; }
   .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5mm; }
   figure { margin: 0; }
   figure img {
@@ -181,7 +185,7 @@
   }
   @media (max-width: 230mm) {
     .page { width: auto; margin: 0; padding: 8mm; box-shadow: none; }
-    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .grid-2, .grid-3, .split { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -497,7 +501,7 @@
   </section>
 
   <figure>
-    <img class="tall" src="img/pool-room.webp" alt="The pool room, with the billiards table and the ocean through the window" />
+    <img src="img/pool-room.webp" alt="The pool room, with the billiards table and the ocean through the window" />
     <figcaption>The pool room</figcaption>
   </figure>
 </article>
@@ -617,15 +621,17 @@
   <p class="label">Board games</p>
   <hr class="rule" />
 
-  <section>
-    <h2>Board games</h2>
-    <p>
-      The cabinet in the lounge, beneath the gold-framed painting, houses a
-      wide selection of board games for your enjoyment. We kindly ask that you
-      return the games to their original condition and pack them back neatly as
-      you found them.
-    </p>
-    <figure>
+  <section class="split">
+    <div class="split-text">
+      <h2>Board games</h2>
+      <p>
+        The cabinet in the lounge, beneath the gold-framed painting, houses a
+        wide selection of board games for your enjoyment. We kindly ask that you
+        return the games to their original condition and pack them back neatly as
+        you found them.
+      </p>
+    </div>
+    <figure class="split-figure">
       <img class="tall" src="img/board-games-cabinet.webp" alt="The lounge cabinet beneath the gold-framed painting, where the board games are kept" />
       <figcaption>The cabinet beneath the painting</figcaption>
     </figure>

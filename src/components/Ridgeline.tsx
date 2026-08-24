@@ -88,6 +88,13 @@ export function RidgelineMark({
  * at once; they are no longer used to pick a stretch of path.
  */
 const GLYPH_WIDTH_FRACTION = 0.17;
+/**
+ * The wordmark path with its right-hand end pulled the last four units down
+ * onto the same y as its left-hand end. Without it the skyline finishes at
+ * y=368 and the rule that leaves it sits at y=372, which reads as a four-unit
+ * step — a visible gap — where the two meet.
+ */
+const RIDGELINE_PATH_D_LEVEL = RIDGELINE_PATH_D.replace(/L2400,368$/, "L2400,372");
 /** The wordmark path, with both ends pulled onto one baseline so the rule
  *  runs into it and out the other side without a step. */
 const RIDGE_BASELINE = 372;
@@ -139,10 +146,10 @@ export function RidgelineDivider({ className = "" }: { from?: number; to?: numbe
 
   // pathLength=1 puts every segment on the same 0..1 scale whatever its real
   // length, so the flats keep their timing as the viewport changes width.
-  const draw = (durationMs: number, delayMs: number, reverse = false) => ({
+  const draw = (durationMs: number, delayMs: number) => ({
     strokeDasharray: 1,
-    strokeDashoffset: inView ? 0 : reverse ? -1 : 1,
-    transition: `stroke-dashoffset ${durationMs}ms cubic-bezier(0.33, 0, 0.15, 1) ${delayMs}ms`,
+    strokeDashoffset: inView ? 0 : 1,
+    transition: `stroke-dashoffset ${durationMs}ms linear ${delayMs}ms`,
   });
 
   return (
@@ -168,7 +175,7 @@ export function RidgelineDivider({ className = "" }: { from?: number; to?: numbe
             />
             <path
               pathLength={1}
-              d={RIDGELINE_PATH_D}
+              d={RIDGELINE_PATH_D_LEVEL}
               transform={glyphTransform}
               vectorEffect="non-scaling-stroke"
               style={draw(1000, 400)}
@@ -176,7 +183,7 @@ export function RidgelineDivider({ className = "" }: { from?: number; to?: numbe
             <path
               pathLength={1}
               d={`M${glyphEnd},${baseline} L${width},${baseline}`}
-              style={draw(400, 1400, true)}
+              style={draw(400, 1400)}
             />
           </g>
         </svg>

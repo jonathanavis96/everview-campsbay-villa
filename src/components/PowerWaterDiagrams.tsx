@@ -148,8 +148,11 @@ export function BoreholeDiagram({ className = "" }: { className?: string }) {
   const WATER = "var(--water)";
 
   // The one path the water takes: up out of the water table, along the riser,
-  // through every filter body, to the back of the tap.
-  const SUPPLY_PATH = "M72 146 L72 52 L254 52";
+  // through every filter body, along the last stretch past the third filter,
+  // then down the tap's stem to the spout. It has to run the *whole* line —
+  // stopping at the third filter left the last 28 units of pipe and the whole
+  // stem dead, which is what it looked like (Jonathan, 2026-08-24).
+  const SUPPLY_PATH = "M72 146 L72 52 L282 52 L282 78";
 
   return (
     <div ref={ref} className={className}>
@@ -193,7 +196,7 @@ export function BoreholeDiagram({ className = "" }: { className?: string }) {
 
         {/* The riser, in ink, with the supply drawn over it in water blue */}
         <path
-          d="M72 76 L72 52 L254 52"
+          d="M72 76 L72 52 L282 52"
           fill="none"
           stroke={INK}
           strokeWidth="1.25"
@@ -251,7 +254,7 @@ export function BoreholeDiagram({ className = "" }: { className?: string }) {
 
         {/* Tap */}
         <g stroke={INK} strokeWidth="1.25" fill="none" strokeLinejoin="round">
-          <path d="M254 52 L282 52 L282 78" strokeLinecap="round" />
+          <path d="M282 52 L282 78" strokeLinecap="round" />
           <path d="M274 52 L274 42 L290 42" strokeLinecap="round" />
         </g>
 
@@ -270,7 +273,7 @@ export function BoreholeDiagram({ className = "" }: { className?: string }) {
           opacity="0.55"
         />
 
-        {/* The drop: leaves the spout and falls to the surface at y=126 */}
+        {/* The drop: leaves the spout at y=78 and falls to the surface at y=126 */}
         {[0, 1].map((i) => (
           <ellipse
             key={i}
