@@ -344,67 +344,7 @@
     animation: ev-stage 3s ease-in-out infinite;
   }
 
-  /* One drop, leaving the tap and falling the 48 units to the water in the
-     glass. Slow on purpose: it is the pace of a tap that has just been shut,
-     not a leak. The splash below is timed to land with it. */
-  @keyframes ev-drop {
-    0% {
-      transform: translateY(0) scale(0.5);
-      opacity: 0;
-    }
-    6% {
-      transform: translateY(2px) scale(1);
-      opacity: 0.9;
-    }
-    46% {
-      transform: translateY(46px) scale(1);
-      opacity: 0.9;
-    }
-    50%,
-    100% {
-      transform: translateY(46px) scale(1);
-      opacity: 0;
-    }
-  }
-
-  .ev-drop {
-    opacity: 0;
-    /* Without a fill-box origin the keyframes' `scale()` is taken about the
-       SVG's 0,0, which throws the drop tens of units up and to the left of
-       the spout — it read as the drop jumping across the diagram rather than
-       falling out of the tap (Jonathan, 2026-08-24). */
-    transform-box: fill-box;
-    transform-origin: center;
-  }
-
-  .is-live .ev-drop {
-    animation: ev-drop 3.8s cubic-bezier(0.45, 0, 0.75, 0.55) infinite;
-  }
-
-  /* The splash: two flecks thrown up off the surface, and a ripple. */
-  @keyframes ev-splash {
-    0%,
-    100% {
-      opacity: 0;
-      transform: scale(0.4);
-    }
-    6% {
-      opacity: 0.85;
-      transform: scale(1);
-    }
-    30% {
-      opacity: 0;
-      transform: scale(1.25) translateY(-2px);
-    }
-  }
-
-  .ev-splash {
-    opacity: 0;
-    transform-box: fill-box;
-    transform-origin: center bottom;
-  }
-
-  .is-live .ev-splash {
-    animation: ev-splash 3.8s ease-out infinite;
-  }
+  /* The drop into the glass and its splash are SMIL now, on the same document
+     clock as the water in the pipe — see BoreholeDiagram. A CSS animation
+     starts when its class lands, which cannot be phase-locked to SMIL. */
 }

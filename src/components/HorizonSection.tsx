@@ -32,7 +32,7 @@ const SPEC = [
 
 export default function HorizonSection() {
   return (
-    <section id="horizon" className="pt-6 md:pt-10 pb-14 md:pb-20">
+    <section id="horizon" className="pt-12 md:pt-20 pb-14 md:pb-20">
       <div className="container">
         <div className="grid max-w-5xl gap-8 md:grid-cols-[minmax(0,1fr)_auto] md:items-start md:gap-12">
           <Reveal className="max-w-2xl">

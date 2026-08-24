@@ -154,6 +154,21 @@ export function BoreholeDiagram({ className = "" }: { className?: string }) {
   // stem dead, which is what it looked like (Jonathan, 2026-08-24).
   const SUPPLY_PATH = "M72 146 L72 52 L282 52 L282 78";
 
+  // The drop that falls into the glass is on the *same* SMIL document clock as
+  // the water in the pipe, not a CSS animation started whenever the section
+  // scrolled into view, because the two clocks cannot be phase-locked. A
+  // carried droplet leaves at t = i * CARRIED_STAGGER and takes CARRIED_DUR to
+  // reach the spout, so one arrives every CARRIED_STAGGER seconds from
+  // FIRST_ARRIVAL onwards; the falling drop repeats on exactly that period,
+  // starting on exactly that beat (Jonathan, 2026-08-24).
+  const CARRIED_DUR = 6;
+  const CARRIED_STAGGER = 2;
+  const FIRST_ARRIVAL = CARRIED_DUR;
+  const DROP_CYCLE = CARRIED_STAGGER;
+  const FALL_PATH = "M282 78 L282 126";
+  /** The share of one cycle the fall itself takes; the rest is the wait. */
+  const FALL_FRACTION = 0.4;
+
   return (
     <div ref={ref} className={className}>
       <svg
@@ -218,8 +233,8 @@ export function BoreholeDiagram({ className = "" }: { className?: string }) {
         {[0, 1, 2].map((i) => (
           <circle key={i} r="2.6" fill={WATER} className="ev-carried">
             <animateMotion
-              dur="6s"
-              begin={inView ? `${i * 2}s` : "indefinite"}
+              dur={`${CARRIED_DUR}s`}
+              begin={inView ? `${i * CARRIED_STAGGER}s` : "indefinite"}
               repeatCount="indefinite"
               path={SUPPLY_PATH}
               keyPoints="0;1"
@@ -273,28 +288,45 @@ export function BoreholeDiagram({ className = "" }: { className?: string }) {
           opacity="0.55"
         />
 
-        {/* The drop: leaves the spout at y=78 and falls to the surface at y=126 */}
-        {[0, 1].map((i) => (
-          <ellipse
-            key={i}
-            className="ev-drop"
-            cx="282"
-            cy="80"
-            rx="2.4"
-            ry="3.2"
-            fill={WATER}
-            style={{ animationDelay: `${i * 1900}ms` }}
+        {/* The drop, on the same clock as the water that feeds it: it leaves
+            the spout at the instant a carried droplet arrives there, falls to
+            the surface, and the splash lands with it. */}
+        <ellipse cx="0" cy="0" rx="2.4" ry="3.2" fill={WATER} opacity="0">
+          <animateMotion
+            dur={`${DROP_CYCLE}s`}
+            begin={inView ? `${FIRST_ARRIVAL}s` : "indefinite"}
+            repeatCount="indefinite"
+            path={FALL_PATH}
+            keyPoints={`0;1;1`}
+            keyTimes={`0;${FALL_FRACTION};1`}
+            calcMode="linear"
           />
-        ))}
+          <animate
+            attributeName="opacity"
+            dur={`${DROP_CYCLE}s`}
+            begin={inView ? `${FIRST_ARRIVAL}s` : "indefinite"}
+            repeatCount="indefinite"
+            values="0.9;0.9;0;0"
+            keyTimes={`0;${FALL_FRACTION - 0.01};${FALL_FRACTION};1`}
+            calcMode="linear"
+          />
+        </ellipse>
 
-        {/* The splash, timed to the moment the drop lands */}
-        {[0, 1].map((i) => (
-          <g key={i} className="ev-splash" style={{ animationDelay: `${i * 1900 + 1750}ms` }}>
-            <path d="M275 126 q 3 -6 5 -1" fill="none" stroke={WATER} strokeWidth="1.25" strokeLinecap="round" />
-            <path d="M289 126 q -3 -6 -5 -1" fill="none" stroke={WATER} strokeWidth="1.25" strokeLinecap="round" />
-            <path d="M273 126 q 9 5 18 0" fill="none" stroke={WATER} strokeWidth="1" strokeLinecap="round" />
-          </g>
-        ))}
+        {/* The splash, at the moment the drop reaches the surface */}
+        <g opacity="0">
+          <animate
+            attributeName="opacity"
+            dur={`${DROP_CYCLE}s`}
+            begin={inView ? `${FIRST_ARRIVAL + DROP_CYCLE * FALL_FRACTION}s` : "indefinite"}
+            repeatCount="indefinite"
+            values="0;0.85;0;0"
+            keyTimes="0;0.06;0.3;1"
+            calcMode="linear"
+          />
+          <path d="M275 126 q 3 -6 5 -1" fill="none" stroke={WATER} strokeWidth="1.25" strokeLinecap="round" />
+          <path d="M289 126 q -3 -6 -5 -1" fill="none" stroke={WATER} strokeWidth="1.25" strokeLinecap="round" />
+          <path d="M273 126 q 9 5 18 0" fill="none" stroke={WATER} strokeWidth="1" strokeLinecap="round" />
+        </g>
       </svg>
     </div>
   );
