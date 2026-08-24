@@ -200,6 +200,17 @@
     }
     .page:last-child { break-after: auto; }
     section, figure { break-inside: avoid; }
+    /* On A4 a page has 182mm of width and 269mm of usable height. A
+       full-width plate at the photographs' 1.4:1 renders about 130mm tall, so
+       the two on the music pages would need 260mm on their own and the second
+       would spill onto another sheet. Capping the height keeps a page's pair
+       plus its instructions on one sheet; the screen keeps the full size. */
+    .plate img {
+      max-height: 78mm;
+      width: auto;
+      max-width: 100%;
+      margin: 0 auto;
+    }
     @page { size: A4; margin: 0; }
   }
   /* Screen only, and that is load-bearing: the print viewport is 210mm wide,
