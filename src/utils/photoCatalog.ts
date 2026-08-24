@@ -1,7 +1,7 @@
 // src/utils/photoCatalog.ts
 import { autoTagsFor } from "@/utils/autoTag";
 import type { PhotoBase } from "@/utils/photoLoader";
-import { loadAllBasesAuto, loadBasesFrom } from "@/utils/photoLoader";
+import { loadAllBases, loadAllBasesAuto, loadBasesFrom, loadBasesInFolder, loadBasesUnderFolder } from "@/utils/photoLoader";
 import type { CatalogEntry, Copy } from "@/utils/types/photos";
 import { PHOTO_CATALOG } from "./content/photoCatalog";
 
@@ -56,8 +56,17 @@ export function resolveManyForSection(
 }
 
 export function loadAndResolveAll(section: string): ResolvedPhoto[] {
-  const bases = loadAllBasesAuto();
-  return resolveManyForSection(bases, section);
+  return resolveManyForSection(loadAllBases(), section);
+}
+
+/** Photographs sitting directly in one folder, e.g. "living-level/kitchen". */
+export function getResolvedInFolder(folder: string, section: string = folder): ResolvedPhoto[] {
+  return resolveManyForSection(loadBasesInFolder(folder), section);
+}
+
+/** Photographs in one folder and everything beneath it. */
+export function getResolvedUnderFolder(folder: string, section: string = folder): ResolvedPhoto[] {
+  return resolveManyForSection(loadBasesUnderFolder(folder), section);
 }
 
 export function getResolvedByFolder(
@@ -78,61 +87,6 @@ export function toLightbox(
   if (!input) return [];
   const arr = Array.isArray(input) ? input : [input];
   return arr.map((p) => ({ src: p.src, title: p.title, category: p.category }));
-}
-
-/* ---------------- bedrooms selection (arrays per room) ---------------- */
-
-export type BedroomsSelection = {
-  master: ResolvedPhoto[];
-  oceanking: ResolvedPhoto[];
-  gardenking: ResolvedPhoto[];
-  ground: ResolvedPhoto[];
-  all: ResolvedPhoto[];
-};
-
-export function selectBedroomsSet(folder: string = BEDROOM_FOLDER): BedroomsSelection {
-  const beds = getResolvedByFolder(folder, "bedrooms"); // slug-sorted
-
-  const matches = (p: ResolvedPhoto, re: RegExp) =>
-    re.test(p.slug) || re.test(p.title ?? "") || p.tags.some((t) => re.test(t));
-
-  const filterBy = (patterns: RegExp[]) =>
-    beds.filter((p) => patterns.some((re) => matches(p, re)));
-
-  // Buckets (tweak patterns to your naming if needed)
-  let master = filterBy([/\bmaster\b/i, /\bmaster[-_ ]?bed(room)?\b/i, /\bprimary\b/i, /\bmain\b/i]);
-  let oceanking = filterBy([
-    /\boceanking\b/i,
-    /\bocean[-_ ]?king\b/i,
-    /\b(ocean|sea|atlantic)[-_ ]?(view)?[-_ ]?king\b/i,
-    /\bup(stairs|per).*(1|one)\b/i,
-    /\bbed(room)?[-_ ]?1\b/i,
-  ]);
-  let gardenking = filterBy([
-    /\bgardenking\b/i,
-    /\bgarden[-_ ]?king\b/i,
-    /\bgarden[-_ ]?(suite|room)\b/i,
-    /\bup(stairs|per).*(2|two)\b/i,
-    /\bbed(room)?[-_ ]?2\b/i,
-  ]);
-  let ground = filterBy([/\bground\b/i, /\bground[-_ ]?floor\b/i, /\bdownstairs\b/i, /\bground[-_ ]?king\b/i]);
-
-  // Ensure at least one image in each bucket (fallbacks)
-  const used = new Set<string>([
-    ...master.map((p) => p.slug),
-    ...oceanking.map((p) => p.slug),
-    ...gardenking.map((p) => p.slug),
-    ...ground.map((p) => p.slug),
-  ]);
-
-  const firstUnused = () => beds.find((p) => !used.has(p.slug));
-
-  if (!master.length)     { const f = firstUnused(); if (f) { master = [f]; used.add(f.slug); } }
-  if (!oceanking.length)  { const f = firstUnused(); if (f) { oceanking = [f]; used.add(f.slug); } }
-  if (!gardenking.length) { const f = firstUnused(); if (f) { gardenking = [f]; used.add(f.slug); } }
-  if (!ground.length)     { const f = firstUnused(); if (f) { ground = [f]; used.add(f.slug); } }
-
-  return { master, oceanking, gardenking, ground, all: beds };
 }
 
 /* ---------------- misc ---------------- */

@@ -11,6 +11,8 @@
 // monitoring and off-grid power lead in body type. The house rules sit
 // underneath in the quieter mono/data register, not the source PDF's
 // shouting caps.
+import Reveal from "@/components/Reveal";
+
 const ARRIVAL_TIMES = [
   { label: "Check-in", value: "2:00 PM – 7:00 PM" },
   { label: "Check-out", value: "By 10:00 AM" },
@@ -32,7 +34,7 @@ export default function ArrivalSection() {
         <p className="text-label text-stone-text mb-4">Arrival</p>
 
         <div className="grid md:grid-cols-2 gap-8 md:gap-12 border-t border-line pt-8 md:pt-12">
-          <div>
+          <Reveal>
             <h2 className="text-display-l text-ink mb-4">A well-run house</h2>
             <p className="text-body text-ink/80 mb-6">
               Housekeeping comes daily, with laundry provided and available on
@@ -56,9 +58,9 @@ export default function ArrivalSection() {
               manager in advance. Late check-out is subject to availability
               and additional cost, arranged in advance.
             </p>
-          </div>
+          </Reveal>
 
-          <div>
+          <Reveal delayMs={100}>
             <h3 className="text-display-m text-ink mb-4">House rules</h3>
             <ul className="text-data text-stone-text space-y-2">
               {HOUSE_RULES.map((rule) => (
@@ -70,7 +72,7 @@ export default function ArrivalSection() {
                 </li>
               ))}
             </ul>
-          </div>
+          </Reveal>
         </div>
       </div>
     </section>

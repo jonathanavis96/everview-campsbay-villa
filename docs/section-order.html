@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Everview — page order</title>
+<style>
+  :root {
+    --ink: #12191c;
+    --paper: #f1f0ec;
+    --stone: #67655e;
+    --line: #dad8d2;
+    --sun: #9c5c1f;
+    --card: #fbfaf7;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 48px 24px 96px; }
+  h1 { font: 300 clamp(2rem, 5vw, 3.25rem)/1.05 Georgia, serif; letter-spacing: -0.02em; margin: 0 0 12px; }
+  h2 { font: 400 1.375rem/1.2 Georgia, serif; margin: 48px 0 12px; }
+  p { max-width: 68ch; }
+  .lede { font: 300 clamp(1.1rem, 2vw, 1.4rem)/1.45 Georgia, serif; color: var(--ink); }
+  .label { font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--stone); font-weight: 600; }
+  .cols { display: grid; grid-template-columns: 1fr; gap: 32px; margin-top: 32px; }
+  @media (min-width: 900px) { .cols { grid-template-columns: 1.15fr 0.85fr; gap: 48px; align-items: start; } }
+
+  ol.list { list-style: none; margin: 12px 0 0; padding: 0; }
+  li.row {
+    display: flex; gap: 14px; align-items: flex-start;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    cursor: grab;
+    box-shadow: 0 1px 2px rgba(58,42,34,0.05), 0 10px 24px -20px rgba(58,42,34,0.5);
+    transition: box-shadow .25s ease, transform .25s ease, opacity .2s ease, border-color .25s ease;
+  }
+  li.row:hover { border-color: var(--stone); }
+  li.row.dragging { opacity: .45; cursor: grabbing; }
+  li.row.over { border-color: var(--sun); box-shadow: 0 0 0 2px rgba(156,92,31,.18); }
+  li.row.pinned { cursor: default; background: #eeece6; }
+  .num { font: 400 0.8125rem/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--stone); min-width: 2.2em; }
+  .grip { color: var(--line); font-size: 1.1rem; line-height: 1.4; user-select: none; }
+  .row-main { flex: 1; min-width: 0; }
+  .row-title { font-weight: 600; }
+  .row-why { color: var(--stone); font-size: 0.9rem; margin-top: 2px; }
+  .row-move { display: flex; flex-direction: column; gap: 2px; }
+  .row-move button {
+    border: 1px solid var(--line); background: transparent; color: var(--ink);
+    width: 26px; height: 20px; border-radius: 2px; cursor: pointer; line-height: 1; font-size: 11px;
+  }
+  .row-move button:hover { background: var(--paper); border-color: var(--stone); }
+
+  .panel { background: var(--card); border: 1px solid var(--line); border-radius: 3px; padding: 20px; }
+  pre {
+    background: var(--ink); color: #e8e6df; padding: 16px; border-radius: 3px;
+    overflow-x: auto; font: 400 0.78rem/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; margin: 12px 0 0;
+  }
+  .btnrow { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+  button.action {
+    font: inherit; font-size: 0.9rem; padding: 9px 16px; border-radius: 3px;
+    border: 1px solid var(--ink); background: var(--ink); color: var(--paper); cursor: pointer;
+    transition: opacity .2s ease;
+  }
+  button.action.ghost { background: transparent; color: var(--ink); }
+  button.action:hover { opacity: .84; }
+  .note { font-size: 0.88rem; color: var(--stone); }
+  table { border-collapse: collapse; width: 100%; margin-top: 12px; font-size: 0.92rem; }
+  th, td { text-align: left; padding: 8px 12px 8px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--stone); font-weight: 600; }
+  code { font: 400 0.86em ui-monospace, SFMono-Regular, Menlo, monospace; background: #e6e4dd; padding: 1px 5px; border-radius: 2px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="label">Everview</p>
+  <h1>Page order</h1>
+  <p class="lede">
+    Drag the sections into the order you want. The code to paste is generated
+    at the bottom of the page as you go, and your arrangement is remembered in
+    this browser.
+  </p>
+
+  <h2>What I would recommend, and why</h2>
+  <p>
+    The old order put the full photo index (“The plates”) third, which buried
+    everything after it — a guest scrolling past sixty photographs rarely
+    reaches the reviews, the rate or the enquiry form. It also opened the
+    power-and-water section before the guest had seen the house.
+  </p>
+  <p>
+    The recommended order follows the decision a guest is actually making:
+    <strong>want it → believe it → work out the practicalities → see the
+    price → ask.</strong> Desire first (the house, then the bedrooms), then
+    where it is, then the reassurances an overseas guest needs, then proof,
+    then price, then the operational detail, then the enquiry. The plate index
+    becomes an appendix at the end, where a long index belongs.
+  </p>
+
+  <div class="cols">
+    <div>
+      <p class="label">Drag to rearrange</p>
+      <ol class="list" id="list"></ol>
+      <p class="note">
+        The hero and the footer are fixed in place and cannot be moved.
+      </p>
+    </div>
+
+    <div>
+      <div class="panel">
+        <p class="label">Paste into <code>src/components/BelowFold.tsx</code></p>
+        <pre id="out"></pre>
+        <div class="btnrow">
+          <button class="action" id="copy">Copy</button>
+          <button class="action ghost" id="reset">Reset to recommended</button>
+        </div>
+        <p class="note" style="margin-top:16px">
+          Replace the <code>SECTIONS</code> array in that file. The skyline
+          dividers between sections space themselves automatically, so nothing
+          else needs changing.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <h2>Old order against the recommendation</h2>
+  <table>
+    <thead>
+      <tr><th>#</th><th>Was</th><th>Recommended</th><th>Why it moved</th></tr>
+    </thead>
+    <tbody id="compare"></tbody>
+  </table>
+
+</div>
+
+<script>
+const FIXED_TOP = { title: "Hero", why: "The photograph, the name, the one-line promise." };
+const FIXED_BOTTOM = { title: "Footer", why: "Contact details and the legal line." };
+
+const RECOMMENDED = [
+  { key: "horizon",     title: "What the house is",        why: "One paragraph and the spec row. Answers “what am I looking at” before anything else." },
+  { key: "house",       title: "The house, level by level", why: "The reason someone books: the living level, the terrace, the pool." },
+  { key: "bedrooms",    title: "The four bedrooms",         why: "The second real question — will we all fit, and who gets which room." },
+  { key: "camps-bay",   title: "Camps Bay",                 why: "Where it is, once they want it. Map, drive times, restaurants." },
+  { key: "power-water", title: "Power and water",           why: "Reassurance, not a headline. It matters to an overseas guest only after they care about the house." },
+  { key: "reviews",     title: "What guests say",           why: "Social proof lands hardest immediately before the price." },
+  { key: "rates",       title: "Rates",                     why: "The number, once the case for it has been made." },
+  { key: "arrival",     title: "Arrival and house rules",   why: "The practical detail a guest wants settled just before they enquire." },
+  { key: "enquire",     title: "Enquire",                   why: "The action, at the point of highest intent." },
+  { key: "plates",      title: "The plates (full photo index)", why: "An appendix. Sixty photographs is a reference, not a chapter — third on the page it buried everything after it." }
+];
+
+const OLD_ORDER = [
+  "horizon", "house", "bedrooms", "power-water", "camps-bay",
+  "arrival", "plates", "reviews", "rates", "enquire"
+];
+
+const byKey = Object.fromEntries(RECOMMENDED.map(s => [s.key, s]));
+const STORAGE_KEY = "everview-section-order";
+
+function loadOrder() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+    if (Array.isArray(saved) && saved.length === RECOMMENDED.length &&
+        saved.every(k => byKey[k])) return saved;
+  } catch (e) { /* fall through to the recommendation */ }
+  return RECOMMENDED.map(s => s.key);
+}
+
+function saveOrder(order) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(order)); } catch (e) { /* private window */ }
+}
+
+let order = loadOrder();
+const listEl = document.getElementById("list");
+const outEl = document.getElementById("out");
+
+function fixedRow(item, position) {
+  const li = document.createElement("li");
+  li.className = "row pinned";
+  li.innerHTML =
+    '<span class="num">' + position + '</span>' +
+    '<span class="grip">&#9679;</span>' +
+    '<span class="row-main"><span class="row-title">' + item.title +
+    '</span><span class="row-why">' + item.why + '</span></span>';
+  return li;
+}
+
+function render() {
+  listEl.innerHTML = "";
+  listEl.appendChild(fixedRow(FIXED_TOP, "01"));
+
+  order.forEach((key, i) => {
+    const s = byKey[key];
+    const li = document.createElement("li");
+    li.className = "row";
+    li.draggable = true;
+    li.dataset.key = key;
+    li.innerHTML =
+      '<span class="num">' + String(i + 2).padStart(2, "0") + '</span>' +
+      '<span class="grip">&#8942;&#8942;</span>' +
+      '<span class="row-main"><span class="row-title">' + s.title +
+      '</span><span class="row-why">' + s.why + '</span></span>' +
+      '<span class="row-move">' +
+      '<button data-dir="-1" aria-label="Move ' + s.title + ' up">&#9650;</button>' +
+      '<button data-dir="1" aria-label="Move ' + s.title + ' down">&#9660;</button>' +
+      '</span>';
+    listEl.appendChild(li);
+  });
+
+  listEl.appendChild(fixedRow(FIXED_BOTTOM, String(order.length + 2).padStart(2, "0")));
+  renderCode();
+  saveOrder(order);
+}
+
+const COMPONENTS = {
+  horizon: "HorizonSection", house: "HouseLevelsSection", bedrooms: "BedroomsSection",
+  "camps-bay": "CampsBaySection", "power-water": "PowerWaterSection",
+  reviews: "ReviewsSection", rates: "RateSection", arrival: "ArrivalSection",
+  enquire: "EnquiryComposer", plates: "PlatesSection"
+};
+
+function renderCode() {
+  const width = Math.max(...order.map(k => k.length)) + 3;
+  const lines = order.map(k => {
+    const quoted = '"' + k + '",';
+    return "  [" + quoted.padEnd(width) + " " + COMPONENTS[k] + "],";
+  });
+  outEl.textContent =
+    "const SECTIONS: Array<[string, ComponentType]> = [\n" + lines.join("\n") + "\n];";
+}
+
+let draggedKey = null;
+
+listEl.addEventListener("dragstart", e => {
+  const row = e.target.closest("li.row:not(.pinned)");
+  if (!row) return;
+  draggedKey = row.dataset.key;
+  row.classList.add("dragging");
+  e.dataTransfer.effectAllowed = "move";
+});
+
+listEl.addEventListener("dragend", e => {
+  const row = e.target.closest("li.row");
+  if (row) row.classList.remove("dragging");
+  listEl.querySelectorAll(".over").forEach(el => el.classList.remove("over"));
+  draggedKey = null;
+});
+
+listEl.addEventListener("dragover", e => {
+  e.preventDefault();
+  const row = e.target.closest("li.row:not(.pinned)");
+  listEl.querySelectorAll(".over").forEach(el => el.classList.remove("over"));
+  if (row && row.dataset.key !== draggedKey) row.classList.add("over");
+});
+
+listEl.addEventListener("drop", e => {
+  e.preventDefault();
+  const row = e.target.closest("li.row:not(.pinned)");
+  if (!row || !draggedKey || row.dataset.key === draggedKey) return;
+  const from = order.indexOf(draggedKey);
+  const to = order.indexOf(row.dataset.key);
+  order.splice(to, 0, order.splice(from, 1)[0]);
+  render();
+});
+
+listEl.addEventListener("click", e => {
+  const btn = e.target.closest("button[data-dir]");
+  if (!btn) return;
+  const key = btn.closest("li.row").dataset.key;
+  const from = order.indexOf(key);
+  const to = from + Number(btn.dataset.dir);
+  if (to < 0 || to >= order.length) return;
+  order.splice(to, 0, order.splice(from, 1)[0]);
+  render();
+});
+
+document.getElementById("copy").addEventListener("click", async e => {
+  try {
+    await navigator.clipboard.writeText(outEl.textContent);
+    e.target.textContent = "Copied";
+    setTimeout(() => { e.target.textContent = "Copy"; }, 1600);
+  } catch (err) {
+    e.target.textContent = "Select the code and copy it";
+  }
+});
+
+document.getElementById("reset").addEventListener("click", () => {
+  order = RECOMMENDED.map(s => s.key);
+  render();
+});
+
+// The comparison table
+const compare = document.getElementById("compare");
+RECOMMENDED.forEach((s, i) => {
+  const wasKey = OLD_ORDER[i];
+  const movement = OLD_ORDER.indexOf(s.key) - i;
+  const tr = document.createElement("tr");
+  tr.innerHTML =
+    "<td>" + String(i + 1).padStart(2, "0") + "</td>" +
+    "<td>" + byKey[wasKey].title + "</td>" +
+    "<td><strong>" + s.title + "</strong></td>" +
+    "<td>" + (movement === 0 ? "Unchanged." : s.why) + "</td>";
+  compare.appendChild(tr);
+});
+
+render();
+</script>
+</body>
+</html>

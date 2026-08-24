@@ -7,6 +7,7 @@ import {
   composeEnquiryMessage,
   type EnquiryIntent,
 } from "@/lib/enquiry";
+import Reveal from "@/components/Reveal";
 
 const GUEST_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8];
 
@@ -29,18 +30,21 @@ export default function EnquiryComposer() {
     <section id="enquire" className="bg-paper py-16 md:py-24">
       <div className="container">
         <div className="max-w-2xl">
-          <p className="text-label text-stone-text mb-3">Enquire</p>
-          <h2 className="text-display-l mb-4">Check dates</h2>
-          <p className="text-body text-stone-text mb-10">
-            Tell us when and how many. We'll open WhatsApp with your enquiry
-            already written — nothing is sent until you press the button.
-          </p>
+          <Reveal>
+            <p className="text-label text-stone-text mb-3">Enquire</p>
+            <h2 className="text-display-l mb-4">Check dates</h2>
+            <p className="text-body text-stone-text mb-10">
+              Tell us when and how many. We'll open WhatsApp with your enquiry
+              already written — nothing is sent until you press the button.
+            </p>
+          </Reveal>
 
-          <div
-            role="group"
-            aria-label="Enquiry type"
-            className="flex gap-2 mb-8"
-          >
+          <Reveal delayMs={100}>
+            <div
+              role="group"
+              aria-label="Enquiry type"
+              className="flex gap-2 mb-8"
+            >
             <button
               type="button"
               aria-pressed={fields.intent === "check-dates"}
@@ -65,7 +69,8 @@ export default function EnquiryComposer() {
             >
               Ask a question
             </button>
-          </div>
+            </div>
+          </Reveal>
 
           <form
             className="space-y-6"
@@ -137,14 +142,14 @@ export default function EnquiryComposer() {
               />
             </label>
 
-            <div className="border-t border-line pt-6">
+            <Reveal className="border-t border-line pt-6">
               <p className="text-label text-stone-text mb-2">Your message</p>
               <p className="text-body italic" aria-live="polite">
                 "{message}"
               </p>
-            </div>
+            </Reveal>
 
-            <div className="flex items-center gap-4">
+            <Reveal delayMs={100} className="flex items-center gap-4">
               <a
                 href={whatsappUrl}
                 target="_blank"
@@ -156,7 +161,7 @@ export default function EnquiryComposer() {
               <a href={mailtoUrl} className="text-body text-stone-text hover:text-ink hover:underline">
                 or email this enquiry
               </a>
-            </div>
+            </Reveal>
           </form>
         </div>
       </div>

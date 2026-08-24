@@ -1,176 +1,163 @@
-// design-direction §6.3 / §14.6 — "the house, level by level". This is the
-// structural fix for the six-identical-photographs bug: each space names the
-// folder(s) its photographs come from, and the component reads that folder.
-// No keyword-matching against filenames — that mechanism is what produced
-// one sofa appearing under six captions.
+// The house, level by level.
 //
-// Levels are named, not numbered (§14.6 withdraws §6.3's Level 3/2/1). The
-// Basement (garage) has no photographs at all, so it is a line of text, not
-// a spread — a folder with no photographs must not borrow a frame from
-// another folder.
-import { getResolvedByFolder, resolveManyForSection, type ResolvedPhoto } from "@/utils/photoCatalog";
-import { loadAllBasesFrom } from "@/utils/photoLoader";
-import { useLightbox } from "@/components/lightbox/LightboxProvider";
+// Every space names the folder its photographs come from, and the component
+// reads that folder. No keyword-matching against filenames — that mechanism
+// is what once produced one sofa appearing under six captions. Moving a file
+// between folders under src/assets/everview_photos_webp is now the only way
+// to change what appears where.
+//
+// Levels are named, not numbered. A space with no photographs is a line of
+// text, not a spread — a folder with no photographs must never borrow a
+// frame from another folder.
+import { getResolvedInFolder, type ResolvedPhoto } from "@/utils/photoCatalog";
+import PhotoCarousel from "@/components/PhotoCarousel";
+import Reveal from "@/components/Reveal";
 
 type Space = {
   name: string;
   copy: string;
+  folder: string;
   photos: ResolvedPhoto[];
 };
 
 type Level = {
   heading: string;
+  intro: string;
+  /** Photographs sitting loose in the level folder, not yet sorted into a space. */
+  folder: string;
   spaces: Space[];
 };
 
-function spaceFromFolder(folder: string, name: string, copy: string): Space {
-  return { name, copy, photos: getResolvedByFolder(folder) };
-}
-
-function spaceFromFolders(folders: string[], name: string, copy: string): Space {
-  const bases = loadAllBasesFrom(folders);
-  return { name, copy, photos: resolveManyForSection(bases, folders[0]) };
+function space(folder: string, name: string, copy: string): Space {
+  return { name, copy, folder, photos: getResolvedInFolder(folder) };
 }
 
 const LEVELS: Level[] = [
   {
-    heading: "Bedroom level",
+    heading: "Living level",
+    intro:
+      "The floor the house is built around: kitchen, dining, lounge and the terrace, all opening onto the same view.",
+    folder: "living-level",
     spaces: [
-      spaceFromFolder(
-        "entertainment",
-        "Pool room",
-        "A billiards table and a media corner, tucked in beside the three upstairs bedrooms — not the swimming pool, which is two levels down."
+      space(
+        "living-level/kitchen",
+        "The kitchen",
+        "Modern appliances, marble countertops, and a large island built for cooking together."
+      ),
+      space(
+        "living-level/indoor-dining",
+        "Indoor dining",
+        "A formal table for eight under the chandelier, with the ocean through the glass."
+      ),
+      space(
+        "living-level/living-room",
+        "Open living lounge",
+        "Two seating groups, a fireplace, and the Atlantic filling the far wall."
+      ),
+      space(
+        "living-level/bar-and-cellar",
+        "Wine cellar & bar",
+        "A wine cellar and a proper bar, next to the second television room, for evenings that run late."
+      ),
+      space(
+        "living-level/terrace",
+        "The terrace",
+        "The covered front patio, where dinner happens: the whole sweep of Camps Bay beach and the Atlantic in front of you, and the Twelve Apostles running away to the far left."
       ),
     ],
   },
   {
-    heading: "Living level",
+    heading: "Bedroom level",
+    intro:
+      "Three bedrooms upstairs, with the pool room and the study sharing the landing.",
+    folder: "bedroom-level",
     spaces: [
-      spaceFromFolder(
-        "kitchen",
-        "The kitchen",
-        "Modern appliances, marble countertops, and a large island built for cooking together."
+      space(
+        "bedroom-level/pool-room",
+        "Pool room",
+        "A billiards table and a media corner beside the three upstairs bedrooms — not the swimming pool, which is two levels down."
       ),
-      spaceFromFolder(
-        "dining",
-        "Indoor dining",
-        "Elegant dining for eight, with stunning views and sophisticated ambiance."
-      ),
-      spaceFromFolder(
-        "living",
-        "Open living lounge",
-        "Spacious seating with panoramic ocean views, built for gathering and relaxation."
-      ),
-      spaceFromFolder(
-        "bar",
-        "Wine cellar & bar",
-        "A curated wine collection and a proper bar setup for evenings that run late."
-      ),
-      spaceFromFolder(
-        "patio",
-        "The terrace",
-        "Al fresco dining and entertaining, with breathtaking sunset views over the Atlantic."
-      ),
-      spaceFromFolders(
-        ["pool", "outdoor"],
-        "Pool & sun deck",
-        "A heated pool and sun deck looking out over the garden and the ocean beyond."
+      space(
+        "bedroom-level/study",
+        "The study",
+        "A quiet desk on the upstairs landing, for the mornings someone has to work."
       ),
     ],
   },
   {
     heading: "Garden level",
+    intro: "Down at garden height: the pool, the lawn, and the evening light.",
+    folder: "garden-level",
     spaces: [
-      spaceFromFolder(
-        "garden",
-        "Roof garden & koi pond",
-        "A roof garden over the garage, with a koi pond and Lion's Head on the skyline at dusk."
+      space(
+        "garden-level/pool",
+        "The pool",
+        "Heated year-round, set into the garden below the house, with the mountain on one side and the ocean on the other."
+      ),
+      space(
+        "garden-level/garden",
+        "The garden",
+        "Lawn, loungers and the gin deck, with Lion's Head on the skyline as the light goes."
       ),
     ],
   },
   {
     heading: "Basement",
+    intro: "",
+    folder: "basement",
     spaces: [
-      spaceFromFolder("garage", "Garage", "Secure off-street parking beneath the house."),
+      space("basement/garage", "Garage", "Secure off-street parking beneath the house, with room for six cars."),
     ],
   },
 ];
 
 function SpaceSpread({ space, index }: { space: Space; index: number }) {
-  const { open } = useLightbox();
-  const [lead, ...rest] = space.photos;
   const reversed = index % 2 === 1;
 
-  if (!lead) {
+  if (space.photos.length === 0) {
     // No photographs for this space: a line of text under its level, not a
     // spread. Do not borrow a frame from another folder to fill the gap.
     return (
-      <div className="py-8 border-t border-line">
+      <Reveal className="py-8 border-t border-line">
         <h3 className="text-display-m text-ink mb-2">{space.name}</h3>
         <p className="text-body text-ink/80">{space.copy}</p>
-      </div>
+      </Reveal>
     );
   }
 
-  const openAt = (i: number) =>
-    open(
-      space.photos.map((p) => ({
-        src: p.src,
-        title: p.title,
-        description: p.description,
-        category: p.category,
-      })),
-      i
-    );
-
   return (
-    <div className="grid md:grid-cols-2 gap-8 md:gap-12 py-12 md:py-16 border-t border-line items-center">
-      <button
-        type="button"
-        onClick={() => openAt(0)}
-        className={`block w-full text-left ${reversed ? "md:order-2" : ""}`}
-        aria-label={`Open ${space.name} photographs`}
-      >
-        <img
-          src={lead.leadSrc || lead.src}
-          srcSet={lead.leadSrc && lead.width ? `${lead.leadSrc} 640w, ${lead.src} ${lead.width}w` : undefined}
-          sizes="(min-width: 768px) 50vw, calc(100vw - 48px)"
-          alt={lead.description || `${space.name} at Everview`}
-          loading="lazy"
-          width={lead.width}
-          height={lead.height}
-          className="w-full h-auto rounded-sm"
-        />
-      </button>
+    <Reveal className="grid md:grid-cols-2 gap-8 md:gap-14 py-12 md:py-16 border-t border-line items-center">
+      <PhotoCarousel
+        photos={space.photos}
+        label={space.name}
+        className={reversed ? "md:order-2" : ""}
+      />
 
       <div className={reversed ? "md:order-1" : ""}>
         <h3 className="text-display-m text-ink mb-3">{space.name}</h3>
-        <p className="text-body text-ink/80 mb-6">{space.copy}</p>
-
-        {rest.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            {rest.map((p, i) => (
-              <button
-                key={p.src}
-                type="button"
-                onClick={() => openAt(i + 1)}
-                className="w-16 h-16 overflow-hidden rounded-sm border border-line"
-                aria-label={`Open photograph ${i + 2} of ${space.name}`}
-              >
-                <img
-                  src={p.thumbSrc || p.src}
-                  alt=""
-                  loading="lazy"
-                  width={64}
-                  height={64}
-                  className="w-full h-full object-cover"
-                />
-              </button>
-            ))}
-          </div>
-        )}
+        <p className="text-body text-ink/80">{space.copy}</p>
       </div>
-    </div>
+    </Reveal>
+  );
+}
+
+/** Photographs sitting loose in a level folder, waiting to be sorted. */
+function LevelExtras({ level }: { level: Level }) {
+  const loose = getResolvedInFolder(level.folder);
+  if (loose.length === 0) return null;
+
+  return (
+    <Reveal className="grid md:grid-cols-2 gap-8 md:gap-14 py-12 md:py-16 border-t border-line items-center">
+      <PhotoCarousel photos={loose} label={level.heading} />
+      <div>
+        <h3 className="text-display-m text-ink mb-3">
+          More of the {level.heading.toLowerCase()}
+        </h3>
+        <p className="text-body text-ink/80">
+          Further frames from this level of the house.
+        </p>
+      </div>
+    </Reveal>
   );
 }
 
@@ -182,10 +169,16 @@ export default function HouseLevelsSection() {
 
         {LEVELS.map((level) => (
           <div key={level.heading} className="mb-4">
-            <h2 className="text-display-l text-ink mb-2">{level.heading}</h2>
-            {level.spaces.map((space, i) => (
-              <SpaceSpread key={space.name} space={space} index={i} />
+            <Reveal>
+              <h2 className="text-display-l text-ink mb-2">{level.heading}</h2>
+              {level.intro && (
+                <p className="text-body text-ink/80 mb-2">{level.intro}</p>
+              )}
+            </Reveal>
+            {level.spaces.map((s, i) => (
+              <SpaceSpread key={s.name} space={s} index={i} />
             ))}
+            <LevelExtras level={level} />
           </div>
         ))}
       </div>

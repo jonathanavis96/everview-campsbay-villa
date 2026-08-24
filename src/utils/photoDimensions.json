@@ -1,12 +1,4 @@
 {
-  "bar_2": {
-    "width": 1280,
-    "height": 853
-  },
-  "tvroom_wine_cellar": {
-    "width": 1280,
-    "height": 853
-  },
   "gardenking_bathroom_1": {
     "width": 1200,
     "height": 800
@@ -19,25 +11,9 @@
     "width": 1280,
     "height": 853
   },
-  "bedroom-5-oceanking": {
-    "width": 1200,
-    "height": 800
-  },
-  "bedroom-6-ground": {
-    "width": 1200,
-    "height": 800
-  },
   "bedroom-chandelier-terrace-sunset": {
     "width": 1280,
     "height": 853
-  },
-  "bedroom-master-16": {
-    "width": 1200,
-    "height": 800
-  },
-  "bedroom-master-17": {
-    "width": 1200,
-    "height": 800
   },
   "bedroom-sliding-doors-ocean-sunset": {
     "width": 1280,
@@ -51,9 +27,89 @@
     "width": 1280,
     "height": 853
   },
+  "bedroom-master-16": {
+    "width": 1200,
+    "height": 800
+  },
+  "bedroom-master-17": {
+    "width": 1200,
+    "height": 800
+  },
+  "bedroom-5-oceanking": {
+    "width": 1200,
+    "height": 800
+  },
   "oceanking_2": {
     "width": 1280,
     "height": 853
+  },
+  "games-room-9": {
+    "width": 1200,
+    "height": 800
+  },
+  "games-room-pool-table-ocean": {
+    "width": 1280,
+    "height": 853
+  },
+  "tv_room_1": {
+    "width": 1200,
+    "height": 800
+  },
+  "study_work_upstairs_area": {
+    "width": 1280,
+    "height": 853
+  },
+  "study_work_upstairs_area_2": {
+    "width": 1280,
+    "height": 853
+  },
+  "evening_front_of_house_1": {
+    "width": 1280,
+    "height": 853
+  },
+  "outside_house_sunset": {
+    "width": 1280,
+    "height": 853
+  },
+  "garden-1": {
+    "width": 1200,
+    "height": 800
+  },
+  "garden-dusk-lions-head": {
+    "width": 1280,
+    "height": 853
+  },
+  "gin_deck_evening": {
+    "width": 1280,
+    "height": 853
+  },
+  "garden-dusk-pool-loungers": {
+    "width": 1280,
+    "height": 853
+  },
+  "pool_mountain_angle": {
+    "width": 1280,
+    "height": 853
+  },
+  "pool_sunset_view": {
+    "width": 1024,
+    "height": 683
+  },
+  "bar-2": {
+    "width": 1200,
+    "height": 800
+  },
+  "bar_2": {
+    "width": 1280,
+    "height": 853
+  },
+  "tvroom_wine_cellar": {
+    "width": 1280,
+    "height": 853
+  },
+  "bedroom-6-ground": {
+    "width": 1200,
+    "height": 800
   },
   "dining-chandelier-ocean": {
     "width": 1280,
@@ -76,34 +132,6 @@
     "height": 853
   },
   "formal_dining_table_1": {
-    "width": 1280,
-    "height": 853
-  },
-  "bar-2": {
-    "width": 1200,
-    "height": 800
-  },
-  "games-room-9": {
-    "width": 1200,
-    "height": 800
-  },
-  "games-room-pool-table-ocean": {
-    "width": 1280,
-    "height": 853
-  },
-  "tv_room_1": {
-    "width": 1200,
-    "height": 800
-  },
-  "evening_front_of_house_1": {
-    "width": 1280,
-    "height": 853
-  },
-  "garden-dusk-lions-head": {
-    "width": 1280,
-    "height": 853
-  },
-  "garden-dusk-pool-loungers": {
     "width": 1280,
     "height": 853
   },
@@ -175,26 +203,6 @@
     "width": 1280,
     "height": 853
   },
-  "study_work_upstairs_area": {
-    "width": 1280,
-    "height": 853
-  },
-  "study_work_upstairs_area_2": {
-    "width": 1280,
-    "height": 853
-  },
-  "garden-1": {
-    "width": 1200,
-    "height": 800
-  },
-  "gin_deck_evening": {
-    "width": 1280,
-    "height": 853
-  },
-  "outside_house_sunset": {
-    "width": 1280,
-    "height": 853
-  },
   "covered-patio-dining-sea": {
     "width": 1280,
     "height": 853
@@ -234,14 +242,6 @@
   "sunset_front_patio_1": {
     "width": 1280,
     "height": 853
-  },
-  "pool_mountain_angle": {
-    "width": 1280,
-    "height": 853
-  },
-  "pool_sunset_view": {
-    "width": 1024,
-    "height": 683
   },
   "view_1": {
     "width": 1200,

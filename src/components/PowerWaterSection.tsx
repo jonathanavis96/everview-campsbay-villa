@@ -9,6 +9,8 @@
 // the pre-rebuild site's own figure, not invented.
 //
 // --sun is the one accent colour on the page, and this is its only use.
+import Reveal from "@/components/Reveal";
+
 const STATS = [
   { value: "40", unit: "panels", label: "Solar array" },
   { value: "26", unit: "kWh", label: "Battery storage" },
@@ -21,7 +23,7 @@ export default function PowerWaterSection() {
         <p className="text-label text-stone-text mb-4">Power and water</p>
 
         <div className="grid md:grid-cols-2 gap-8 md:gap-12 border-t border-line pt-8 md:pt-12">
-          <div>
+          <Reveal>
             <h2 className="text-display-l text-ink mb-4">Solar and battery power</h2>
             <p className="text-body text-ink/80 mb-8">
               A 40-panel solar array feeds a 26kWh battery bank, so the lights,
@@ -40,16 +42,16 @@ export default function PowerWaterSection() {
                 </div>
               ))}
             </div>
-          </div>
+          </Reveal>
 
-          <div>
+          <Reveal delayMs={100}>
             <h2 className="text-display-l text-ink mb-4">A private borehole</h2>
             <p className="text-body text-ink/80">
               Water is drawn from a private borehole and purified through
               multi-stage filtration before it reaches a tap — an independent
               supply, not dependent on municipal pressure or restrictions.
             </p>
-          </div>
+          </Reveal>
         </div>
       </div>
     </section>
