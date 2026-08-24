@@ -28,3 +28,6 @@ dist-ssr
 
 # TypeScript incremental build state
 *.tsbuildinfo
+
+# Chrome profile directories a Windows-path Lighthouse run drops into the repo root
+C:\\*
