@@ -43,7 +43,7 @@ function BedroomSpread({ room, index }: { room: Bedroom; index: number }) {
         <img
           src={lead.leadSrc || lead.src}
           srcSet={lead.leadSrc && lead.width ? `${lead.leadSrc} 640w, ${lead.src} ${lead.width}w` : undefined}
-          sizes="(min-width: 768px) 50vw, 100vw"
+          sizes="(min-width: 768px) 50vw, calc(100vw - 48px)"
           alt={lead.description || `${room.name} at Everview, shown at its true size, uncropped`}
           loading="lazy"
           width={lead.width}
