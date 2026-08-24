@@ -61,9 +61,14 @@ function applyDrag(
   yEdges: number[]
 ): Rect {
   if (mode === "move") {
-    const x = snap(start.x + dx, xEdges, grid, EDGE_SNAP);
-    const y = snap(start.y + dy, yEdges, grid, EDGE_SNAP);
-    // Snapping the leading edges keeps the room's size exactly as it was.
+    // Both edges get to snap, not just the leading one: a room dragged up
+    // against another from the left meets it with its *right* edge, and
+    // offering only `x` as a candidate left that gap open. Subtracting the
+    // room's own width turns "my right edge lands on that line" into a
+    // candidate for `x`, so either edge can catch, whichever is nearer.
+    const x = snap(start.x + dx, [...xEdges, ...xEdges.map((e) => e - start.w)], grid, EDGE_SNAP);
+    const y = snap(start.y + dy, [...yEdges, ...yEdges.map((e) => e - start.h)], grid, EDGE_SNAP);
+    // The size is carried through untouched, whichever edge snapped.
     return { ...start, x, y };
   }
 

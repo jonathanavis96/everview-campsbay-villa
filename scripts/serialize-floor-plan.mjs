@@ -47,7 +47,6 @@ export function validateFloors(data) {
       for (const key of ["x", "y", "w", "h"]) {
         if (!isFiniteNumber(room[key])) throw new Error(`${where}: ${key} must be a number`);
       }
-      if (room.w <= 0 || room.h <= 0) throw new Error(`${where}: width and height must be positive`);
 
       const out = {
         name: room.name,
@@ -56,6 +55,12 @@ export function validateFloors(data) {
         w: Math.round(room.w),
         h: Math.round(room.h),
       };
+      // Checked *after* rounding, which is what actually reaches the file: a
+      // width of 0.1 is positive but serialises as 0, and a zero-width room
+      // is invisible on the plan and cannot be grabbed to fix.
+      if (out.w <= 0 || out.h <= 0) {
+        throw new Error(`${where}: width and height must round to at least 1`);
+      }
       if (typeof room.planName === "string" && room.planName.trim()) out.planName = room.planName;
       if (room.area !== undefined && room.area !== null && room.area !== "") {
         if (!isFiniteNumber(room.area)) throw new Error(`${where}: area must be a number`);
