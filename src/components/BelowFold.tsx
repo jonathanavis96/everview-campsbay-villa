@@ -26,8 +26,11 @@ import AtlanticBand from "@/components/Atlantic";
  *
  * Each section names what follows it. Most take the skyline; the plan hands
  * over to the Atlantic, because the water is south of the terrace and the
- * plan no longer says so itself; the sunset photograph takes a plain rule,
- * since a drawn mountain under a photograph of a mountain says it twice.
+ * plan no longer says so itself. Three take a plain rule instead: under the
+ * sunset photograph, because a drawn mountain under a photograph of a
+ * mountain says it twice, and after the filtration and rates sections, where
+ * Jonathan found a mountain range between two blocks of practical text too
+ * loud for what it was separating.
  *
  * The order runs: what the house is, then the house itself, then where it
  * is, then the reassurances an overseas guest needs, then proof, then price,
@@ -44,10 +47,10 @@ const SECTIONS: Array<[string, ComponentType, Divider?]> = [
   ["bedrooms", BedroomsSection],
   ["plans", FloorPlanSection, "atlantic"],
   ["camps-bay", CampsBaySection],
-  ["power-water", PowerWaterSection],
+  ["power-water", PowerWaterSection, "rule"],
   ["reviews", ReviewsSection],
   ["sunset-band", SunsetBand, "rule"],
-  ["rates", RateSection],
+  ["rates", RateSection, "rule"],
   ["arrival", ArrivalSection],
   ["enquire", EnquiryComposer],
   ["plates", PlatesSection],

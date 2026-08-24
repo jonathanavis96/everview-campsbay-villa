@@ -79,12 +79,16 @@ function FloorPlan({ floor }: { floor: Floor }) {
 
   return (
     <div>
-      {/* Trimmed to its own bounds, the plan fits a phone at full width. The
-          labels are sized up below the md breakpoint to survive that. */}
+      {/* Trimmed to its own bounds, the plan fits a phone at full width, and
+          the labels are sized up below the md breakpoint to survive that.
+          From the md breakpoint it is sized by height instead: Jonathan could
+          not get the level buttons and the whole sketch onto one 1080p screen
+          at full width, so the drawing takes at most 62vh and lets its width
+          follow. */}
       <div>
       <svg
         viewBox={`${box.x} ${box.y} ${box.width} ${box.height}`}
-        className="ev-plan w-full h-auto text-ink"
+        className="ev-plan mx-auto block h-auto w-full text-ink md:h-[56vh] md:w-auto md:max-w-full"
         role="img"
         aria-label={`Simplified plan of the ${floor.label.toLowerCase()} at Everview`}
       >
@@ -254,19 +258,19 @@ export default function FloorPlanSection() {
   const floor = FLOORS.find((f) => f.id === floorId) ?? FLOORS[0];
 
   return (
-    <section id="plans" className="py-8 md:py-12">
+    <section id="plans" className="py-8 md:py-8">
       <div className="container">
         <p className="text-label text-stone-text mb-4">The plan</p>
 
-        <div className="border-t border-line pt-8 md:pt-12">
+        <div className="border-t border-line pt-8 md:pt-6">
           <Reveal>
-            <h2 className="text-display-l text-ink mb-4">How the house is laid out</h2>
+            <h2 className="text-display-l text-ink mb-3">How the house is laid out</h2>
 
             {/* One bordered group with the live level filled: two outlined
                 words read as decoration, and Jonathan watched people miss
                 that the plan had a second floor at all. */}
             <div
-              className="mb-6 inline-flex overflow-hidden rounded-sm border border-ink"
+              className="mb-4 inline-flex overflow-hidden rounded-sm border border-ink"
               role="tablist"
               aria-label="Floor"
             >
@@ -288,7 +292,7 @@ export default function FloorPlanSection() {
               ))}
             </div>
 
-            <p className="text-body text-ink/80 mb-6 max-w-2xl">{floor.intro}</p>
+            <p className="text-body text-ink/80 mb-4 max-w-2xl">{floor.intro}</p>
           </Reveal>
 
           <Reveal>

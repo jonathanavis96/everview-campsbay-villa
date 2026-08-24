@@ -46,15 +46,29 @@ export default function HorizonSection() {
             </p>
           </Reveal>
 
-          <Reveal delayMs={120} className="md:w-[28rem] md:border-l md:border-line md:pl-10">
-            <p className="text-label text-stone-text mb-5 text-[0.9375rem] tracking-[0.16em]">
+          {/* Set against the lede's own rhythm, from Jonathan's second
+              mockup: the heading sits on the paragraph's first line and the
+              facts run on the same 1.45 line-height beneath it, so the last
+              of them — "Safe and secure" — finishes level with "running away
+              to the far left". Centred over the pair of columns rather than
+              flush left, because the rail is wider than either of them. */}
+          <Reveal
+            delayMs={120}
+            className="md:w-[28rem] md:border-l md:border-line md:pl-10"
+          >
+            <p className="text-lede text-stone-text mb-0 text-center uppercase tracking-[0.16em]">
               The house
             </p>
             <div className="grid grid-cols-2 gap-x-8">
               {SPEC.map((column) => (
-                <ul key={column[0]} className="text-data-l space-y-1 text-ink">
+                <ul
+                  key={column[0]}
+                  className="text-data-l list-disc pl-5 leading-[calc(clamp(1.25rem,2.2vw,1.75rem)*1.45)] text-ink marker:text-stone-text"
+                >
                   {column.map((item) => (
-                    <li key={item}>{item}</li>
+                    <li key={item} className="leading-[calc(clamp(1.25rem,2.2vw,1.75rem)*1.45)]">
+                      {item}
+                    </li>
                   ))}
                 </ul>
               ))}
