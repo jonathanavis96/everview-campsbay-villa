@@ -32,7 +32,7 @@ export default function PowerWaterSection() {
             <div className="flex gap-8">
               {STATS.map((s) => (
                 <div key={s.label}>
-                  <p className="text-display-m" style={{ color: "var(--sun)" }}>
+                  <p className="text-display-m" style={{ color: "var(--sun-text)" }}>
                     {s.value}
                     <span className="text-label ml-1">{s.unit}</span>
                   </p>
