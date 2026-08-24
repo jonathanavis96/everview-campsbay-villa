@@ -129,9 +129,19 @@ export function SolarDiagram({ className = "" }: { className?: string }) {
   );
 }
 
-/** Borehole → filtration → tap. */
+/**
+ * Borehole → filtration → tap.
+ *
+ * The water reads as water: every moving part of it is on the water blue,
+ * never on ink. It climbs the bore, runs the riser and passes through each
+ * filter in turn as a marching dashed line, then leaves the *tap* — not the
+ * first filter, which is where the drop used to appear — and falls slowly
+ * into a glass that is already part full, splashing as it lands on the
+ * surface.
+ */
 export function BoreholeDiagram({ className = "" }: { className?: string }) {
   const { ref, inView } = useInView<HTMLDivElement>();
+  const WATER = "var(--water)";
 
   return (
     <div ref={ref} className={className}>
@@ -139,7 +149,7 @@ export function BoreholeDiagram({ className = "" }: { className?: string }) {
         viewBox="0 0 320 168"
         className={`w-full h-auto text-ink ${inView ? "is-live" : ""}`}
         role="img"
-        aria-label="Water rising from a private borehole through three filtration stages to a tap"
+        aria-label="Water rising from a private borehole through three filtration stages to a tap, filling a glass"
       >
         {/* Ground line and hatching */}
         <line x1="24" y1="76" x2="308" y2="76" stroke={INK} strokeWidth="1.25" />
@@ -167,13 +177,13 @@ export function BoreholeDiagram({ className = "" }: { className?: string }) {
           className="ev-wave"
           d="M34 142 q 11 -6 22 0 t 22 0 t 22 0"
           fill="none"
-          stroke={INK}
+          stroke={WATER}
           strokeWidth="1.25"
           strokeLinecap="round"
-          opacity="0.5"
+          opacity="0.6"
         />
 
-        {/* Rising water */}
+        {/* Water climbing the bore */}
         {[0, 1, 2].map((i) => (
           <circle
             key={i}
@@ -181,28 +191,50 @@ export function BoreholeDiagram({ className = "" }: { className?: string }) {
             cx="72"
             cy="146"
             r="2.5"
-            fill={INK}
+            fill={WATER}
             style={{ animationDelay: `${i * 1000}ms` }}
           />
         ))}
 
-        {/* Riser, up out of the ground and across to the filter stack */}
+        {/* Riser: out of the ground, along the top, through all three filter
+            bodies and on to the tap. Drawn as one path in ink, with the same
+            path repeated in water blue on top as a marching dashed line, so
+            the flow is visibly the same water the whole way. */}
         <path
-          d="M72 76 L72 52 L170 52"
+          d="M72 76 L72 52 L254 52"
           fill="none"
           stroke={INK}
           strokeWidth="1.25"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
+        <path
+          className="ev-flow"
+          d="M72 76 L72 52 L254 52"
+          fill="none"
+          stroke={WATER}
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
 
         {/* Three filtration stages, threaded on the riser */}
         {[0, 1, 2].map((i) => (
-          <g key={i} stroke={INK} strokeWidth="1.25" fill="none">
-            <rect x={170 + i * 30} y="38" width="24" height="28" rx="2" />
+          <g key={i} fill="none">
+            <rect
+              x={170 + i * 30}
+              y="38"
+              width="24"
+              height="28"
+              rx="2"
+              stroke={INK}
+              strokeWidth="1.25"
+            />
             <path
               className="ev-stage"
               d={`M${175 + i * 30} 52 h 14`}
+              stroke={WATER}
+              strokeWidth="1.5"
               strokeLinecap="round"
               style={{ animationDelay: `${i * 400}ms` }}
             />
@@ -215,20 +247,13 @@ export function BoreholeDiagram({ className = "" }: { className?: string }) {
           <path d="M274 52 L274 42 L290 42" strokeLinecap="round" />
         </g>
 
-        {/* Drip */}
-        {[0, 1].map((i) => (
-          <circle
-            key={i}
-            className="ev-drip"
-            cx="282"
-            cy="84"
-            r="2.5"
-            fill={INK}
-            style={{ animationDelay: `${i * 1400}ms` }}
-          />
-        ))}
-
-        {/* Glass */}
+        {/* Glass, already part full */}
+        <path
+          className="ev-glass-water"
+          d="M269.6 126 L294.4 126 L293 144 L271 144 Z"
+          fill={WATER}
+          opacity="0.28"
+        />
         <path
           d="M266 116 L298 116 L293 144 L271 144 Z"
           fill="none"
@@ -237,6 +262,49 @@ export function BoreholeDiagram({ className = "" }: { className?: string }) {
           strokeLinejoin="round"
           opacity="0.55"
         />
+
+        {/* The drop: leaves the tap's spout and falls the 48 units to the
+            water surface at y=126. Two of them, half a cycle apart. */}
+        {[0, 1].map((i) => (
+          <ellipse
+            key={i}
+            className="ev-drop"
+            cx="282"
+            cy="80"
+            rx="2.4"
+            ry="3.2"
+            fill={WATER}
+            style={{ animationDelay: `${i * 1900}ms` }}
+          />
+        ))}
+
+        {/* The splash, on the surface, timed to the moment the drop lands */}
+        {[0, 1].map((i) => (
+          <g key={i} className="ev-splash" style={{ animationDelay: `${i * 1900 + 1750}ms` }}>
+            <path
+              d="M275 126 q 3 -6 5 -1"
+              fill="none"
+              stroke={WATER}
+              strokeWidth="1.25"
+              strokeLinecap="round"
+            />
+            <path
+              d="M289 126 q -3 -6 -5 -1"
+              fill="none"
+              stroke={WATER}
+              strokeWidth="1.25"
+              strokeLinecap="round"
+            />
+            <path
+              className="ev-ripple"
+              d="M273 126 q 9 5 18 0"
+              fill="none"
+              stroke={WATER}
+              strokeWidth="1"
+              strokeLinecap="round"
+            />
+          </g>
+        ))}
       </svg>
     </div>
   );

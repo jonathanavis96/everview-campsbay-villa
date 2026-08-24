@@ -1,0 +1,14 @@
+- generic [ref=f15e3]:
+  - navigation [ref=f15e4]:
+    - generic [ref=f15e5]:
+      - link "Everview — back to top" [ref=f15e6] [cursor=pointer]:
+        - /url: "#top"
+        - generic [ref=f15e9]: Everview
+      - button "Check dates" [ref=f15e10] [cursor=pointer]
+  - generic [ref=f15e11]:
+    - img "Everview at sunset, seen from the garden, with the Atlantic and Lion's Head behind the house" [ref=f15e12]
+    - generic [ref=f15e16]:
+      - paragraph [ref=f15e17]: Camps Bay · Cape Town
+      - heading "Everview" [level=1] [ref=f15e18]
+      - paragraph [ref=f15e19]: Four bedrooms above the Atlantic, at the end of a quiet road.
+      - button "Check dates" [ref=f15e20] [cursor=pointer]

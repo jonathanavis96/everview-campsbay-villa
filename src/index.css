@@ -44,6 +44,10 @@
        WCAG for text). Use this, not --sun, whenever the accent colours
        text rather than a background/icon. */
     --sun-text: #9c5c1f;
+    /* The water blue for the borehole drawing. Dark enough to hold a
+       hairline against paper — the same reason --sun-text is not literal
+       sunlight yellow. */
+    --water: #2f6f9b;
   }
 
   * {
@@ -355,31 +359,61 @@
     animation: ev-stage 3s ease-in-out infinite;
   }
 
-  /* One drop from the tap, with a long pause between. */
-  @keyframes ev-drip {
+  /* One drop, leaving the tap and falling the 48 units to the water in the
+     glass. Slow on purpose: it is the pace of a tap that has just been shut,
+     not a leak. The splash below is timed to land with it. */
+  @keyframes ev-drop {
     0% {
-      transform: translateY(0) scale(0.6);
+      transform: translateY(0) scale(0.5);
       opacity: 0;
     }
-    8% {
-      opacity: 0.7;
+    6% {
+      transform: translateY(2px) scale(1);
+      opacity: 0.9;
     }
-    38% {
-      transform: translateY(28px) scale(1);
-      opacity: 0.7;
+    46% {
+      transform: translateY(46px) scale(1);
+      opacity: 0.9;
     }
-    46%,
+    50%,
     100% {
-      transform: translateY(30px) scale(1);
+      transform: translateY(46px) scale(1);
       opacity: 0;
     }
   }
 
-  .ev-drip {
+  .ev-drop {
     opacity: 0;
   }
 
-  .is-live .ev-drip {
-    animation: ev-drip 2.8s ease-in infinite;
+  .is-live .ev-drop {
+    animation: ev-drop 3.8s cubic-bezier(0.45, 0, 0.75, 0.55) infinite;
+  }
+
+  /* The splash: two flecks thrown up off the surface, and a ripple. */
+  @keyframes ev-splash {
+    0%,
+    100% {
+      opacity: 0;
+      transform: scale(0.4);
+    }
+    6% {
+      opacity: 0.85;
+      transform: scale(1);
+    }
+    30% {
+      opacity: 0;
+      transform: scale(1.25) translateY(-2px);
+    }
+  }
+
+  .ev-splash {
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center bottom;
+  }
+
+  .is-live .ev-splash {
+    animation: ev-splash 3.8s ease-out infinite;
   }
 }

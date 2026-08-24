@@ -136,7 +136,12 @@ export function RidgelineDivider({ className = "" }: { from?: number; to?: numbe
   return (
     <div ref={wrapperRef} className={className} aria-hidden="true">
       {ready && (
-        <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="block">
+        <svg
+          height={height}
+          viewBox={`0 0 ${width} ${height}`}
+          preserveAspectRatio="none"
+          className="block w-full"
+        >
           <g fill="none" stroke="currentColor" strokeWidth={1} strokeLinejoin="round" strokeLinecap="round">
             <path
               stroke="#DAD8D2"
