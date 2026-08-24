@@ -40,15 +40,6 @@ export default function Footer() {
           </p>
         </div>
         <div>
-          <p className="text-label text-paper/60 mb-3">Brochure</p>
-          <a
-            href={`${base}brochures/Everview-Welcome-Brochure-v3.pdf`}
-            className="text-body hover:underline"
-          >
-            Download the welcome brochure
-          </a>
-        </div>
-        <div>
           <p className="text-label text-paper/60 mb-3">Before &amp; after</p>
           <a href={`${base}old/`} className="text-body hover:underline">
             See the previous site
