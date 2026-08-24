@@ -52,9 +52,16 @@ function heroPreloadPlugin(): Plugin {
 //
 // It writes to one fixed path and takes JSON, never a string to put on disk:
 // the file text is built on this side by `serialize-floor-plan.mjs` after the
-// payload has been validated. It also refuses anything that did not come from
-// the loopback interface, because the dev server binds `::` and a write
-// endpoint reachable from the LAN is a different thing entirely.
+// payload has been validated.
+//
+// Three checks stand in front of it, and the loopback one is not enough on its
+// own. A page on any website open in the same browser can POST to
+// `localhost:8080` — the request leaves the machine's own loopback interface,
+// so an address check waves it straight through. That is a cross-origin write
+// to a file in the repository. So the endpoint also requires
+// `Sec-Fetch-Site: same-origin`, which browsers set themselves and page script
+// cannot forge, and a JSON content type, which a form post cannot send without
+// a preflight the endpoint never answers.
 function floorPlanEditorApi(): Plugin {
   const ENDPOINT = "/__floor-plan";
   const isLoopback = (address?: string) =>
@@ -74,6 +81,16 @@ function floorPlanEditorApi(): Plugin {
         if (req.method !== "POST") return send(405, { error: "POST only" });
         if (!isLoopback(req.socket.remoteAddress ?? undefined)) {
           return send(403, { error: "the plan editor only saves from localhost" });
+        }
+        // Absent on a non-browser client (curl, a test) — which is fine; what
+        // must never pass is a browser telling us the request came from
+        // somewhere else.
+        const site = req.headers["sec-fetch-site"];
+        if (site !== undefined && site !== "same-origin") {
+          return send(403, { error: "cross-origin save refused" });
+        }
+        if (!String(req.headers["content-type"] ?? "").startsWith("application/json")) {
+          return send(415, { error: "expected application/json" });
         }
 
         let raw = "";
