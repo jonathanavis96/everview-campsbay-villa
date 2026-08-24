@@ -135,6 +135,8 @@ function SpaceSpread({ space, index }: { space: Space; index: number }) {
           src={lead.src}
           alt={lead.description || `${space.name} at Everview`}
           loading="lazy"
+          width={lead.width}
+          height={lead.height}
           className="w-full h-auto rounded-sm"
         />
       </button>
@@ -154,9 +156,11 @@ function SpaceSpread({ space, index }: { space: Space; index: number }) {
                 aria-label={`Open photograph ${i + 2} of ${space.name}`}
               >
                 <img
-                  src={p.src}
+                  src={p.thumbSrc || p.src}
                   alt=""
                   loading="lazy"
+                  width={64}
+                  height={64}
                   className="w-full h-full object-cover"
                 />
               </button>
