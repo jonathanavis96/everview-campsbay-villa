@@ -1,0 +1,40 @@
+{
+  "fxUpdated": "2026-08-24",
+  "base": "ZAR",
+  "seasonal": {
+    "inSeason": 45000,
+    "outOfSeason": 25000
+  },
+  "currencies": {
+    "USD": { "rate": 0.0546, "symbol": "$" },
+    "GBP": { "rate": 0.0426, "symbol": "£" },
+    "EUR": { "rate": 0.0505, "symbol": "€" },
+    "AUD": { "rate": 0.0833, "symbol": "A$" }
+  },
+  "timezoneCurrency": {
+    "America/New_York": "USD",
+    "America/Chicago": "USD",
+    "America/Denver": "USD",
+    "America/Los_Angeles": "USD",
+    "America/Anchorage": "USD",
+    "Pacific/Honolulu": "USD",
+    "America/Phoenix": "USD",
+    "Europe/London": "GBP",
+    "Europe/Dublin": "EUR",
+    "Europe/Paris": "EUR",
+    "Europe/Berlin": "EUR",
+    "Europe/Madrid": "EUR",
+    "Europe/Rome": "EUR",
+    "Europe/Amsterdam": "EUR",
+    "Europe/Brussels": "EUR",
+    "Europe/Vienna": "EUR",
+    "Europe/Lisbon": "EUR",
+    "Europe/Athens": "EUR",
+    "Europe/Helsinki": "EUR",
+    "Australia/Sydney": "AUD",
+    "Australia/Melbourne": "AUD",
+    "Australia/Brisbane": "AUD",
+    "Australia/Perth": "AUD",
+    "Australia/Adelaide": "AUD"
+  }
+}
