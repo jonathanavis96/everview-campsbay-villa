@@ -1,55 +1,67 @@
 {
-  "1-bedroom-unplaced": {
-    "width": 1280,
-    "height": 853
-  },
-  "2-bedroom-unplaced": {
-    "width": 1280,
-    "height": 853
-  },
-  "1-bedroom-bathroom": {
+  "1-garden-king-bedroom-bathroom": {
     "width": 1200,
     "height": 800
   },
-  "2-bedroom-bathroom": {
+  "2-garden-king-bedroom-bathroom": {
     "width": 1200,
     "height": 800
   },
-  "3-bedroom-bathroom": {
+  "3-ocean-king-bedroom-bathroom": {
     "width": 1280,
     "height": 853
   },
-  "1-bedroom-gardenKing": {
+  "1-bedroom-garden-king": {
     "width": 1280,
     "height": 853
   },
-  "2-bedroom-gardenKing": {
+  "2-bedroom-garden-king": {
     "width": 1280,
     "height": 853
   },
-  "1-bedroom-masterSuite": {
+  "1-bedroom-master-suite": {
     "width": 1200,
     "height": 800
   },
-  "2-bedroom-masterSuite": {
+  "2-bedroom-master-suite": {
     "width": 1200,
     "height": 800
   },
-  "1-bedroom-oceanKing": {
+  "3-bedroom-master-suite": {
+    "width": 1280,
+    "height": 853
+  },
+  "4-bedroom-master-suite-private-balcony": {
+    "width": 1280,
+    "height": 853
+  },
+  "1-bedroom-ocean-king": {
+    "width": 1280,
+    "height": 853
+  },
+  "2-bedroom-ocean-king": {
     "width": 1200,
     "height": 800
   },
-  "2-bedroom-oceanKing": {
+  "3-bedroom-ocean-king-balcony": {
+    "width": 1280,
+    "height": 853
+  },
+  "3-bedroom-ocean-king": {
+    "width": 1280,
+    "height": 853
+  },
+  "4-bedroom-ocean-king-balcony": {
     "width": 1280,
     "height": 853
   },
   "1-bedroom-poolRoom": {
-    "width": 1200,
-    "height": 800
-  },
-  "2-bedroom-poolRoom": {
     "width": 1280,
     "height": 853
+  },
+  "2-bedroom-poolRoom": {
+    "width": 1200,
+    "height": 800
   },
   "1-bedroom-study": {
     "width": 1280,
@@ -67,15 +79,15 @@
     "width": 1280,
     "height": 853
   },
-  "1-garden-garden": {
+  "1-garden-garden-lions-head": {
     "width": 1200,
     "height": 800
   },
-  "2-garden-garden": {
+  "2-garden-garden-lions-head": {
     "width": 1280,
     "height": 853
   },
-  "3-garden-garden": {
+  "3-garden-roof-garden-gin-deck": {
     "width": 1280,
     "height": 853
   },
@@ -91,55 +103,59 @@
     "width": 1280,
     "height": 853
   },
-  "1-living-formalLivingRoom": {
+  "1-living-bar": {
     "width": 1200,
     "height": 800
   },
-  "2-living-formalLivingRoom": {
-    "width": 1200,
-    "height": 800
-  },
-  "3-living-formalLivingRoom": {
-    "width": 1200,
-    "height": 800
-  },
-  "4-living-formalLivingRoom": {
+  "2-living-bar": {
     "width": 1280,
     "height": 853
   },
-  "5-living-formalLivingRoom": {
-    "width": 1280,
-    "height": 853
-  },
-  "6-living-formalLivingRoom": {
-    "width": 1280,
-    "height": 853
-  },
-  "1-living-groundKing": {
+  "1-living-formal-living-room": {
     "width": 1200,
     "height": 800
   },
-  "1-living-indoorDining": {
+  "2-living-formal-living-room": {
+    "width": 1200,
+    "height": 800
+  },
+  "3-living-formal-living-room": {
+    "width": 1200,
+    "height": 800
+  },
+  "4-living-formal-living-room": {
     "width": 1280,
     "height": 853
   },
-  "2-living-indoorDining": {
-    "width": 1200,
-    "height": 800
-  },
-  "3-living-indoorDining": {
-    "width": 1200,
-    "height": 800
-  },
-  "4-living-indoorDining": {
-    "width": 1200,
-    "height": 800
-  },
-  "5-living-indoorDining": {
+  "5-living-formal-living-room": {
     "width": 1280,
     "height": 853
   },
-  "6-living-indoorDining": {
+  "6-living-formal-living-room": {
+    "width": 1280,
+    "height": 853
+  },
+  "1-living-ground-king": {
+    "width": 1200,
+    "height": 800
+  },
+  "1-living-indoor-formal-dining": {
+    "width": 1280,
+    "height": 853
+  },
+  "2-living-indoor-formal-dining": {
+    "width": 1200,
+    "height": 800
+  },
+  "3-living-indoor-formal-dining": {
+    "width": 1200,
+    "height": 800
+  },
+  "4-living-indoor-formal-dining": {
+    "width": 1280,
+    "height": 853
+  },
+  "5-living-indoor-formal-dining": {
     "width": 1280,
     "height": 853
   },
@@ -167,13 +183,29 @@
     "width": 1280,
     "height": 853
   },
-  "1-living-outsideLounge": {
+  "1-living-covered-outside-dining": {
+    "width": 1280,
+    "height": 853
+  },
+  "2-outside-covered-dining-and-lounge": {
     "width": 1200,
     "height": 800
   },
-  "2-living-outsideLounge": {
+  "1-living-covered-outside-lounge": {
     "width": 1200,
     "height": 800
+  },
+  "2-living-covered-outside-lounge": {
+    "width": 1200,
+    "height": 800
+  },
+  "3-living-covered-outside-lounge": {
+    "width": 1280,
+    "height": 853
+  },
+  "4-living-covered-outside-lounge": {
+    "width": 1280,
+    "height": 853
   },
   "1-living-sunbeds": {
     "width": 1200,
@@ -191,55 +223,23 @@
     "width": 1280,
     "height": 853
   },
-  "10-living-terrace": {
-    "width": 1280,
-    "height": 853
-  },
   "2-living-terrace": {
     "width": 1280,
     "height": 853
   },
   "3-living-terrace": {
-    "width": 1200,
-    "height": 800
+    "width": 1280,
+    "height": 853
   },
   "4-living-terrace": {
-    "width": 1280,
-    "height": 853
-  },
-  "5-living-terrace": {
-    "width": 1280,
-    "height": 853
-  },
-  "6-living-terrace": {
-    "width": 1280,
-    "height": 853
-  },
-  "7-living-terrace": {
-    "width": 1280,
-    "height": 853
-  },
-  "8-living-terrace": {
-    "width": 1280,
-    "height": 853
-  },
-  "9-living-terrace": {
-    "width": 1280,
-    "height": 853
-  },
-  "1-living-wineCellar": {
-    "width": 1280,
-    "height": 853
-  },
-  "2-living-wineCellar": {
     "width": 1200,
     "height": 800
   },
-  "3-living-wineCellar": {
+  "1-living-wine-cellar-and-tv-room": {
     "width": 1280,
     "height": 853
   },
-  "4-living-wineCellar": {
+  "2-living-wine-cellar-and-tv-room": {
     "width": 1200,
     "height": 800
   },

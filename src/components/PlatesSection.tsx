@@ -23,6 +23,8 @@ const GROUP_LABELS: Record<string, string> = {
   "living-level/kitchen": "The kitchen",
   "living-level/indoor-dining": "Indoor dining",
   "living-level/formal-living-room": "The formal living room",
+  "living-level/outside-dining": "Outside dining",
+  "living-level/bar": "The bar",
   "living-level/outside-lounge": "The outside lounge",
   "living-level/sunbeds": "The sunbeds",
   "living-level/wine-cellar": "Wine cellar & TV room",
