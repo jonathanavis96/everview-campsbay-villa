@@ -41,7 +41,9 @@ function BedroomSpread({ room, index }: { room: Bedroom; index: number }) {
         aria-label={`Open ${room.name} photographs`}
       >
         <img
-          src={lead.src}
+          src={lead.leadSrc || lead.src}
+          srcSet={lead.leadSrc && lead.width ? `${lead.leadSrc} 640w, ${lead.src} ${lead.width}w` : undefined}
+          sizes="(min-width: 768px) 50vw, 100vw"
           alt={lead.description || `${room.name} at Everview, shown at its true size, uncropped`}
           loading="lazy"
           width={lead.width}
