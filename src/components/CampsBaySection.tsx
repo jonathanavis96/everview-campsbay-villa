@@ -51,7 +51,7 @@ function MapPanel() {
       onClick={() => setLoaded(true)}
       className="relative w-full overflow-hidden rounded-sm border border-line bg-line/20 text-left"
       style={{ paddingTop: "56%" }}
-      aria-label="Load the map"
+      aria-label="Load map"
     >
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-6 text-center">
         <p className="text-label text-stone-text">14 Cramond Road, Camps Bay</p>
@@ -81,10 +81,17 @@ export default function CampsBaySection() {
             <div>
               <h3 className="text-display-m text-ink mb-4">Getting around</h3>
               <table className="w-full text-body text-ink/80">
+                <thead className="sr-only">
+                  <tr>
+                    <th scope="col">Place</th>
+                    <th scope="col">Travel time</th>
+                    <th scope="col">Distance</th>
+                  </tr>
+                </thead>
                 <tbody>
                   {DISTANCES.map((d) => (
                     <tr key={d.name} className="border-t border-line">
-                      <td className="py-2 pr-4">{d.name}</td>
+                      <th scope="row" className="py-2 pr-4 text-left font-normal">{d.name}</th>
                       <td className="py-2 pr-4 text-stone-text whitespace-nowrap">{d.time}</td>
                       <td className="py-2 text-stone-text whitespace-nowrap text-right">{d.distance}</td>
                     </tr>

@@ -77,7 +77,7 @@ export default function PlatesSection() {
                     className="block w-full text-left"
                     aria-label={`Open photograph ${globalIndex + 1}: ${p.title ?? labelFor(folder)}`}
                   >
-                    <p className="text-label text-stone-text mb-1">
+                    <p className="text-label text-stone-text mb-1" aria-hidden="true">
                       {String(globalIndex + 1).padStart(2, "0")}
                     </p>
                     <img
