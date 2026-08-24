@@ -91,6 +91,10 @@
     "width": 1280,
     "height": 853
   },
+  "4-garden-pool": {
+    "width": 1280,
+    "height": 960
+  },
   "1-living-formalLivingRoom": {
     "width": 1200,
     "height": 800
@@ -246,5 +250,17 @@
   "1-view-atlantic": {
     "width": 1200,
     "height": 800
+  },
+  "2-view-camps-bay-panorama": {
+    "width": 2400,
+    "height": 1039
+  },
+  "3-view-sunset": {
+    "width": 1600,
+    "height": 1200
+  },
+  "4-view-camps-bay-beach": {
+    "width": 1280,
+    "height": 960
   }
 }
