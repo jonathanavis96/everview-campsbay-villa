@@ -66,12 +66,12 @@ export default function HorizonSection() {
             delayMs={120}
             className="flex flex-col md:w-[28rem] md:border-l md:border-line md:pl-10"
           >
-            <p className="text-lede text-stone-text mb-0 text-center uppercase tracking-[0.16em]">
+            <p className="text-lede text-stone-text mb-6 text-center uppercase tracking-[0.16em]">
               The house
             </p>
-            <ul className="text-data-l grid flex-1 grid-flow-col grid-cols-2 grid-rows-5 content-between gap-x-6 whitespace-nowrap pl-5 text-ink marker:text-stone-text">
+            <ul className="text-data-l grid grid-flow-col grid-cols-2 grid-rows-5 gap-x-6 gap-y-2 whitespace-nowrap pl-5 text-ink marker:text-stone-text">
               {SPEC.map((item) => (
-                <li key={item} className="list-disc leading-[calc(clamp(1.25rem,2.2vw,1.75rem)*1.45)]">
+                <li key={item} className="list-disc leading-[1.6]">
                   {item}
                 </li>
               ))}
