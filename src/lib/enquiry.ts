@@ -3,6 +3,10 @@
 // anywhere except the guest's own WhatsApp client when they press send.
 export const WHATSAPP_NUMBER = "27822227457";
 
+// design-direction §14.5: dictated ("JonathanEvers96 at gmail.com") and
+// resolved to Jonathan's own address. One constant, so a correction is one word.
+export const ENQUIRY_FALLBACK_EMAIL = "jonathanavis96@gmail.com";
+
 export const SEND_ON_WHATSAPP_LABEL = "Send on WhatsApp";
 
 export type EnquiryIntent = "check-dates" | "ask-question";
@@ -71,4 +75,15 @@ export function composeEnquiryMessage(fields: EnquiryFields): string {
 export function buildWhatsAppUrl(fields: EnquiryFields): string {
   const text = composeEnquiryMessage(fields);
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
+}
+
+export function buildMailtoUrl(fields: EnquiryFields): string {
+  const body = composeEnquiryMessage(fields);
+  const subject =
+    fields.intent === "ask-question"
+      ? "Question about Everview"
+      : "Availability enquiry — Everview";
+  return `mailto:${ENQUIRY_FALLBACK_EMAIL}?subject=${encodeURIComponent(
+    subject,
+  )}&body=${encodeURIComponent(body)}`;
 }

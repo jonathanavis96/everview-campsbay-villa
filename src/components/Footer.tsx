@@ -1,3 +1,5 @@
+import { ENQUIRY_FALLBACK_EMAIL } from "@/lib/enquiry";
+
 const base = import.meta.env.BASE_URL;
 
 export default function Footer() {
@@ -31,6 +33,11 @@ export default function Footer() {
               WhatsApp
             </a>
           </p>
+          <p className="text-body">
+            <a href={`mailto:${ENQUIRY_FALLBACK_EMAIL}`} className="hover:underline">
+              {ENQUIRY_FALLBACK_EMAIL}
+            </a>
+          </p>
         </div>
         <div>
           <p className="text-label text-paper/60 mb-3">Brochure</p>
@@ -51,7 +58,7 @@ export default function Footer() {
       <div className="border-t border-paper/15">
         <div className="container py-6">
           <p className="text-caption text-paper/50">
-            © {year} Everview, Camps Bay.
+            © {year} Everview, Camps Bay. Jonathan Avis, owner-host.
           </p>
         </div>
       </div>
