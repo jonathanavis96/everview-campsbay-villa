@@ -202,7 +202,11 @@
     section, figure { break-inside: avoid; }
     @page { size: A4; margin: 0; }
   }
-  @media (max-width: 230mm) {
+  /* Screen only, and that is load-bearing: the print viewport is 210mm wide,
+     so an unqualified max-width:230mm query matches when the brochure is
+     printed and collapses every grid to one column on top of the print rules
+     above — which pushes the manually paginated pages onto extra sheets. */
+  @media screen and (max-width: 230mm) {
     .page { width: auto; margin: 0; padding: 8mm; box-shadow: none; }
     .grid-2, .grid-3, .split { grid-template-columns: 1fr; }
   }
