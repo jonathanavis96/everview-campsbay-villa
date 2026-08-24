@@ -148,6 +148,12 @@ export default function PlanEditor() {
   // so there is nothing to gain from a finer-grained command history.
   const past = useRef<Floor[][]>([]);
   const future = useRef<Floor[][]>([]);
+  // The current plan, readable synchronously. History is pushed from event
+  // handlers, never from inside a setState updater: StrictMode double-invokes
+  // those in development — which is the only place this page runs — and a ref
+  // push inside one lands twice, so one edit took two undos to reverse.
+  const floorsRef = useRef(floors);
+  floorsRef.current = floors;
   const svgRef = useRef<SVGSVGElement>(null);
   const drag = useRef<{ name: string; mode: DragMode; start: Rect; originX: number; originY: number } | null>(null);
 
@@ -156,11 +162,9 @@ export default function PlanEditor() {
 
   const commit = useCallback(
     (next: Floor[] | ((current: Floor[]) => Floor[])) => {
-      setFloors((current) => {
-        past.current.push(clone(current));
-        future.current = [];
-        return typeof next === "function" ? next(current) : next;
-      });
+      past.current.push(clone(floorsRef.current));
+      future.current = [];
+      setFloors((current) => (typeof next === "function" ? next(current) : next));
       setDirty(true);
       setStatus(null);
     },
@@ -188,20 +192,16 @@ export default function PlanEditor() {
   const undo = useCallback(() => {
     const previous = past.current.pop();
     if (!previous) return;
-    setFloors((current) => {
-      future.current.push(clone(current));
-      return previous;
-    });
+    future.current.push(clone(floorsRef.current));
+    setFloors(previous);
     setDirty(true);
   }, []);
 
   const redo = useCallback(() => {
     const next = future.current.pop();
     if (!next) return;
-    setFloors((current) => {
-      past.current.push(clone(current));
-      return next;
-    });
+    past.current.push(clone(floorsRef.current));
+    setFloors(next);
     setDirty(true);
   }, []);
 
@@ -237,7 +237,7 @@ export default function PlanEditor() {
     (event.currentTarget as Element).setPointerCapture(event.pointerId);
     setSelected(target.name);
     // One undo step per drag, taken before anything moves.
-    past.current.push(clone(floors));
+    past.current.push(clone(floorsRef.current));
     future.current = [];
     const origin = toPlan(event);
     drag.current = {
