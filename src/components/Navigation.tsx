@@ -1,170 +1,67 @@
-import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Menu, X, Phone, Mail } from 'lucide-react';
+import { useEffect, useState } from "react";
+import { RidgelineMark } from "@/components/Ridgeline";
 
-const Navigation = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+// Section links return once MIS-449 lands the content sections they point
+// to — a nav item that scrolls nowhere is the same defect as a play button
+// with no video.
+export default function Navigation() {
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const navItems = [
-    { label: 'Overview', href: '#overview' },
-    { label: 'Bedrooms', href: '#bedrooms' },
-    { label: 'Living', href: '#living' },
-    { label: 'Features', href: '#features' },
-    { label: 'Sustainability', href: '#sustainability' },
-    { label: 'Gallery', href: '#gallery' },
-    { label: 'Location', href: '#location' },
-    { label: 'Enquire', href: '#enquire' },
-  ];
+  const scrollToTop = (e: React.MouseEvent) => {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
-  const scrollToSection = (href: string) => {
-    const element = document.querySelector(href);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-    setIsMobileMenuOpen(false);
+  const scrollToEnquiry = () => {
+    document.getElementById("enquire")?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
-    <>
-      <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          isScrolled
-            ? 'bg-white shadow-sm border-b border-ever-line'
-            : 'glass'
-        }`}
-      >
-        <div className="container-luxury">
-          <div className="flex items-center justify-between h-20">
-            {/* Logo */}
-            <a
-              href="#top"
-              onClick={(e) => {
-                e.preventDefault();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-                setIsMobileMenuOpen(false);
-              }}
-              aria-label="Everview — back to top"
-              className="relative inline-flex items-center"
-            >
-              {/* One-shot Table Mountain silhouette reveal, CSS-only, gated
-                  on prefers-reduced-motion. Lives in the nav, physically
-                  separate from the hero image, so it can't touch the LCP
-                  element or shift layout. */}
-              <svg
-                aria-hidden="true"
-                viewBox="0 0 120 40"
-                className={`mountain-reveal absolute -left-2 -bottom-1 h-8 w-[110px] transition-colors duration-300 ${
-                  isScrolled ? 'text-ever-blue/20' : 'text-white/25'
-                }`}
-              >
-                <path
-                  d="M0,40 L0,28 L15,28 L20,10 L85,10 L92,26 L120,26 L120,40 Z"
-                  fill="currentColor"
-                />
-              </svg>
-              <span
-                className={`relative font-heading text-2xl font-bold transition-colors duration-300 ${
-                  isScrolled ? 'text-ever-ink' : 'text-white'
-                }`}
-              >
-                Everview
-              </span>
-            </a>
-
-            {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center space-x-8">
-              {navItems.map((item) => (
-                <button
-                  key={item.label}
-                  onClick={() => scrollToSection(item.href)}
-                  className={`font-body text-sm font-medium transition-all duration-200 tracking-wide relative hover:after:scale-x-100 after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-ever-champ after:origin-bottom-right after:transition-transform after:duration-300 hover:after:origin-bottom-left ${
-                    isScrolled ? 'text-ever-ink' : 'text-white'
-                  }`}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
-
-            {/* Solar Badge */}
-            <div className="hidden lg:flex items-center space-x-3">
-              <div className={`border px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-2 transition-colors duration-300 ${
-                isScrolled 
-                  ? 'border-ever-champ text-ever-ink' 
-                  : 'border-white/30 text-white'
-              }`}>
-                <div className="w-2 h-2 rounded-full bg-ever-blue"></div>
-                Solar powered • No load-shedding
-              </div>
-            </div>
-
-            {/* Mobile Menu Button */}
-            <button
-              className={`lg:hidden p-2 transition-colors ${
-                isScrolled 
-                  ? 'text-ever-ink hover:text-ever-blue' 
-                  : 'text-white hover:text-ever-champ'
-              }`}
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
-              aria-expanded={isMobileMenuOpen}
-            >
-              {isMobileMenuOpen ? (
-                <X className="h-6 w-6" />
-              ) : (
-                <Menu className="h-6 w-6" />
-              )}
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile Menu */}
-        {isMobileMenuOpen && (
-          <div className="lg:hidden bg-white/98 backdrop-blur-md border-t border-ever-line">
-            <div className="container-luxury py-6">
-              <div className="flex flex-col space-y-4">
-                {navItems.map((item) => (
-                  <button
-                    key={item.label}
-                    onClick={() => scrollToSection(item.href)}
-                    className="font-body text-left text-base font-medium text-ever-ink hover:text-ever-blue transition-colors duration-200 py-2 tracking-wide"
-                  >
-                    {item.label}
-                  </button>
-                ))}
-                <div className="pt-4 border-t border-ever-line">
-                  <div className="border border-ever-champ text-ever-ink px-4 py-3 rounded-full text-sm font-medium text-center flex items-center justify-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-ever-blue"></div>
-                    Solar powered • No load-shedding
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </nav>
-
-      {/* Sticky Enquire Button - Mobile Only */}
-      <div className="lg:hidden fixed bottom-6 right-6 z-40">
-        <Button
-          onClick={() => scrollToSection('#enquire')}
-          className="btn-luxury shadow-lg"
+    <nav
+      className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${
+        scrolled ? "bg-paper border-b border-line" : "bg-transparent"
+      }`}
+    >
+      <div className="container flex items-center justify-between h-20">
+        <a
+          href="#top"
+          onClick={scrollToTop}
+          aria-label="Everview — back to top"
+          className="inline-flex flex-col items-start"
         >
-          Enquire Now
-        </Button>
-      </div>
-    </>
-  );
-};
+          <span
+            className={`text-display-m transition-colors duration-300 ${
+              scrolled ? "text-ink" : "text-paper"
+            }`}
+          >
+            Everview
+          </span>
+          <RidgelineMark
+            className={`h-3 w-32 -mt-1 transition-colors duration-300 ${
+              scrolled ? "text-stone" : "text-paper/70"
+            }`}
+          />
+        </a>
 
-export default Navigation;
+        <button
+          type="button"
+          onClick={scrollToEnquiry}
+          className={`text-body px-5 py-2.5 rounded-sm border transition-colors duration-300 ${
+            scrolled
+              ? "border-ink text-ink hover:bg-ink hover:text-paper"
+              : "border-paper text-paper hover:bg-paper hover:text-ink"
+          }`}
+        >
+          Check dates
+        </button>
+      </div>
+    </nav>
+  );
+}

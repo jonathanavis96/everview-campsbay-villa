@@ -2,200 +2,151 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Everview Villa Design System — "Atlantic Edge" (MIS-441 direction) */
+/* Everview — design system per MIS-430 design-direction §3–4.
+   Self-hosted, latin subset, font-display: swap. The two above-the-fold
+   faces (Fraunces, Archivo) are preloaded from index.html. */
 
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+@font-face {
+  font-family: "Fraunces Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("./assets/fonts/fraunces-variable-latin.woff2") format("woff2-variations");
+  font-named-instance: "Regular";
+}
+
+@font-face {
+  font-family: "Archivo Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  src: url("./assets/fonts/archivo-variable-latin.woff2") format("woff2-variations");
+}
+
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url("./assets/fonts/ibm-plex-mono-400-latin.woff2") format("woff2");
+}
 
 @layer base {
   :root {
-    /* Atlantic Edge palette — teal sampled from the hero photograph's pool/ocean
-       band, charcoal ground, warm off-white body (not pure white). */
-    --background: 40 27% 95.7%;
-    --foreground: 60 3.7% 10.6%;
+    /* §3 colour — there is no accent colour. */
+    --ink: #12191c;
+    --paper: #f1f0ec;
+    --stone: #8c857a;
+    --line: #dad8d2;
+    --sun: #d98a3d;
+  }
 
-    --card: 0 0% 100%;
-    --card-foreground: 60 3.7% 10.6%;
+  * {
+    border-color: var(--line);
+  }
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 60 3.7% 10.6%;
+  html {
+    scroll-behavior: smooth;
+  }
 
-    --primary: 60 3.7% 10.6%;
-    --primary-foreground: 40 27% 95.7%;
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 
-    --secondary: 40 15% 91%;
-    --secondary-foreground: 60 3.7% 10.6%;
+  body {
+    background-color: var(--paper);
+    color: var(--ink);
+    font-family: "Archivo Variable", system-ui, sans-serif;
+    font-weight: 400;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
 
-    --muted: 40 15% 91%;
-    --muted-foreground: 60 3% 32%;
-
-    --accent: 183.2 47.5% 23.1%;
-    --accent-foreground: 40 27% 95.7%;
-
-    /* Everview Brand Colors — ever-blue/ever-champ kept as the section files'
-       existing hook names, repointed from the old gold/navy pair onto the
-       Atlantic Edge teal family so every section shifts colour immediately;
-       full renames happen as each section is rebuilt in later MIS-443 PRs. */
-    --ever-bg: 40 27% 95.7%;
-    --ever-ink: 60 3.7% 10.6%;
-    --ever-body: 60 3.7% 10.6%;
-    --ever-blue: 183.2 47.5% 23.1%;
-    --ever-champ: 182.7 43.8% 30%;
-    --ever-line: 40 15% 88%;
-    --ever-panel: 0 0% 100%;
-    --ever-solar: 48 91% 68%; /* HSL version of #F5D367 */
-    --ever-green: 141 22% 56%; /* muted green (#7FA27C) */
-
-    /* Legacy luxury-* hooks, repointed onto the same teal family (no gold) */
-    --luxury-gold: 182.7 43.8% 30%;
-    --luxury-gold-light: 182.7 43.8% 30%;
-    --luxury-champagne: 182.7 43.8% 30%;
-    --luxury-cream: 40 27% 95.7%;
-    --luxury-navy: 183.2 47.5% 23.1%;
-    --luxury-charcoal: 60 3.7% 10.6%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 40 15% 88%;
-    --input: 40 15% 88%;
-    --ring: 183.2 47.5% 23.1%;
-
-    /* Gradients & Shadows */
-    --gradient-hero: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 35%, rgba(0,0,0,0.6) 100%);
-    --shadow-luxury: 0 8px 24px rgba(0,0,0,0.05);
-    --shadow-card: 0 8px 32px -8px rgba(0,0,0,0.05);
-    --shadow-elegant: 0 4px 20px -4px rgba(0,0,0,0.1);
-
-    /* Animations */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-    --radius: 0.125rem;
+  :focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
   }
 }
 
 @layer components {
-  /* Typography Styles */
-  .font-heading {
-    font-family: 'Cormorant Garamond', serif;
-    font-weight: 600;
+  /* §4 typography scale — mobile-to-desktop clamps. */
+  .text-display-xl {
+    font-family: "Fraunces Variable", Georgia, serif;
+    font-weight: 300;
+    font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 0;
+    font-size: clamp(3.5rem, 11vw, 8rem);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+  }
+
+  .text-display-l {
+    font-family: "Fraunces Variable", Georgia, serif;
+    font-weight: 300;
+    font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 0;
+    font-size: clamp(2.25rem, 5vw, 3.75rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+
+  .text-display-m {
+    font-family: "Fraunces Variable", Georgia, serif;
+    font-weight: 400;
+    font-variation-settings: "opsz" 72, "SOFT" 0, "WONK" 0;
+    font-size: clamp(1.5rem, 2.6vw, 2rem);
+    line-height: 1.15;
     letter-spacing: -0.01em;
   }
 
-  .font-body {
-    font-family: 'Inter', sans-serif;
+  .text-lede {
+    font-family: "Fraunces Variable", Georgia, serif;
+    font-weight: 300;
+    font-variation-settings: "opsz" 40, "SOFT" 0, "WONK" 0;
+    font-size: clamp(1.25rem, 2.2vw, 1.75rem);
+    line-height: 1.45;
+  }
+
+  .text-body {
+    font-family: "Archivo Variable", system-ui, sans-serif;
     font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.65;
+    max-width: 62ch;
   }
 
-  /* Layout Components */
-  .container-luxury {
-    @apply max-w-7xl mx-auto px-6 lg:px-8;
+  .text-label {
+    font-family: "Archivo Variable", system-ui, sans-serif;
+    font-weight: 500;
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
   }
 
-  .section-spacing {
-    @apply py-16 lg:py-24;
+  .text-data {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-weight: 400;
+    font-size: 0.8125rem;
+    letter-spacing: 0.02em;
   }
 
-  /* Interactive Elements — sharp corners, uppercase, generous padding
-     (Atlantic Edge button register, replacing the soft gold pill) */
-  .btn-luxury {
-    @apply inline-flex items-center justify-center px-8 py-4 font-medium tracking-wide uppercase text-sm transition-all duration-300;
-    @apply bg-primary text-white hover:shadow-2xl hover:shadow-black/20;
-  }
-
-  .btn-luxury-outline {
-    @apply inline-flex items-center justify-center px-8 py-4 font-medium tracking-wide uppercase text-sm transition-all duration-300;
-    @apply border border-ever-champ text-primary bg-transparent hover:bg-ever-champ hover:text-primary;
-  }
-
-  .card-luxury {
-    @apply bg-white shadow-sm hover:shadow-lg hover:shadow-black/5 transition-all duration-300;
-    @apply border border-ever-line;
-  }
-
-  /* Glass Effects */
-  .glass {
-    @apply backdrop-blur-md bg-white/10 border-b border-white/20;
-  }
-
-  .glass-card {
-    @apply backdrop-blur-md bg-white/60 border border-ever-line rounded-2xl;
-  }
-
-  /* Animations */
-  .animate-fade-up {
-    @apply animate-[fade-up_0.8s_ease-out_forwards];
-  }
-
-  .animate-scale-in {
-    @apply animate-[scale-in_0.6s_ease-out_forwards];
-  }
-
-  .parallax {
-    transform: translateZ(0);
-    backface-visibility: hidden;
-  }
-
-  /* Native scroll-snap strips (room photo carousels) — hide the
-     scrollbar but keep the element natively scrollable/swipeable. */
-  .no-scrollbar {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-}
-
-@layer base {
-  * {
-    @apply border-border;
-  }
-
-  body {
-    @apply bg-background text-foreground font-body;
-  }
-}
-
-/* Custom Animations */
-@keyframes fade-up {
-  0% {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes scale-in {
-  0% {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* Table Mountain wordmark reveal — one-shot on load, CSS-only. */
-@keyframes mountain-reveal {
-  from {
-    clip-path: inset(0 100% 0 0);
-  }
-  to {
-    clip-path: inset(0 0 0 0);
-  }
-}
-
-.mountain-reveal {
-  animation: mountain-reveal 700ms ease-out 150ms both;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .mountain-reveal {
-    animation: none;
-    clip-path: inset(0 0 0 0);
+  .text-caption {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-weight: 400;
+    font-size: 0.6875rem;
+    line-height: 1.4;
+    /* Literal --stone only reaches 3.2:1 on --paper (short of the §10 4.5:1
+       floor) — fine here since callers on ink set their own colour, but a
+       caption sitting directly on paper needs the `stone-text` tint instead. */
+    color: var(--stone);
   }
 }

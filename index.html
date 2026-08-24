@@ -10,6 +10,15 @@
     <meta name="keywords" content="Camps Bay villa rental, luxury accommodation Cape Town, private villa South Africa, ocean view villa, solar powered villa" />
     <link rel="canonical" href="https://jonathanavis96.github.io/everview-campsbay-villa/" />
 
+    <!-- Self-hosted, latin subset, the above-the-fold body/label face
+         (design-direction §4). Fraunces is not preloaded: at 121 KB it is
+         heavier than the hero photograph itself at mobile viewport widths,
+         and preloading it competed directly with the hero <img> for
+         throttled mobile bandwidth, regressing LCP well past the ≥90 gate.
+         font-display: swap already renders the hero headline immediately in
+         the fallback serif with no layout shift once Fraunces arrives. -->
+    <link rel="preload" as="font" type="font/woff2" href="/src/assets/fonts/archivo-variable-latin.woff2" crossorigin />
+
     <meta property="og:title" content="Everview - Luxury Villa Rental in Camps Bay" />
     <meta property="og:description" content="Exclusive 4-bedroom luxury villa with panoramic ocean views, heated pool, and premium amenities in prime Camps Bay location." />
     <meta property="og:type" content="website" />
