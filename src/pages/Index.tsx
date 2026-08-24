@@ -2,6 +2,12 @@ import { useEffect, useState, lazy, Suspense } from "react";
 import Navigation from "@/components/Navigation";
 import HeroSection from "@/components/HeroSection";
 import { hasPlaceholderReviews } from "@/lib/reviews";
+import {
+  isBelowFoldRevealed,
+  onBelowFoldReveal,
+  revealBelowFold,
+  scrollToSection,
+} from "@/lib/belowFold";
 
 // Everything below the hero fold is lazy-loaded as one chunk. The initial
 // bundle was 675 KB (278 KB gzip) of JS the browser had to fetch, parse and
@@ -29,20 +35,19 @@ const BelowFold = lazy(() => import("@/components/BelowFold"));
  * moves before it fires never waits for it.
  */
 function useAfterHero() {
-  const [ready, setReady] = useState(false);
+  const [ready, setReady] = useState(isBelowFoldRevealed);
 
   useEffect(() => {
-    let done = false;
-    const start = () => {
-      if (done) return;
-      done = true;
-      setReady(true);
-    };
+    // The reveal itself lives in src/lib/belowFold.ts, because a click on
+    // "Enquire" has to be able to pull the sections forward and then wait for
+    // its anchor — see `scrollToSection`. This effect only decides when the
+    // page reveals them of its own accord.
+    const unsubscribe = onBelowFoldReveal(() => setReady(true));
 
     const idle = () => {
       const ric = window.requestIdleCallback;
-      if (ric) ric(start, { timeout: 1200 });
-      else window.setTimeout(start, 200);
+      if (ric) ric(() => revealBelowFold(), { timeout: 1200 });
+      else window.setTimeout(revealBelowFold, 200);
     };
 
     if (document.readyState === "complete") idle();
@@ -50,12 +55,19 @@ function useAfterHero() {
 
     const events = ["scroll", "pointerdown", "keydown", "wheel", "touchstart"] as const;
     for (const type of events) {
-      window.addEventListener(type, start, { once: true, passive: true });
+      window.addEventListener(type, revealBelowFold, { once: true, passive: true });
     }
 
+    // A guest who arrives on /#enquire (or any other below-fold anchor) gets
+    // no native scroll, because the target is not in the document yet. Ask
+    // for it explicitly; `scrollToSection` reveals the sections and waits.
+    const hash = window.location.hash.slice(1);
+    if (hash) scrollToSection(hash, "auto");
+
     return () => {
+      unsubscribe();
       window.removeEventListener("load", idle);
-      for (const type of events) window.removeEventListener(type, start);
+      for (const type of events) window.removeEventListener(type, revealBelowFold);
     };
   }, []);
 

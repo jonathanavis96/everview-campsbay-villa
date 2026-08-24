@@ -13,6 +13,7 @@ import hero960Jpg from "@/assets/hero/hero-960.jpg";
 import hero1280Jpg from "@/assets/hero/hero-1280.jpg";
 import hero1920Jpg from "@/assets/hero/hero-1920.jpg";
 import hero2048Jpg from "@/assets/hero/hero-2048.jpg";
+import { scrollToSection } from "@/lib/belowFold";
 
 const heroAvifSrcSet = `${hero640Avif} 640w, ${hero960Avif} 960w, ${hero1280Avif} 1280w, ${hero1920Avif} 1920w, ${hero2048Avif} 2048w`;
 const heroWebpSrcSet = `${hero640Webp} 640w, ${hero960Webp} 960w, ${hero1280Webp} 1280w, ${hero1920Webp} 1920w, ${hero2048Webp} 2048w`;
@@ -29,7 +30,7 @@ const LABEL_SHADOW = "0 1px 4px rgba(11,17,20,0.7)";
 
 export default function HeroSection() {
   const scrollToEnquiry = () => {
-    document.getElementById("enquire")?.scrollIntoView({ behavior: "smooth" });
+    scrollToSection("enquire");
   };
 
   return (
