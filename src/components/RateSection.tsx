@@ -12,6 +12,7 @@ import {
   formatConverted,
   formatZAR,
 } from "@/lib/rates";
+import Reveal from "@/components/Reveal";
 
 function RateRow({ label, amount, currencyCode }: { label: string; amount: number; currencyCode: string | null }) {
   const converted = currencyCode ? formatConverted(amount, currencyCode) : null;
@@ -47,14 +48,18 @@ export default function RateSection() {
         <p className="text-label text-stone-text mb-4">Rates</p>
 
         <div className="grid md:grid-cols-2 gap-8 md:gap-12 border-t border-line pt-8 md:pt-12">
-          <RateRow label="In season" amount={inSeason} currencyCode={currencyCode} />
-          <RateRow label="Out of season" amount={outOfSeason} currencyCode={currencyCode} />
+          <Reveal>
+            <RateRow label="In season" amount={inSeason} currencyCode={currencyCode} />
+          </Reveal>
+          <Reveal delayMs={100}>
+            <RateRow label="Out of season" amount={outOfSeason} currencyCode={currencyCode} />
+          </Reveal>
         </div>
 
-        <p className="text-caption text-stone-text mt-8">
+        <Reveal as="p" delayMs={200} className="text-caption text-stone-text mt-8">
           Rates are indicative — final quote on enquiry. FX last updated{" "}
           {RATES.fxUpdated}.
-        </p>
+        </Reveal>
       </div>
     </section>
   );

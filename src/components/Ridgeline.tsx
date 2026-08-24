@@ -1,87 +1,91 @@
 import { useEffect, useRef, useState } from "react";
 
 /**
- * One accurate ridgeline path — Lion's Head, the saddle, the Kloof Corner
- * shoulder, and the Twelve Apostles buttresses descending toward Oudekraal —
- * traced from a reference photograph taken from Camps Bay beach looking
- * east-north-east (Wikimedia Commons: "Camps Bay – Cape Town suburbs, beach,
- * Lion's Head, Twelve Apostles.jpg", verified against the overlay test in
- * design-direction §5). viewBox is 2400 units wide; left-to-right traversal
- * of this one path is both the wordmark rule and every section divider, so
- * scrolling the page traverses the skyline north to south.
+ * The Table Mountain skyline as seen from Camps Bay: the Devil's Peak
+ * shoulder on the left, the flat table, Kloof Nek, then Lion's Head as the
+ * sharp peak on the right. Traced pixel by pixel from the outline Jonathan
+ * supplied (topmost dark pixel per column, simplified with
+ * Ramer-Douglas-Peucker at a 1.5px tolerance), so the line is his drawing
+ * rather than an approximation of it.
  */
 export const RIDGE_VIEWBOX_WIDTH = 2400;
-export const RIDGE_VIEWBOX_HEIGHT = 300;
+export const RIDGE_VIEWBOX_HEIGHT = 400;
 export const RIDGELINE_PATH_D =
-  "M0,288 L125,262 L269,219 L350,170 L469,219 L500,219 L594,188 L688,144 L781,112 L875,94 L925,94 L969,106 L1019,97 L1062,119 L1094,147 L1125,112 L1156,153 L1188,122 L1219,156 L1250,125 L1319,156 L1356,128 L1394,162 L1431,141 L1469,150 L1512,131 L1556,162 L1600,141 L1650,169 L1700,150 L1750,181 L1794,200 L1875,216 L1969,228 L2094,241 L2219,250 L2400,258";
+  "M0,372 L66,349 L156,341 L207,314 L270,306 L317,278 L367,271 L453,224 L504,149 L610,99 L645,40 L731,48 L758,79 L786,56 L864,40 L1380,56 L1399,95 L1489,130 L1521,189 L1548,200 L1618,263 L1696,278 L1755,302 L1802,294 L1864,259 L1911,220 L1966,153 L1978,153 L2009,204 L2033,220 L2232,298 L2326,361 L2400,368";
 
-/** Leftmost ~15% of the path — the Lion's Head end, used under the wordmark. */
-const WORDMARK_WIDTH = 360;
-
-function useDrawOnce(active: boolean, durationMs: number) {
-  const pathRef = useRef<SVGPathElement>(null);
-  const [ready, setReady] = useState(false);
+/**
+ * Sweeps an element on from left to right by uncovering it.
+ *
+ * Motion is always on for this site: there is deliberately no
+ * prefers-reduced-motion branch.
+ */
+function useSweep(active: boolean, durationMs: number, delayMs = 0) {
+  const [swept, setSwept] = useState(false);
 
   useEffect(() => {
-    const el = pathRef.current;
-    if (!el || !active) return;
-    const length = el.getTotalLength();
-    el.style.strokeDasharray = `${length}`;
-    el.style.strokeDashoffset = `${length}`;
-    // Force layout before animating so the initial state paints first.
-    el.getBoundingClientRect();
-    el.style.transition = `stroke-dashoffset ${durationMs}ms ease-out`;
-    requestAnimationFrame(() => {
-      el.style.strokeDashoffset = "0";
-    });
-    setReady(true);
-  }, [active, durationMs]);
+    if (!active) return;
+    const id = requestAnimationFrame(() => setSwept(true));
+    return () => cancelAnimationFrame(id);
+  }, [active]);
 
-  return { pathRef, ready };
+  return {
+    clipPath: swept ? "inset(-20% 0 -20% 0)" : "inset(-20% 100% -20% 0)",
+    transition: `clip-path ${durationMs}ms cubic-bezier(0.33, 0, 0.15, 1) ${delayMs}ms`,
+  } as const;
 }
 
-/** The wordmark rule: sits under "Everview" as its underline, not behind it. */
-export function RidgelineMark({ className = "" }: { className?: string }) {
-  const { pathRef } = useDrawOnce(true, 900);
+/**
+ * The wordmark: the whole mountain arching over "Everview", swept on at page
+ * load. It sits above the word rather than behind it, so the type never has
+ * to compete with the line.
+ */
+export function RidgelineMark({
+  className = "",
+  strokeWidth = 9,
+}: {
+  className?: string;
+  strokeWidth?: number;
+}) {
+  const sweep = useSweep(true, 1500, 200);
 
   return (
     <svg
       aria-hidden="true"
-      viewBox={`0 100 ${WORDMARK_WIDTH} 220`}
+      viewBox={`0 20 ${RIDGE_VIEWBOX_WIDTH} 370`}
       preserveAspectRatio="none"
       className={className}
+      style={sweep}
     >
       <path
-        ref={pathRef}
         d={RIDGELINE_PATH_D}
         fill="none"
         stroke="currentColor"
-        strokeWidth={2.5}
+        strokeWidth={strokeWidth}
         strokeLinejoin="round"
         strokeLinecap="round"
+        vectorEffect="non-scaling-stroke"
       />
     </svg>
   );
 }
 
 /**
- * A section divider: the next segment of the same path, so position on the
- * ridge tells the reader where they are on the page. Draws once on scroll-in.
- * `from`/`to` are path-space x coordinates (0–2400); pick the next
- * unclaimed range left to right as sections are added.
+ * A section divider: a hairline rule with a small Table Mountain glyph set
+ * on it.
+ *
+ * This replaces an earlier idea where each divider drew a different stretch
+ * of the skyline path across the full width of the page. It was a nice
+ * conceit and it looked like a squiggle: stretched to 1350px, a 200-unit
+ * slice of a mountain is just a wobbly line with no readable shape. The
+ * mountain reads at small size, in one piece, or not at all — so the rule
+ * carries the width and the glyph carries the motif.
+ *
+ * `from`/`to` are kept in the signature so callers do not all have to change
+ * at once; they are no longer used to pick a stretch of path.
  */
-export function RidgelineDivider({
-  from,
-  to,
-  className = "",
-}: {
-  from: number;
-  to: number;
-  className?: string;
-}) {
+export function RidgelineDivider({ className = "" }: { from?: number; to?: number; className?: string }) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(false);
-  const { pathRef } = useDrawOnce(inView, 600);
 
   useEffect(() => {
     const el = wrapperRef.current;
@@ -99,27 +103,37 @@ export function RidgelineDivider({
     return () => observer.disconnect();
   }, []);
 
-  const minY = 60;
-  const maxY = RIDGE_VIEWBOX_HEIGHT;
-
   return (
-    <div ref={wrapperRef} className={className}>
-      <svg
-        aria-hidden="true"
-        viewBox={`${from} ${minY} ${to - from} ${maxY - minY}`}
-        preserveAspectRatio="none"
-        className="w-full h-10 text-stone"
-      >
-        <path
-          ref={pathRef}
-          d={RIDGELINE_PATH_D}
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={1.25}
-          strokeLinejoin="round"
-          strokeLinecap="round"
+    <div ref={wrapperRef} className={className} aria-hidden="true">
+      <div className="flex items-center gap-5">
+        <span
+          className="h-px flex-1 bg-line origin-right transition-transform duration-700 ease-out"
+          style={{ transform: inView ? "scaleX(1)" : "scaleX(0)" }}
         />
-      </svg>
+        <svg
+          viewBox="0 20 2400 370"
+          preserveAspectRatio="xMidYMid meet"
+          className="h-4 w-11 shrink-0 text-stone transition-all duration-700 ease-out"
+          style={{
+            opacity: inView ? 1 : 0,
+            transform: inView ? "translateY(0)" : "translateY(6px)",
+            transitionDelay: "160ms",
+          }}
+        >
+          <path
+            d={RIDGELINE_PATH_D}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={18}
+            strokeLinejoin="round"
+            strokeLinecap="round"
+          />
+        </svg>
+        <span
+          className="h-px flex-1 bg-line origin-left transition-transform duration-700 ease-out"
+          style={{ transform: inView ? "scaleX(1)" : "scaleX(0)" }}
+        />
+      </div>
     </div>
   );
 }

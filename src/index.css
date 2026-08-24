@@ -54,19 +54,9 @@
     scroll-behavior: smooth;
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    html {
-      scroll-behavior: auto;
-    }
-    *,
-    *::before,
-    *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-      scroll-behavior: auto !important;
-    }
-  }
+  /* Motion is always on. Jonathan's instruction for this site is that it
+     never honours prefers-reduced-motion — the movement is part of how the
+     house is presented, so there is deliberately no reduce branch here. */
 
   body {
     background-color: var(--paper);
@@ -139,18 +129,257 @@
   .text-data {
     font-family: "IBM Plex Mono", ui-monospace, monospace;
     font-weight: 400;
-    font-size: 0.8125rem;
+    /* Was 0.8125rem/no line-height. Mono at 13px with the page's low-contrast
+       stone tint was the readability complaint of 2026-08-24; 14px with a real
+       line-height is still a quiet register and is legible. */
+    font-size: 0.875rem;
+    line-height: 1.6;
     letter-spacing: 0.02em;
   }
 
   .text-caption {
     font-family: "IBM Plex Mono", ui-monospace, monospace;
     font-weight: 400;
-    font-size: 0.6875rem;
-    line-height: 1.4;
+    /* Was 0.6875rem — 11px mono is below anything readable on a phone. */
+    font-size: 0.8125rem;
+    line-height: 1.5;
     /* Literal --stone only reaches 3.2:1 on --paper (short of the §10 4.5:1
        floor) — fine here since callers on ink set their own colour, but a
        caption sitting directly on paper needs the `stone-text` tint instead. */
     color: var(--stone);
+  }
+}
+
+@layer components {
+  /* §6 photographs — a photograph on this page is a print, not a texture
+     pasted onto the paper. Paper matte, a hairline edge, and a warm shadow
+     that lifts it off the background. Warm rather than neutral grey: a grey
+     shadow on a warm-paper page reads as dirt. */
+  .photo-frame {
+    display: block;
+    background: #fbfaf7;
+    padding: clamp(6px, 0.9vw, 14px);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    box-shadow:
+      0 1px 2px rgba(58, 42, 34, 0.07),
+      0 18px 40px -22px rgba(58, 42, 34, 0.42);
+    transition:
+      box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .photo-frame:hover,
+  .photo-frame:focus-visible {
+    transform: translateY(-3px);
+    box-shadow:
+      0 2px 4px rgba(58, 42, 34, 0.09),
+      0 30px 60px -26px rgba(58, 42, 34, 0.5);
+  }
+
+  .photo-frame img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* Scroll-in reveal, applied by <Reveal>. */
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform;
+  }
+
+  .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@layer utilities {
+  /* Hero: a very slow push-in, so the first thing the page does is move. */
+  @keyframes hero-drift {
+    from {
+      transform: scale(1.06);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+
+  .animate-hero-drift {
+    animation: hero-drift 18s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(22px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .animate-fade-up {
+    animation: fade-up 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+
+@layer utilities {
+  /*
+   * The power/water diagrams. Every animation below is scoped to `.is-live`,
+   * which <SolarDiagram>/<BoreholeDiagram> add once the drawing scrolls into
+   * view — nothing animates off screen, so the section costs nothing until it
+   * is looked at.
+   */
+  @keyframes ev-ray {
+    0%,
+    100% {
+      opacity: 0.35;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  .is-live .ev-ray {
+    animation: ev-ray 3.2s ease-in-out infinite;
+  }
+
+  /* Current marching along the wire, panels to battery to house. */
+  @keyframes ev-flow {
+    from {
+      stroke-dashoffset: 22;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  .is-live .ev-flow {
+    stroke-dasharray: 3 8;
+    animation: ev-flow 1.6s linear infinite;
+  }
+
+  .is-live .ev-flow-delayed {
+    animation-delay: 0.5s;
+  }
+
+  /* The battery filling and holding, then starting again. */
+  @keyframes ev-charge {
+    0% {
+      transform: scaleY(0.06);
+      opacity: 0.16;
+    }
+    55%,
+    88% {
+      transform: scaleY(1);
+      opacity: 0.3;
+    }
+    100% {
+      transform: scaleY(0.06);
+      opacity: 0.16;
+    }
+  }
+
+  .is-live .ev-charge {
+    transform-box: fill-box;
+    transform-origin: bottom;
+    animation: ev-charge 7s ease-in-out infinite;
+  }
+
+  /* Water table, moving just enough to read as liquid. */
+  @keyframes ev-wave {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    50% {
+      transform: translateX(6px);
+    }
+  }
+
+  .is-live .ev-wave {
+    animation: ev-wave 5s ease-in-out infinite;
+  }
+
+  /* A bubble of water climbing the bore and out of shot. */
+  @keyframes ev-rise {
+    0% {
+      transform: translateY(0);
+      opacity: 0;
+    }
+    12% {
+      opacity: 0.55;
+    }
+    88% {
+      opacity: 0.55;
+    }
+    100% {
+      transform: translateY(-96px);
+      opacity: 0;
+    }
+  }
+
+  .ev-rise {
+    opacity: 0;
+  }
+
+  .is-live .ev-rise {
+    animation: ev-rise 3s linear infinite;
+  }
+
+  /* Each filter stage lighting in turn as the water passes through it. */
+  @keyframes ev-stage {
+    0%,
+    70%,
+    100% {
+      opacity: 0.25;
+    }
+    20%,
+    45% {
+      opacity: 1;
+    }
+  }
+
+  .ev-stage {
+    opacity: 0.25;
+  }
+
+  .is-live .ev-stage {
+    animation: ev-stage 3s ease-in-out infinite;
+  }
+
+  /* One drop from the tap, with a long pause between. */
+  @keyframes ev-drip {
+    0% {
+      transform: translateY(0) scale(0.6);
+      opacity: 0;
+    }
+    8% {
+      opacity: 0.7;
+    }
+    38% {
+      transform: translateY(28px) scale(1);
+      opacity: 0.7;
+    }
+    46%,
+    100% {
+      transform: translateY(30px) scale(1);
+      opacity: 0;
+    }
+  }
+
+  .ev-drip {
+    opacity: 0;
+  }
+
+  .is-live .ev-drip {
+    animation: ev-drip 2.8s ease-in infinite;
   }
 }

@@ -11,8 +11,10 @@ export type PhotoBase = {
   src: string;         // URL resolved by Vite
   title?: string;      // derived from filename (or set upstream)
   category?: string;   // human name of primary folder (badge text)
-  subfolder: string;   // first folder under the root (e.g. "bedrooms")
+  subfolder: string;   // first folder under the root (e.g. "living-level")
   folders?: string[];  // all folder segments under the root
+  folderPath?: string; // full folder path under the root, e.g. "living-level/kitchen"
+  leafFolder?: string; // deepest folder, e.g. "kitchen" ("" for a level's loose photos)
   author?: string;     // preserved if you already set this elsewhere
   thumbSrc?: string;    // small derivative for 62-64px thumbnail strips (MIS-459)
   leadSrc?: string;     // 640px derivative for the full-width "lead" spread photo (MIS-459)
@@ -183,4 +185,87 @@ export function loadAllBasesFrom(
   withCategory?: Record<string, string>
 ): PhotoBase[] {
   return folders.flatMap((f) => loadBasesFrom(f, withCategory?.[f]));
+}
+
+
+/* ------------------------------------------------------------------ *
+ * Folder-addressed loading (MIS — the house, level by level)
+ *
+ * Photographs live under src/assets/everview_photos_webp in a folder tree
+ * that mirrors the house:
+ *
+ *   bedroom-level/            <- photos loose here belong to the level
+ *     master-suite/           <- and photos here belong to that space
+ *     ocean-king/
+ *     ...
+ *   living-level/
+ *   garden-level/
+ *   exterior/
+ *   views/
+ *
+ * Moving a file between folders is the whole editing interface: the section
+ * a photograph appears in is decided by where it sits, never by matching
+ * keywords against its filename. Re-run `node scripts/generate-thumbnails.mjs`
+ * after moving anything.
+ * ------------------------------------------------------------------ */
+
+const ROOT_SEGMENT = "/everview_photos_webp/";
+
+/** "…/everview_photos_webp/living-level/kitchen/kitchen-7.webp" -> "living-level/kitchen" */
+function folderPathOf(path: string): string {
+  const idx = path.indexOf(ROOT_SEGMENT);
+  if (idx < 0) return "";
+  const rel = path.slice(idx + ROOT_SEGMENT.length);
+  const parts = rel.split("/");
+  parts.pop();
+  return parts.join("/");
+}
+
+function baseFromEntry(path: string, url: string): PhotoBase {
+  const file = path.split("/").pop() || "";
+  const slug = file.replace(/\.(webp|jpg|jpeg|png)$/i, "");
+  const folderPath = folderPathOf(path);
+  const folders = folderPath ? folderPath.split("/") : [];
+  const dims = DIMENSIONS[slug];
+
+  return {
+    slug,
+    src: url,
+    title: titleFromFilename(file),
+    category: toTitleCase(folders[folders.length - 1] || folders[0] || "gallery"),
+    subfolder: folders[0] || "gallery",
+    folders,
+    folderPath,
+    leafFolder: folders.length > 1 ? folders[folders.length - 1] : "",
+    thumbSrc: resolveDerivative(path, THUMBS_BY_KEY),
+    leadSrc: resolveDerivative(path, LEADS_BY_KEY),
+    width: dims?.width,
+    height: dims?.height,
+  };
+}
+
+const ALL_BASES: PhotoBase[] = Object.entries(ALL_IMAGES)
+  .sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
+  .map(([path, url]) => baseFromEntry(path, url));
+
+/**
+ * Every photograph sitting directly in `folder` (no descendants).
+ * `folder` is a path under the root, e.g. "living-level/kitchen" — or
+ * "bedroom-level" for the photographs a level holds loose, not yet sorted
+ * into one of its spaces.
+ */
+export function loadBasesInFolder(folder: string): PhotoBase[] {
+  return ALL_BASES.filter((b) => b.folderPath === folder);
+}
+
+/** Every photograph in `folder` and everything beneath it. */
+export function loadBasesUnderFolder(folder: string): PhotoBase[] {
+  return ALL_BASES.filter(
+    (b) => b.folderPath === folder || (b.folderPath ?? "").startsWith(`${folder}/`)
+  );
+}
+
+/** The whole set, in folder/filename order. */
+export function loadAllBases(): PhotoBase[] {
+  return ALL_BASES;
 }

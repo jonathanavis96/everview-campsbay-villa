@@ -34,8 +34,6 @@ function useNoindexWhilePlaceholderReviews() {
   }, []);
 }
 
-// The 0–360 range belongs to the wordmark (Ridgeline.tsx), so section
-// dividers start at 360.
 const Index = () => {
   useNoindexWhilePlaceholderReviews();
 
@@ -43,7 +41,7 @@ const Index = () => {
     <div className="min-h-screen bg-paper">
       <Navigation />
       <HeroSection />
-      <RidgelineDivider from={360} to={560} className="container py-2" />
+      <RidgelineDivider className="container py-2" />
       <Suspense fallback={null}>
         <BelowFold />
       </Suspense>

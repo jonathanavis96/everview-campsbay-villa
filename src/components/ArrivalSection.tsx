@@ -8,9 +8,15 @@
 // fact carried over, verbatim and with nothing added. See MIS-457/MIS-458.
 //
 // A well-run house, not a list of restrictions: housekeeping, the lift,
-// monitoring and off-grid power lead in body type. The house rules sit
-// underneath in the quieter mono/data register, not the source PDF's
-// shouting caps.
+// monitoring and off-grid power lead in body type, and the rules follow
+// underneath rather than in the source PDF's shouting caps.
+//
+// The rules, the check-in times and the late-arrival note were all set in
+// 13px mono in stone tint, and Jonathan could not read them (2026-08-24).
+// They are body type on ink now: the hierarchy comes from position and from
+// the labels beside them, not from shrinking the thing a guest has to read.
+import Reveal from "@/components/Reveal";
+
 const ARRIVAL_TIMES = [
   { label: "Check-in", value: "2:00 PM – 7:00 PM" },
   { label: "Check-out", value: "By 10:00 AM" },
@@ -32,7 +38,7 @@ export default function ArrivalSection() {
         <p className="text-label text-stone-text mb-4">Arrival</p>
 
         <div className="grid md:grid-cols-2 gap-8 md:gap-12 border-t border-line pt-8 md:pt-12">
-          <div>
+          <Reveal>
             <h2 className="text-display-l text-ink mb-4">A well-run house</h2>
             <p className="text-body text-ink/80 mb-6">
               Housekeeping comes daily, with laundry provided and available on
@@ -43,24 +49,24 @@ export default function ArrivalSection() {
               response, and by day the house runs largely on its own solar
               power.
             </p>
-            <dl className="text-data text-stone-text space-y-1">
+            <dl className="space-y-2">
               {ARRIVAL_TIMES.map((a) => (
-                <div key={a.label} className="flex gap-2">
-                  <dt className="w-24 shrink-0">{a.label}</dt>
-                  <dd>{a.value}</dd>
+                <div key={a.label} className="flex items-baseline gap-3">
+                  <dt className="text-label text-stone-text w-24 shrink-0">{a.label}</dt>
+                  <dd className="text-body text-ink">{a.value}</dd>
                 </div>
               ))}
             </dl>
-            <p className="text-caption text-stone-text mt-3">
+            <p className="text-body text-ink/80 mt-4">
               Arriving after 7:00 PM: arrange a time with the property
               manager in advance. Late check-out is subject to availability
               and additional cost, arranged in advance.
             </p>
-          </div>
+          </Reveal>
 
-          <div>
+          <Reveal delayMs={100}>
             <h3 className="text-display-m text-ink mb-4">House rules</h3>
-            <ul className="text-data text-stone-text space-y-2">
+            <ul className="text-body text-ink/80 space-y-2">
               {HOUSE_RULES.map((rule) => (
                 <li
                   key={rule}
@@ -70,7 +76,7 @@ export default function ArrivalSection() {
                 </li>
               ))}
             </ul>
-          </div>
+          </Reveal>
         </div>
       </div>
     </section>
