@@ -46,7 +46,7 @@ const SECTIONS: Array<[string, ComponentType, Divider?]> = [
   ["house", HouseLevelsSection],
   ["bedrooms", BedroomsSection],
   ["plans", FloorPlanSection, "atlantic"],
-  ["camps-bay", CampsBaySection],
+  ["camps-bay", CampsBaySection, "rule"],
   ["power-water", PowerWaterSection, "rule"],
   ["reviews", ReviewsSection],
   ["sunset-band", SunsetBand, "rule"],
