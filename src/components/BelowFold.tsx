@@ -42,7 +42,7 @@ type Divider = "ridge" | "rule" | "atlantic";
 
 const SECTIONS: Array<[string, ComponentType, Divider?]> = [
   ["horizon", HorizonSection],
-  ["beach-band", BeachBand],
+  ["beach-band", BeachBand, "rule"],
   ["house", HouseLevelsSection],
   ["bedrooms", BedroomsSection],
   ["plans", FloorPlanSection, "atlantic"],
