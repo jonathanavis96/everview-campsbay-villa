@@ -45,14 +45,14 @@ const LEVELS: Level[] = [
         "Modern appliances, marble countertops, and a large island built for cooking together."
       ),
       space(
+        "living-level/sunbeds",
+        "The sunbeds",
+        "Off the kitchen: loungers and a reading nook, for the part of the day nobody wants to be indoors."
+      ),
+      space(
         "living-level/indoor-dining",
         "Indoor dining",
         "A formal table for eight under the chandelier, with the ocean through the glass."
-      ),
-      space(
-        "living-level/outside-dining",
-        "Outside dining",
-        "The covered dining table on the terrace, where most meals end up happening."
       ),
       space(
         "living-level/formal-living-room",
@@ -60,14 +60,14 @@ const LEVELS: Level[] = [
         "A fireplace, deep seating, and the Atlantic filling the far wall."
       ),
       space(
+        "living-level/outside-dining",
+        "Outside dining",
+        "The covered dining table on the terrace, where most meals end up happening."
+      ),
+      space(
         "living-level/outside-lounge",
         "The outside lounge",
         "The seating that lives outdoors, between the living room and the view."
-      ),
-      space(
-        "living-level/sunbeds",
-        "The sunbeds",
-        "Off the kitchen: loungers and a reading nook, for the part of the day nobody wants to be indoors."
       ),
       space(
         "living-level/bar",

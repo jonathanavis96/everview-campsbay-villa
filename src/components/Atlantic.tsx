@@ -6,8 +6,10 @@
 // arrow is gone and the sea is drawn where it belongs: under the section, in
 // the place the skyline divider held.
 //
-// The waves are the same ink-on-paper line as the plan and the ridgeline —
-// no fill, no gradient, no blue. They drift sideways slowly and forever,
+// The waves are the same drawn hairline as the plan and the ridgeline — no
+// fill, no gradient — but in `sea` rather than ink: ink with the blue left
+// in it, dark enough that the three-swell opacity stack still reads as depth
+// rather than as colour. They drift sideways slowly and forever,
 // which is the one thing a drawn sea can do that a photograph of one cannot.
 // Motion is always on for this site; there is deliberately no
 // prefers-reduced-motion branch, as in `Ridgeline`.
@@ -60,7 +62,7 @@ export default function AtlanticBand({ className = "" }: { className?: string })
         <svg
           viewBox={`0 0 ${TILE} ${HEIGHT}`}
           preserveAspectRatio="none"
-          className="ev-atlantic block h-[58px] w-full text-ink md:h-[74px]"
+          className="ev-atlantic block h-[58px] w-full text-sea md:h-[74px]"
           role="presentation"
           focusable="false"
         >
