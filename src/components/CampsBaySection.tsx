@@ -132,6 +132,7 @@ function warmMapOrigins() {
 
 function MapPanel() {
   const [loaded, setLoaded] = useState(false);
+  const hoverTimer = useRef<number | null>(null);
   const [ready, setReady] = useState(false);
   const panelRef = useRef<HTMLElement | null>(null);
 
@@ -152,6 +153,21 @@ function MapPanel() {
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
+
+  // Hovering the poster is a good enough signal of intent to start fetching
+  // the embed behind it. The poster stays on top until the iframe reports it
+  // is ready, so the guest never watches it assemble itself — which is the
+  // whole complaint (2026-09-01). A short delay keeps a pointer merely
+  // crossing the panel from spending the megabytes.
+  const armLoad = () => {
+    if (loaded || hoverTimer.current !== null) return;
+    hoverTimer.current = window.setTimeout(() => setLoaded(true), 180);
+  };
+  const cancelLoad = () => {
+    if (hoverTimer.current === null) return;
+    window.clearTimeout(hoverTimer.current);
+    hoverTimer.current = null;
+  };
 
   if (loaded) {
     // The poster stays underneath and fades out only once the iframe reports
@@ -190,6 +206,9 @@ function MapPanel() {
       ref={(el) => { panelRef.current = el; }}
       type="button"
       onClick={() => setLoaded(true)}
+      onPointerEnter={armLoad}
+      onPointerLeave={cancelLoad}
+      onFocus={armLoad}
       className="photo-frame group relative block w-full overflow-hidden text-left"
       aria-label="Load the interactive map"
     >
@@ -234,7 +253,10 @@ export default function CampsBaySection() {
               — the beach band says it better, higher up the page, and the new
               plates say it in every space (2026-08-31). */}
 
-          <Reveal>
+          {/* Capped rather than full-width: at 1080p the 56% box was taller
+              than a third of the viewport and read as the subject of the
+              section rather than a reference for it (2026-09-01). */}
+          <Reveal className="max-w-3xl">
             <MapPanel />
           </Reveal>
 

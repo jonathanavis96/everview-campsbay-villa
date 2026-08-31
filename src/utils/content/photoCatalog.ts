@@ -172,12 +172,6 @@ export const PHOTO_CATALOG: Record<string, CatalogEntry> = {
         "The study from the landing end, its shelving and cabinetry running the length of the wall.",
     },
   },
-  "1-bedroom-landing": {
-    default: {
-      description:
-        "The upstairs landing, its glass balustrade open over the stairwell to the level below.",
-    },
-  },
   "1-garden-pool": {
     default: {
       description:
@@ -196,7 +190,7 @@ export const PHOTO_CATALOG: Record<string, CatalogEntry> = {
         "The house from the pool's edge, a palm in the foreground and the covered terrace along its length.",
     },
   },
-  "1-exterior-arrival": {
+  "13-exterior-arrival": {
     default: {
       description:
         "Everview from the closed end of Cramond Road: the garages, the entrance, and the house rising above them.",

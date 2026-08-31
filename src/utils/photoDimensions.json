@@ -1,9 +1,4 @@
 {
-  "1-bedroom-landing": {
-    "width": 1600,
-    "height": 1067,
-    "hash": "b7902c4f8260c25b"
-  },
   "1-bedroom-gardenKing": {
     "width": 1600,
     "height": 1067,
@@ -169,11 +164,6 @@
     "height": 853,
     "hash": "8250042e4aafffb0"
   },
-  "1-exterior-arrival": {
-    "width": 1600,
-    "height": 1067,
-    "hash": "0520a4cf74c427f7"
-  },
   "1-garden-pool": {
     "width": 1600,
     "height": 1067,
@@ -193,6 +183,11 @@
     "width": 1280,
     "height": 853,
     "hash": "4e4f8f352f589361"
+  },
+  "13-exterior-arrival": {
+    "width": 1600,
+    "height": 1067,
+    "hash": "0520a4cf74c427f7"
   },
   "2-garden-houseFromPool": {
     "width": 1600,

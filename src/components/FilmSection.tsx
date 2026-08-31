@@ -45,13 +45,24 @@ function useAutoplayLoop() {
   return allowed;
 }
 
+/**
+ * The full film, at the same size as a photograph in the lightbox: the whole
+ * viewport bar the control gutters, not a box floating in the middle of it.
+ */
 function FilmDialog({ onClose }: { onClose: () => void }) {
   const closeRef = useRef<HTMLButtonElement>(null);
+  const filmRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     closeRef.current?.focus();
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     document.addEventListener("keydown", onKey);
+    // A tenth of the original mix, arrived at in two halves: the encoded file
+    // itself was re-mixed at 20% (see scripts/encode-film-audio.sh), and the
+    // player opens at 50% of that. Jonathan's call, 2026-09-01. Doing half of
+    // it in the file means a visitor who drags the slider to full still does
+    // not get the original blast.
+    if (filmRef.current) filmRef.current.volume = 0.5;
     const { overflow } = document.body.style;
     document.body.style.overflow = "hidden";
     return () => {
@@ -65,7 +76,7 @@ function FilmDialog({ onClose }: { onClose: () => void }) {
       role="dialog"
       aria-modal="true"
       aria-label="The full walkthrough of Everview"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-ink/95 p-4"
+      className="fixed inset-0 z-[100] flex flex-col bg-ink/95"
       onClick={onClose}
     >
       <button
@@ -78,17 +89,20 @@ function FilmDialog({ onClose }: { onClose: () => void }) {
         <X className="h-5 w-5" />
       </button>
 
-      <video
-        onClick={(e) => e.stopPropagation()}
-        className="max-h-full w-full max-w-6xl"
-        controls
-        autoPlay
-        playsInline
-        preload="metadata"
-      >
-        <source src={FILM_AV1} type="video/mp4; codecs=av01.0.08M.08" />
-        <source src={FILM_H264} type="video/mp4; codecs=avc1.640028" />
-      </video>
+      <div className="flex flex-1 items-center justify-center px-4 py-14 md:px-20">
+        <video
+          ref={filmRef}
+          onClick={(e) => e.stopPropagation()}
+          className="max-h-full max-w-full"
+          controls
+          autoPlay
+          playsInline
+          preload="metadata"
+        >
+          <source src={FILM_AV1} type="video/mp4; codecs=av01.0.08M.08" />
+          <source src={FILM_H264} type="video/mp4; codecs=avc1.640028" />
+        </video>
+      </div>
     </div>
   );
 }
@@ -108,14 +122,27 @@ export default function FilmSection() {
     loopRef.current?.play().catch(() => {});
   }, [autoplay]);
 
+  // Two cuts of the same house playing at once is the wrong impression
+  // entirely. The loop stops while the film is open and picks up again after,
+  // and pausing also stops it decoding behind an opaque overlay.
+  useEffect(() => {
+    const v = loopRef.current;
+    if (!v) return;
+    if (open) v.pause();
+    else if (autoplay) v.play().catch(() => {});
+  }, [open, autoplay]);
+
   return (
     <section id="film" className="py-8 md:py-12">
       <div className="container">
         <p className="text-label text-stone-text mb-4">The house, in motion</p>
 
+        {/* One centred column, heading and film together — the film sitting
+            hard left under a full-width rule read as an afterthought
+            (Jonathan, 2026-09-01). */}
         <div className="border-t border-line pt-8 md:pt-12">
-          <Reveal className="max-w-3xl mb-8">
-            <h2 className="text-display-l text-ink mb-4">Walk through it</h2>
+          <Reveal className="mx-auto max-w-3xl mb-6">
+            <h2 className="text-display-l text-ink mb-3">Walk through it</h2>
             <p className="text-lede text-ink">
               Half a minute from the street to the terrace, taking in the pool,
               the lawn and the bay on the way. The full walkthrough, with sound,
@@ -123,7 +150,7 @@ export default function FilmSection() {
             </p>
           </Reveal>
 
-          <Reveal delayMs={100}>
+          <Reveal delayMs={100} className="mx-auto max-w-3xl">
             <div className="photo-frame photo-frame--static">
               <video
                 ref={loopRef}

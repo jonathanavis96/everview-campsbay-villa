@@ -23,8 +23,6 @@ type Space = {
 type Level = {
   heading: string;
   intro: string;
-  /** Photographs sitting loose in the level folder, not yet sorted into a space. */
-  folder: string;
   spaces: Space[];
 };
 
@@ -37,7 +35,6 @@ const LEVELS: Level[] = [
     heading: "Living level",
     intro:
       "The floor the house is built around: kitchen, dining, lounge and the terrace, all opening onto the same view.",
-    folder: "living-level",
     spaces: [
       space(
         "living-level/kitchen",
@@ -65,7 +62,6 @@ const LEVELS: Level[] = [
     heading: "Bedroom level",
     intro:
       "Three bedrooms upstairs, with the pool room and the study sharing the landing.",
-    folder: "bedroom-level",
     spaces: [
       space(
         "bedroom-level/pool-room-and-study",
@@ -77,21 +73,21 @@ const LEVELS: Level[] = [
   {
     heading: "Garden level",
     intro: "Down at garden height: the pool, the lawn, and the evening light.",
-    folder: "garden-level",
     spaces: [
       space(
         "garden-level/pool-and-garden",
         "The pool and garden",
-        "Heated year-round and set into the lawn below the house, with the mountain on one side and the ocean on the other, the gin deck above it and Lion's Head on the skyline as the light goes."
+        "Heated year-round and set into the lawn below the house, with the mountain on one side and the ocean on the other, the gin deck above it and Lion's Head on the skyline as the light goes — and the house seen from the street it is entered from."
       ),
     ],
   },
   {
     heading: "Entrance",
     intro: "",
-    folder: "entrance",
     spaces: [
       space(
+        // The arrival photograph moved to the pool and garden, where it sits
+        // with the other exteriors. This space is text now, by design.
         "entrance/entrance",
         "Street level",
         "The house is entered at street level, off a driveway with room for six cars. There is further parking in the cul-de-sac itself, which carries no through traffic."
@@ -100,8 +96,17 @@ const LEVELS: Level[] = [
   },
 ];
 
-function SpaceSpread({ space, index }: { space: Space; index: number }) {
-  const reversed = index % 2 === 1;
+function SpaceSpread({
+  space,
+  index,
+  flip = false,
+}: {
+  space: Space;
+  index: number;
+  /** Start this level's alternation on the other foot. */
+  flip?: boolean;
+}) {
+  const reversed = (index + (flip ? 1 : 0)) % 2 === 1;
 
   if (space.photos.length === 0) {
     // No photographs for this space: a line of text under its level, not a
@@ -130,26 +135,11 @@ function SpaceSpread({ space, index }: { space: Space; index: number }) {
   );
 }
 
-/** Photographs sitting loose in a level folder, waiting to be sorted. */
-function LevelExtras({ level }: { level: Level }) {
-  const loose = getResolvedInFolder(level.folder);
-  if (loose.length === 0) return null;
-
-  return (
-    <Reveal className="grid md:grid-cols-2 gap-8 md:gap-14 py-12 md:py-16 border-t border-line items-center">
-      <PhotoCarousel photos={loose} label={level.heading} />
-      <div>
-        <h3 className="text-display-m text-ink mb-3">
-          More of the {level.heading.toLowerCase()}
-        </h3>
-        <p className="text-body text-ink/80">
-          Further frames from this level of the house.
-        </p>
-      </div>
-    </Reveal>
-  );
-}
-
+// There is no "more of this level" spread any more. It existed to catch
+// photographs sitting loose in a level folder, and the one it was catching —
+// a landing shot on the bedroom level — was not worth a spread of its own
+// (Jonathan, 2026-09-01). A loose file is now simply not shown: put it in a
+// space's folder, or leave it out.
 export default function HouseLevelsSection() {
   return (
     <section id="house" className="py-8 md:py-12">
@@ -165,9 +155,16 @@ export default function HouseLevelsSection() {
               )}
             </Reveal>
             {level.spaces.map((s, i) => (
-              <SpaceSpread key={s.name} space={s} index={i} />
+              <SpaceSpread
+                key={s.name}
+                space={s}
+                index={i}
+                // The garden level is one spread, and the spread above it —
+                // the pool room and study — puts its photograph on the left.
+                // Two lefts in a row reads as a column, so this one flips.
+                flip={level.heading === "Garden level"}
+              />
             ))}
-            <LevelExtras level={level} />
           </div>
         ))}
       </div>
