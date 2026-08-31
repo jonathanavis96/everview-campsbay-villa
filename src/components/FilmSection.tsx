@@ -54,6 +54,10 @@ function FilmDialog({ onClose }: { onClose: () => void }) {
   const filmRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
+    // Whatever opened the dialog gets focus back when it closes — by Escape,
+    // by the close button or by the backdrop. Without this, focus falls to
+    // <body> and a keyboard visitor loses their place on the page.
+    const opener = document.activeElement as HTMLElement | null;
     closeRef.current?.focus();
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     document.addEventListener("keydown", onKey);
@@ -68,6 +72,7 @@ function FilmDialog({ onClose }: { onClose: () => void }) {
     return () => {
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = overflow;
+      opener?.focus?.();
     };
   }, [onClose]);
 

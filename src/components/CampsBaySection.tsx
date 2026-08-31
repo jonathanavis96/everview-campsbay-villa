@@ -169,6 +169,13 @@ function MapPanel() {
     hoverTimer.current = null;
   };
 
+  // Focus arms the timer the same way a pointer does, so blur has to disarm it
+  // the same way leaving does — otherwise tabbing straight past the button
+  // spends the megabytes anyway. Unmounting mid-wait has to cancel it too.
+  useEffect(() => () => {
+    if (hoverTimer.current !== null) window.clearTimeout(hoverTimer.current);
+  }, []);
+
   if (loaded) {
     // The poster stays underneath and fades out only once the iframe reports
     // it has loaded, so the panel never goes blank mid-load.
@@ -209,6 +216,7 @@ function MapPanel() {
       onPointerEnter={armLoad}
       onPointerLeave={cancelLoad}
       onFocus={armLoad}
+      onBlur={cancelLoad}
       className="photo-frame group relative block w-full overflow-hidden text-left"
       aria-label="Load the interactive map"
     >
