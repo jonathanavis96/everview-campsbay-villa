@@ -41,48 +41,23 @@ const LEVELS: Level[] = [
     spaces: [
       space(
         "living-level/kitchen",
-        "The kitchen",
-        "Modern appliances, marble countertops, and a large island built for cooking together."
+        "The kitchen and sunbeds",
+        "Modern appliances, marble countertops and a large island built for cooking together — with the loungers and reading nook just off it, for the part of the day nobody wants to be indoors."
       ),
       space(
-        "living-level/sunbeds",
-        "The sunbeds",
-        "Off the kitchen: loungers and a reading nook, for the part of the day nobody wants to be indoors."
+        "living-level/living-and-dining",
+        "The living room and dining",
+        "A fireplace, deep seating and the Atlantic filling the far wall, with the formal table for eight under the chandelier at the other end of the same room."
       ),
       space(
-        "living-level/indoor-dining",
-        "Indoor dining",
-        "A formal table for eight under the chandelier, with the ocean through the glass."
-      ),
-      space(
-        "living-level/formal-living-room",
-        "The formal living room",
-        "A fireplace, deep seating, and the Atlantic filling the far wall."
-      ),
-      space(
-        "living-level/outside-dining",
-        "Outside dining",
-        "The covered dining table on the terrace, where most meals end up happening."
-      ),
-      space(
-        "living-level/outside-lounge",
-        "The outside lounge",
-        "The seating that lives outdoors, between the living room and the view."
-      ),
-      space(
-        "living-level/bar",
-        "The bar",
-        "A proper bar off the living room, stocked and ready for the evening."
-      ),
-      space(
-        "living-level/wine-cellar",
-        "Wine cellar & TV room",
-        "A wine cellar alongside the television room, for evenings that run late."
+        "living-level/bar-and-cellar",
+        "The bar, wine cellar and TV room",
+        "A proper bar off the living room, stocked and ready, with the wine cellar and the television room alongside it for evenings that run late."
       ),
       space(
         "living-level/terrace",
         "The terrace",
-        "The covered front patio, where dinner happens: the whole sweep of Camps Bay beach and the Atlantic in front of you, and the Twelve Apostles running away to the far left."
+        "The covered front patio, where dinner happens: the whole sweep of Camps Bay beach and the Atlantic in front of you, the Twelve Apostles running away to the far left, and the outdoor lounge and dining table under the same roof."
       ),
     ],
   },
@@ -93,14 +68,9 @@ const LEVELS: Level[] = [
     folder: "bedroom-level",
     spaces: [
       space(
-        "bedroom-level/pool-room",
-        "Pool room",
-        "A billiards table and a media corner beside the three upstairs bedrooms — not the swimming pool, which is two levels down."
-      ),
-      space(
-        "bedroom-level/study",
-        "The study",
-        "A quiet desk on the upstairs landing, for the mornings someone has to work."
+        "bedroom-level/pool-room-and-study",
+        "Pool room and study",
+        "A billiards table and a media corner beside the three upstairs bedrooms — not the swimming pool, which is two levels down — and a quiet desk on the landing for the mornings someone has to work."
       ),
     ],
   },
@@ -110,14 +80,9 @@ const LEVELS: Level[] = [
     folder: "garden-level",
     spaces: [
       space(
-        "garden-level/pool",
-        "The pool",
-        "Heated year-round, set into the garden below the house, with the mountain on one side and the ocean on the other."
-      ),
-      space(
-        "garden-level/garden",
-        "The garden",
-        "Lawn, loungers and the gin deck, with Lion's Head on the skyline as the light goes."
+        "garden-level/pool-and-garden",
+        "The pool and garden",
+        "Heated year-round and set into the lawn below the house, with the mountain on one side and the ocean on the other, the gin deck above it and Lion's Head on the skyline as the light goes."
       ),
     ],
   },

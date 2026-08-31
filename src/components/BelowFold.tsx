@@ -1,9 +1,10 @@
 import type { ComponentType } from "react";
 import HorizonSection from "@/components/HorizonSection";
+import FilmSection from "@/components/FilmSection";
 import HouseLevelsSection from "@/components/HouseLevelsSection";
 import BedroomsSection from "@/components/BedroomsSection";
 import FloorPlanSection from "@/components/FloorPlanSection";
-import { BeachBand, SunsetBand } from "@/components/Bands";
+import { BeachBand } from "@/components/Bands";
 import PowerWaterSection from "@/components/PowerWaterSection";
 import CampsBaySection from "@/components/CampsBaySection";
 import ArrivalSection from "@/components/ArrivalSection";
@@ -26,11 +27,15 @@ import AtlanticBand from "@/components/Atlantic";
  *
  * Each section names what follows it. Most take the skyline; the plan hands
  * over to the Atlantic, because the water is south of the terrace and the
- * plan no longer says so itself. Five take a plain rule instead: under each
- * of the two photographs, because a drawn mountain under a photograph of a
- * mountain says it twice; and after the Camps Bay, filtration and rates
- * sections, where Jonathan found a mountain range between two blocks of
- * practical text too loud for what it was separating.
+ * plan no longer says so itself. Four take a plain rule instead: under the
+ * beach band, because a drawn mountain under a photograph of a mountain says
+ * it twice; and after the Camps Bay, filtration and rates sections, where
+ * Jonathan found a mountain range between two blocks of practical text too
+ * loud for what it was separating.
+ *
+ * The film sits directly after the beach band and before the house tour: it
+ * previews the whole house in half a minute, which is what lets the
+ * room-by-room sections below it be shorter without reading thin.
  *
  * The order runs: what the house is, then the house itself, then where it
  * is, then the reassurances an overseas guest needs, then proof, then price,
@@ -43,13 +48,13 @@ type Divider = "ridge" | "rule" | "atlantic";
 const SECTIONS: Array<[string, ComponentType, Divider?]> = [
   ["horizon", HorizonSection],
   ["beach-band", BeachBand, "rule"],
+  ["film", FilmSection],
   ["house", HouseLevelsSection],
   ["bedrooms", BedroomsSection],
   ["plans", FloorPlanSection, "atlantic"],
   ["camps-bay", CampsBaySection, "rule"],
   ["power-water", PowerWaterSection, "rule"],
   ["reviews", ReviewsSection],
-  ["sunset-band", SunsetBand, "rule"],
   ["rates", RateSection, "rule"],
   ["arrival", ArrivalSection],
   ["enquire", EnquiryComposer],
