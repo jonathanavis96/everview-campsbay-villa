@@ -7,7 +7,10 @@
 // the AV1 is both smaller and cleaner. VP9 was tested and dropped — 0.8966 at
 // 8.6 MB, worse than H.264 on both axes.
 //
-// The loop autoplays on desktop only. On a phone it is a poster image and
+// The loop autoplays on every desktop, including ones asking for reduced
+// motion — Jonathan's call on 2026-09-01: the loop IS the section, and a
+// still frame there reads as a broken video rather than a considered choice.
+// On a phone it is a poster image and
 // nothing more until the visitor asks, because ~6 MB on every mobile visit is
 // real data and a real risk to the mobile Lighthouse score, which is gated at
 // >=90 and has been fought for repeatedly (MIS-459). preload="none" keeps the
@@ -27,21 +30,16 @@ const POSTER = `${BASE}video/everview-loop-poster.webp`;
 const FILM_AV1 = `${BASE}video/everview-film.av1.mp4`;
 const FILM_H264 = `${BASE}video/everview-film.h264.mp4`;
 
-/** Desktop, and only when the visitor has not asked for less motion. */
+/** Desktop only. Width is the whole test; reduced motion is not consulted. */
 function useAutoplayLoop() {
   const [allowed, setAllowed] = useState(false);
 
   useEffect(() => {
     const wide = window.matchMedia("(min-width: 768px)");
-    const still = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const decide = () => setAllowed(wide.matches && !still.matches);
+    const decide = () => setAllowed(wide.matches);
     decide();
     wide.addEventListener("change", decide);
-    still.addEventListener("change", decide);
-    return () => {
-      wide.removeEventListener("change", decide);
-      still.removeEventListener("change", decide);
-    };
+    return () => wide.removeEventListener("change", decide);
   }, []);
 
   return allowed;
@@ -99,6 +97,16 @@ export default function FilmSection() {
   const autoplay = useAutoplayLoop();
   const [open, setOpen] = useState(false);
   const close = useCallback(() => setOpen(false), []);
+  const loopRef = useRef<HTMLVideoElement>(null);
+
+  // The autoplay attribute alone is not always enough: Chrome ignores it if
+  // the element is still laid out at zero height when it is parsed, which the
+  // Reveal wrapper can cause. Ask once more after mount. It is muted, so no
+  // gesture is required and a rejection is nothing to act on.
+  useEffect(() => {
+    if (!autoplay) return;
+    loopRef.current?.play().catch(() => {});
+  }, [autoplay]);
 
   return (
     <section id="film" className="py-8 md:py-12">
@@ -116,8 +124,9 @@ export default function FilmSection() {
           </Reveal>
 
           <Reveal delayMs={100}>
-            <div className="photo-frame relative">
+            <div className="photo-frame photo-frame--static">
               <video
+                ref={loopRef}
                 key={String(autoplay)}
                 className="block w-full"
                 poster={POSTER}
@@ -137,16 +146,18 @@ export default function FilmSection() {
                 <source src={LOOP_AV1} type="video/mp4; codecs=av01.0.08M.08" />
                 <source src={LOOP_H264} type="video/mp4; codecs=avc1.640028" />
               </video>
-
-              <button
-                type="button"
-                onClick={() => setOpen(true)}
-                className="absolute bottom-4 left-4 inline-flex items-center gap-3 bg-paper/90 px-5 py-3 text-label text-ink transition-colors hover:bg-paper"
-              >
-                <Play className="h-4 w-4" aria-hidden="true" />
-                Play the full film — 2:23, with sound
-              </button>
             </div>
+
+            {/* Below the frame, not over it — overlaid it collided with the
+                phone's own control bar (2026-09-01). */}
+            <button
+              type="button"
+              onClick={() => setOpen(true)}
+              className="mt-5 inline-flex items-center gap-3 border border-ink bg-ink px-6 py-4 text-label text-paper transition-colors hover:bg-transparent hover:text-ink"
+            >
+              <Play className="h-4 w-4" aria-hidden="true" />
+              Play the full film — 2:23, with sound
+            </button>
           </Reveal>
         </div>
       </div>
