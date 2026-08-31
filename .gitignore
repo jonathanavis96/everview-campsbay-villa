@@ -31,3 +31,9 @@ dist-ssr
 
 # Chrome profile directories a Windows-path Lighthouse run drops into the repo root
 C:\\*
+
+# Full-resolution originals from the photographer (45 MP JPEGs + the 4K film).
+# Kept in the repo so they are not forgotten on a stray disk, deliberately
+# untracked: 678 MB has no business in git. The web-sized derivatives under
+# src/assets/everview_photos_webp are what ship.
+photo-originals/

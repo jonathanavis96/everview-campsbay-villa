@@ -3,6 +3,12 @@
 // Each room names its folder. There is no filename keyword-matching left in
 // this component — a photograph appears under a room because it sits in that
 // room's folder, and nowhere else.
+//
+// A room's balcony and its en-suite live in that room's folder too, so they
+// crossfade behind the bedroom itself rather than each claiming a spread of
+// its own. The shared "bathrooms" carousel that used to close this section is
+// gone with them: a guest thinks about the bathroom attached to their room,
+// not about the house's bathrooms as a set (2026-08-31).
 import { getResolvedInFolder, type ResolvedPhoto } from "@/utils/photoCatalog";
 import PhotoCarousel from "@/components/PhotoCarousel";
 import Reveal from "@/components/Reveal";
@@ -41,8 +47,6 @@ const ROOMS: Bedroom[] = [
   },
 ];
 
-const BATHROOMS = getResolvedInFolder("bedroom-level/bathrooms");
-
 function BedroomSpread({ room, index }: { room: Bedroom; index: number }) {
   const reversed = index % 2 === 1;
   if (room.photos.length === 0) return null;
@@ -79,18 +83,6 @@ export default function BedroomsSection() {
           <BedroomSpread key={room.name} room={room} index={i} />
         ))}
 
-        {BATHROOMS.length > 0 && (
-          <Reveal className="grid md:grid-cols-2 gap-8 md:gap-14 py-12 md:py-16 border-t border-line items-center">
-            <PhotoCarousel photos={BATHROOMS} label="The bathrooms" />
-            <div>
-              <h3 className="text-display-m text-ink mb-3">The bathrooms</h3>
-              <p className="text-body text-ink/80">
-                An en-suite to every bedroom, plus a guest toilet upstairs and
-                another downstairs.
-              </p>
-            </div>
-          </Reveal>
-        )}
 
         <Reveal className="py-8 border-t border-line text-center">
           <p className="text-body text-ink/80 mx-auto">

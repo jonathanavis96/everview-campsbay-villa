@@ -1,49 +1,22 @@
-// design-direction §6.10 — "Arrival and the house rules".
+// design-direction §6.10 — "Arrival".
 //
-// The section carries what a guest needs *before* they arrive: the times, the
-// short version of how the house runs, and the rules. Everything operational
-// — the lift's load-shedding behaviour, the AV walkthrough, the two music
-// systems, the emergency numbers — lives in the welcome brochure, which is
-// one button away and printed in the house. The page used to try to be both
-// and read as a wall of paragraphs (Jonathan, 2026-08-24).
+// The section carries the three times, and then hands over. Housekeeping, the
+// lift, the WiFi, the alarm and the six house rules were all on this page and
+// all already in the welcome brochure; carrying them twice made the section
+// the longest block of body text on the site for information a guest reads
+// once, at most. They are in the brochure now and nowhere else, and the
+// button that opens it is sized to be found (2026-08-31).
 //
 // The WiFi password and the alarm codes appear in neither: they are on the
 // printed card in the house. A page or a brochure gets forwarded and
 // screenshotted; a card on the kitchen counter does not.
+import { ArrowRight } from "lucide-react";
 import Reveal from "@/components/Reveal";
 
 const ARRIVAL_TIMES = [
   { label: "Check-in", value: "2:00 PM – 7:00 PM" },
   { label: "Check-out", value: "By 10:00 AM" },
   { label: "After 7:00 PM", value: "Arrange with the property manager" },
-];
-
-const HOW_IT_RUNS = [
-  {
-    heading: "Housekeeping",
-    body: "Daily, with laundry provided and available on request.",
-  },
-  {
-    heading: "The lift",
-    body: "Between all levels, up to six people, and it keeps running through load-shedding on days the battery bank has had sun.",
-  },
-  {
-    heading: "WiFi",
-    body: "Fibre on every level. The network and password are on the printed card in the house — never in a document that can be forwarded.",
-  },
-  {
-    heading: "Alarm",
-    body: "Monitored 24/7 by ADT Security with armed response. The codes are on that same card, and the property manager sets you up on arrival.",
-  },
-];
-
-const HOUSE_RULES = [
-  "No pets.",
-  "No smoking anywhere on the property.",
-  "No parties or events — small gatherings by prior arrangement with the property manager.",
-  "No unauthorised guests outside the booking group without prior arrangement.",
-  "No commercial filming or photography.",
-  "Damages reported to the property manager immediately.",
 ];
 
 const BROCHURE_HREF = `${import.meta.env.BASE_URL}brochures/welcome-brochure.html`;
@@ -80,46 +53,28 @@ export default function ArrivalSection() {
             </dl>
           </Reveal>
 
-          <Reveal as="div" className="mt-10 grid gap-8 md:grid-cols-2 md:gap-12">
-            <div>
-              {/* Headed and hairline-separated, like the house rules opposite:
-                  the four facts used to float under nothing while the column
-                  beside them carried a heading, which is most of why the row
-                  looked unfinished. */}
-              <h3 className="text-display-m text-ink mb-4">How the house runs</h3>
-              <ul className="grid gap-x-8 sm:grid-cols-2">
-                {HOW_IT_RUNS.map((item) => (
-                  <li key={item.heading} className="border-t border-line pb-4 pt-3">
-                    <h3 className="text-label text-stone-text mb-1">{item.heading}</h3>
-                    <p className="text-body text-ink/80">{item.body}</p>
-                  </li>
-                ))}
-              </ul>
-
-              <a
-                href={BROCHURE_HREF}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-6 inline-flex items-center gap-3 border border-ink px-6 py-3 text-label text-ink transition-colors hover:bg-ink hover:text-paper"
-              >
-                Read the welcome brochure
-              </a>
-            </div>
-
-            <div>
-              <h3 className="text-display-m text-ink mb-4">House rules</h3>
-              <ul className="text-body text-ink/80 space-y-2 pb-1">
-                {HOUSE_RULES.map((rule) => (
-                  <li key={rule} className="border-t border-line pt-2">
-                    {rule}
-                  </li>
-                ))}
-              </ul>
-              <p className="text-body text-ink/80 mt-4">
-                Late check-out is subject to availability and additional cost,
-                arranged in advance.
-              </p>
-            </div>
+          {/* The brochure carries housekeeping, the lift, the WiFi, the
+              alarm, the house rules and everything operational. It is printed
+              in the house as well, so this button is the whole handover. */}
+          <Reveal delayMs={160} as="div" className="mt-10 border-t border-line pt-8">
+            <a
+              href={BROCHURE_HREF}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex w-full items-center justify-between gap-6 border border-ink px-8 py-6 text-ink transition-colors hover:bg-ink hover:text-paper sm:w-auto"
+            >
+              <span>
+                <span className="text-display-m block">Read the welcome brochure</span>
+                <span className="text-body mt-1 block opacity-80">
+                  Housekeeping, the lift, WiFi, the alarm and the house rules.
+                </span>
+              </span>
+              <ArrowRight className="h-6 w-6 shrink-0" aria-hidden="true" />
+            </a>
+            <p className="text-body text-ink/70 mt-4 max-w-2xl">
+              Late check-out is subject to availability and additional cost,
+              arranged in advance.
+            </p>
           </Reveal>
         </div>
       </div>

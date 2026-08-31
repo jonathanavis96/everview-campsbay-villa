@@ -29,21 +29,32 @@ come from the component that renders the folder.
 ```
 bedroom-level/
   master-suite/     ocean-king/      garden-king/
-  bathrooms/        pool-room/       study/
+  pool-room-and-study/
   *.webp            loose files here show as "More of the bedroom level"
 living-level/
-  kitchen/          indoor-dining/   formal-living-room/
-  outside-lounge/   sunbeds/         wine-cellar/
+  kitchen/          living-and-dining/   bar-and-cellar/
   terrace/          ground-king/
 garden-level/
-  pool/             garden/
-exterior/
+  pool-and-garden/
+entrance/entrance/
 views/
 ```
 
 A folder with no files in it renders nothing — no empty carousel, no gap. A
-folder that does not exist at all (e.g. `entrance/`) renders its copy without
-photographs, which is deliberate.
+folder that does not exist at all renders its copy without photographs, which
+is deliberate.
+
+**The folders are deliberately coarse.** Each one is a *group*, not a room: the
+kitchen folder holds the sunbeds too, `living-and-dining` holds the formal
+living room and the dining table, `bar-and-cellar` holds the bar, the wine
+cellar and the television room, and each bedroom folder holds that bedroom's
+balcony and its en-suite. Every folder is one spread on the page, so splitting a
+group in two adds half a screen of scrolling — which is exactly what the
+2026-08-31 merge removed. Add to a group before you add a group.
+
+Ordering inside a folder is by the `{order}` prefix, and the 2026-08 plates
+(45 MP originals, 1600px WebP) come first in every folder; the older, softer
+plates follow them and are what the carousel crossfades to.
 
 ## After moving or adding a file
 

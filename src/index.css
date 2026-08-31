@@ -189,6 +189,14 @@
       transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
+  /* The film frame opts out of the lift. A transform on a box containing a
+     <video> forces Chrome to rebuild the compositing layer on every hover,
+     which flashes the video black (2026-09-01). */
+  .photo-frame.photo-frame--static:hover,
+  .photo-frame.photo-frame--static:focus-visible {
+    transform: none;
+  }
+
   .photo-frame:hover,
   .photo-frame:focus-visible {
     transform: translateY(-3px);

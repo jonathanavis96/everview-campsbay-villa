@@ -10,9 +10,6 @@ import { useEffect, useRef, useState } from "react";
 import { MapPin } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import mapPoster from "@/assets/map/camps-bay-map-poster.webp";
-import panorama from "@/assets/everview_photos_webp/views/2-view-camps-bay-panorama.webp";
-import panoramaLead from "@/assets/everview_photos_webp_lead/views/2-view-camps-bay-panorama.webp";
-import panoramaMid from "@/assets/everview_photos_webp_mid/views/2-view-camps-bay-panorama.webp";
 
 const MAP_EMBED_SRC =
   "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d361.5336953869003!2d18.3857876684248!3d-33.952026148004215!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f120!3m3!1m2!1s0x1dcc67added5d659%3A0x6777a5740e47b06d!2s14%20Cramond%20Rd%2C%20Camps%20Bay%2C%20Cape%20Town%2C%208040!5e0!3m2!1sen!2sza!4v1756208341188!5m2!1sen!2sza";
@@ -135,6 +132,7 @@ function warmMapOrigins() {
 
 function MapPanel() {
   const [loaded, setLoaded] = useState(false);
+  const hoverTimer = useRef<number | null>(null);
   const [ready, setReady] = useState(false);
   const panelRef = useRef<HTMLElement | null>(null);
 
@@ -154,6 +152,28 @@ function MapPanel() {
     );
     observer.observe(el);
     return () => observer.disconnect();
+  }, []);
+
+  // Hovering the poster is a good enough signal of intent to start fetching
+  // the embed behind it. The poster stays on top until the iframe reports it
+  // is ready, so the guest never watches it assemble itself — which is the
+  // whole complaint (2026-09-01). A short delay keeps a pointer merely
+  // crossing the panel from spending the megabytes.
+  const armLoad = () => {
+    if (loaded || hoverTimer.current !== null) return;
+    hoverTimer.current = window.setTimeout(() => setLoaded(true), 180);
+  };
+  const cancelLoad = () => {
+    if (hoverTimer.current === null) return;
+    window.clearTimeout(hoverTimer.current);
+    hoverTimer.current = null;
+  };
+
+  // Focus arms the timer the same way a pointer does, so blur has to disarm it
+  // the same way leaving does — otherwise tabbing straight past the button
+  // spends the megabytes anyway. Unmounting mid-wait has to cancel it too.
+  useEffect(() => () => {
+    if (hoverTimer.current !== null) window.clearTimeout(hoverTimer.current);
   }, []);
 
   if (loaded) {
@@ -193,6 +213,10 @@ function MapPanel() {
       ref={(el) => { panelRef.current = el; }}
       type="button"
       onClick={() => setLoaded(true)}
+      onPointerEnter={armLoad}
+      onPointerLeave={cancelLoad}
+      onFocus={armLoad}
+      onBlur={cancelLoad}
       className="photo-frame group relative block w-full overflow-hidden text-left"
       aria-label="Load the interactive map"
     >
@@ -224,37 +248,30 @@ export default function CampsBaySection() {
         <p className="text-label text-stone-text mb-4">Camps Bay</p>
 
         <div className="border-t border-line pt-8 md:pt-12">
-          <p className="text-body text-ink/80 max-w-2xl mb-8">
-            Everview sits on Cramond Road, at the quiet, closed end of a
-            cul-de-sac above Camps Bay's beach. The village's restaurants and
-            the Atlantic Seaboard's landmarks are all close, without the
-            noise of being on top of them.
-          </p>
-
-          <Reveal className="mb-10">
-            <figure className="m-0">
-              <span className="photo-frame block">
-                {/* A phone painting this at 390px wide has no business
-                    fetching the 2400px plate. */}
-                <img
-                  src={panorama}
-                  srcSet={`${panoramaLead} 640w, ${panoramaMid} 960w, ${panorama} 2400w`}
-                  sizes="(min-width: 1280px) 1200px, 100vw"
-                  alt="Panorama from Everview looking down the closed end of Cramond Road, with Camps Bay, the beach and the Atlantic beyond and the Twelve Apostles away to the left"
-                  loading="lazy"
-                  decoding="async"
-                  width={2400}
-                  height={1039}
-                />
-              </span>
-              <figcaption className="text-body text-ink/70 pt-3">
-                Looking down the closed end of Cramond Road from the house: the
-                bay, the beach, and the Twelve Apostles away to the left.
-              </figcaption>
-            </figure>
+          {/* The heading and the paragraph share the map's centred column, so
+              the map is not a centred object under left-aligned text
+              (Jonathan, 2026-09-01). The wider "Getting around" grid below
+              opens back out to the full container. */}
+          <Reveal className="mx-auto max-w-3xl mb-8">
+            <h2 className="text-display-l text-ink mb-3">Where the house sits</h2>
+            <p className="text-body text-ink/80">
+              Everview sits on Cramond Road, at the quiet, closed end of a
+              cul-de-sac above Camps Bay's beach. The village's restaurants and
+              the Atlantic Seaboard's landmarks are all close, without the
+              noise of being on top of them.
+            </p>
           </Reveal>
 
-          <Reveal>
+          {/* The panorama that used to sit here is gone. The paragraph above
+              already places the house on its cul-de-sac, and a full-width
+              photograph of the bay is the one thing this section did not need
+              — the beach band says it better, higher up the page, and the new
+              plates say it in every space (2026-08-31). */}
+
+          {/* Capped rather than full-width: at 1080p the 56% box was taller
+              than a third of the viewport and read as the subject of the
+              section rather than a reference for it (2026-09-01). */}
+          <Reveal className="mx-auto max-w-3xl">
             <MapPanel />
           </Reveal>
 
