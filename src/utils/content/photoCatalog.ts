@@ -70,6 +70,12 @@ export const PHOTO_CATALOG: Record<string, CatalogEntry> = {
         "The terrace's casual dining end, the glass balustrade opening onto the bay and the Twelve Apostles to the left.",
     },
   },
+  "4-living-terrace": {
+    default: {
+      description:
+        "The terrace at its ocean end, wicker chairs either side of a low table, a tree framing the bay beyond the glass.",
+    },
+  },
   "1-living-groundKing": {
     default: {
       description:

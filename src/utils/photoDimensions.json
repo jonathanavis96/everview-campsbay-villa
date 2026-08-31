@@ -404,22 +404,27 @@
     "height": 1067,
     "hash": "1efc7975e0d6dd95"
   },
-  "10-living-terrace": {
+  "10-living-covered-outside-lounge": {
     "width": 1280,
     "height": 853,
-    "hash": "c875b3aab0298947"
+    "hash": "3b2f6abd4e9c0e1d"
   },
   "11-living-terrace": {
     "width": 1280,
     "height": 853,
-    "hash": "a99d2da45d77d5fe"
+    "hash": "c875b3aab0298947"
   },
   "12-living-terrace": {
     "width": 1280,
     "height": 853,
-    "hash": "fbc9bceaf5ec4c4d"
+    "hash": "a99d2da45d77d5fe"
   },
   "13-living-terrace": {
+    "width": 1280,
+    "height": 853,
+    "hash": "fbc9bceaf5ec4c4d"
+  },
+  "14-living-terrace": {
     "width": 1200,
     "height": 800,
     "hash": "ae0d20e074ff3564"
@@ -434,35 +439,35 @@
     "height": 1067,
     "hash": "72d84d16cf0fad14"
   },
-  "4-living-covered-outside-dining": {
+  "4-living-terrace": {
+    "width": 1600,
+    "height": 1067,
+    "hash": "453c1fd127fe0a15"
+  },
+  "5-living-covered-outside-dining": {
     "width": 1280,
     "height": 853,
     "hash": "03611275c3a4110e"
   },
-  "5-outside-covered-dining-and-lounge": {
+  "6-outside-covered-dining-and-lounge": {
     "width": 1200,
     "height": 800,
     "hash": "fea967136d91777e"
   },
-  "6-living-covered-outside-lounge": {
+  "7-living-covered-outside-lounge": {
     "width": 1200,
     "height": 800,
     "hash": "b7c2dbd579a6ee1d"
   },
-  "7-living-covered-outside-lounge": {
+  "8-living-covered-outside-lounge": {
     "width": 1200,
     "height": 800,
     "hash": "51f14b30163ac19d"
   },
-  "8-living-covered-outside-lounge": {
-    "width": 1280,
-    "height": 853,
-    "hash": "d2bfb6d8c37328eb"
-  },
   "9-living-covered-outside-lounge": {
     "width": 1280,
     "height": 853,
-    "hash": "3b2f6abd4e9c0e1d"
+    "hash": "d2bfb6d8c37328eb"
   },
   "1-view-atlantic": {
     "width": 1200,
