@@ -57,11 +57,11 @@ function FilmDialog({ onClose }: { onClose: () => void }) {
     closeRef.current?.focus();
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     document.addEventListener("keydown", onKey);
-    // A tenth of the original mix, arrived at in two halves: the encoded file
-    // itself was re-mixed at 20% (see scripts/encode-film-audio.sh), and the
-    // player opens at 50% of that. Jonathan's call, 2026-09-01. Doing half of
-    // it in the file means a visitor who drags the slider to full still does
-    // not get the original blast.
+    // A twentieth of the original mix: the encoded file is at 10% (two passes
+    // of scripts/encode-film-audio.sh, 0.2 then 0.5) and the player opens at
+    // half of that. Jonathan's calls on 2026-09-01. Keeping most of the
+    // reduction in the file means a visitor who drags the slider to maximum
+    // still does not get the original blast.
     if (filmRef.current) filmRef.current.volume = 0.5;
     const { overflow } = document.body.style;
     document.body.style.overflow = "hidden";
@@ -151,7 +151,7 @@ export default function FilmSection() {
           </Reveal>
 
           <Reveal delayMs={100} className="mx-auto max-w-3xl">
-            <div className="photo-frame photo-frame--static">
+            <div className="photo-frame photo-frame--static relative">
               <video
                 ref={loopRef}
                 key={String(autoplay)}
@@ -173,6 +173,24 @@ export default function FilmSection() {
                 <source src={LOOP_AV1} type="video/mp4; codecs=av01.0.08M.08" />
                 <source src={LOOP_H264} type="video/mp4; codecs=avc1.640028" />
               </video>
+              {/* On desktop the loop carries no controls of its own, so the
+                  whole frame is the button — clicking the film opens the film,
+                  which is what anyone expects (Jonathan, 2026-09-01). On a
+                  phone the element shows its own controls and this overlay is
+                  not rendered, so a tap still reaches play/pause. */}
+              {autoplay && (
+                <button
+                  type="button"
+                  onClick={() => setOpen(true)}
+                  aria-label="Play the full film with sound"
+                  className="group absolute inset-0 flex items-center justify-center"
+                >
+                  <span className="flex items-center gap-3 bg-ink/70 px-5 py-3 text-label text-paper opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
+                    <Play className="h-4 w-4" aria-hidden="true" />
+                    Play the full film
+                  </span>
+                </button>
+              )}
             </div>
 
             {/* Below the frame, not over it — overlaid it collided with the

@@ -240,12 +240,19 @@ export default function CampsBaySection() {
         <p className="text-label text-stone-text mb-4">Camps Bay</p>
 
         <div className="border-t border-line pt-8 md:pt-12">
-          <p className="text-body text-ink/80 max-w-2xl mb-8">
-            Everview sits on Cramond Road, at the quiet, closed end of a
-            cul-de-sac above Camps Bay's beach. The village's restaurants and
-            the Atlantic Seaboard's landmarks are all close, without the
-            noise of being on top of them.
-          </p>
+          {/* The heading and the paragraph share the map's centred column, so
+              the map is not a centred object under left-aligned text
+              (Jonathan, 2026-09-01). The wider "Getting around" grid below
+              opens back out to the full container. */}
+          <Reveal className="mx-auto max-w-3xl mb-8">
+            <h2 className="text-display-l text-ink mb-3">Where the house sits</h2>
+            <p className="text-body text-ink/80">
+              Everview sits on Cramond Road, at the quiet, closed end of a
+              cul-de-sac above Camps Bay's beach. The village's restaurants and
+              the Atlantic Seaboard's landmarks are all close, without the
+              noise of being on top of them.
+            </p>
+          </Reveal>
 
           {/* The panorama that used to sit here is gone. The paragraph above
               already places the house on its cul-de-sac, and a full-width
@@ -256,7 +263,7 @@ export default function CampsBaySection() {
           {/* Capped rather than full-width: at 1080p the 56% box was taller
               than a third of the viewport and read as the subject of the
               section rather than a reference for it (2026-09-01). */}
-          <Reveal className="max-w-3xl">
+          <Reveal className="mx-auto max-w-3xl">
             <MapPanel />
           </Reveal>
 
