@@ -10,6 +10,14 @@
 // The two builds resolve the same asset imports independently, so this also
 // asserts that every asset URL in the rendered markup actually exists in
 // dist/. A silent hash mismatch would ship a hero <img> pointing at nothing.
+//
+// It also writes dist/404.html, which GitHub Pages serves for every unknown
+// path so the SPA can route it client-side. That file must keep the *empty*
+// shell: a 404 is any route but the home page, so home markup there would
+// paint the villa's hero on a URL that is not it and then be thrown away by
+// React as a hydration mismatch. The workflow used to `cp dist/index.html
+// dist/404.html`, which is exactly that; it is written here instead, from the
+// shell as it stood before the markup went in.
 import { readFile, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import path from "node:path";
@@ -48,9 +56,10 @@ if (!html.includes(PLACEHOLDER)) {
   console.error(`prerender: ${PLACEHOLDER} not found in dist/index.html`);
   process.exit(1);
 }
+await writeFile(path.join(DIST, "404.html"), html);
 await writeFile(indexPath, html.replace(PLACEHOLDER, `<div id="root">${markup}</div>`));
 
 console.log(
   `prerender: ${(Buffer.byteLength(markup) / 1024).toFixed(1)} KB of above-fold markup, ` +
-    `${referenced.size} asset URLs verified`,
+    `${referenced.size} asset URLs verified, 404.html written from the empty shell`,
 );
