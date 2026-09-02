@@ -15,7 +15,10 @@ import { validateFloors, writeFloorPlan } from "./scripts/serialize-floor-plan.m
 function heroPreloadPlugin(): Plugin {
   return {
     name: "hero-preload",
-    apply: "build",
+    // Build only, and only the client build: `npm run build` runs a second,
+    // SSR-target pass for the prerender entry whose output directory has no
+    // `assets/` to read.
+    apply: (config, env) => env.command === "build" && !config.build?.ssr,
     writeBundle(options) {
       const outDir = options.dir ?? "dist";
       const assetsDir = path.join(outDir, "assets");
