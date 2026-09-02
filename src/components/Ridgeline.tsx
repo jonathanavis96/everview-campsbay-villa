@@ -18,6 +18,14 @@ export const RIDGELINE_PATH_D =
  *
  * Motion is always on for this site: there is deliberately no
  * prefers-reduced-motion branch.
+ *
+ * The wipe is two translations, not a `clip-path` transition. PageSpeed
+ * Insights flagged this element on 2026-09-02 as the page's one
+ * non-composited animation — "Unsupported CSS Property: clip-path" — and it
+ * runs during the load, which is exactly when a repaint per frame is least
+ * affordable. A moving `overflow: hidden` window with the content
+ * counter-translated inside it produces the identical wipe out of two
+ * transforms, both of which the compositor can run off the main thread.
  */
 function useSweep(active: boolean, durationMs: number, delayMs = 0) {
   const [swept, setSwept] = useState(false);
@@ -28,9 +36,19 @@ function useSweep(active: boolean, durationMs: number, delayMs = 0) {
     return () => cancelAnimationFrame(id);
   }, [active]);
 
+  const transition = `transform ${durationMs}ms cubic-bezier(0.33, 0, 0.15, 1) ${delayMs}ms`;
+
   return {
-    clipPath: swept ? "inset(-20% 0 -20% 0)" : "inset(-20% 100% -20% 0)",
-    transition: `clip-path ${durationMs}ms cubic-bezier(0.33, 0, 0.15, 1) ${delayMs}ms`,
+    /** The clipping window, which slides in from the left. */
+    window: {
+      transform: swept ? "translateX(0)" : "translateX(-100%)",
+      transition,
+    },
+    /** The content, held still against the window's travel. */
+    content: {
+      transform: swept ? "translateX(0)" : "translateX(100%)",
+      transition,
+    },
   } as const;
 }
 
@@ -48,24 +66,43 @@ export function RidgelineMark({
 }) {
   const sweep = useSweep(true, 1500, 200);
 
+  // Three layers: the sizing box the caller styles, the window that travels
+  // across it, and the drawing held still inside that window.
+  //
+  // The window is 8px taller than the mark on each side — the old clip-path's
+  // -20% vertical inset, in the same spirit — because it must clip
+  // horizontally and must not clip the stroke, which sits up to half its
+  // width proud of the viewBox. It is absolutely positioned so that extra
+  // height costs nothing in layout, and the drawing inside is inset by the
+  // same 8px, which puts it back exactly where the caller's box is.
   return (
-    <svg
-      aria-hidden="true"
-      viewBox={`0 20 ${RIDGE_VIEWBOX_WIDTH} 370`}
-      preserveAspectRatio="none"
-      className={className}
-      style={sweep}
-    >
-      <path
-        d={RIDGELINE_PATH_D}
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={strokeWidth}
-        strokeLinejoin="round"
-        strokeLinecap="round"
-        vectorEffect="non-scaling-stroke"
-      />
-    </svg>
+    <span aria-hidden="true" className={`relative block ${className}`}>
+      <span
+        className="absolute inset-x-0 -inset-y-2 overflow-hidden will-change-transform"
+        style={sweep.window}
+      >
+        <span
+          className="absolute inset-x-0 inset-y-2 will-change-transform"
+          style={sweep.content}
+        >
+          <svg
+            viewBox={`0 20 ${RIDGE_VIEWBOX_WIDTH} 370`}
+            preserveAspectRatio="none"
+            className="block h-full w-full overflow-visible"
+          >
+            <path
+              d={RIDGELINE_PATH_D}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={strokeWidth}
+              strokeLinejoin="round"
+              strokeLinecap="round"
+              vectorEffect="non-scaling-stroke"
+            />
+          </svg>
+        </span>
+      </span>
+    </span>
   );
 }
 

@@ -71,7 +71,7 @@ export default function BelowFold() {
   return (
     <>
       {SECTIONS.map(([key, Section, divider]) => (
-        <div key={key}>
+        <div key={key} className={key === "plates" ? "defer-offscreen" : undefined}>
           <Section />
           <SectionDivider kind={divider ?? "ridge"} />
         </div>
