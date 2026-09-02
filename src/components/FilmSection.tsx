@@ -26,13 +26,25 @@ import Reveal from "@/components/Reveal";
 const BASE = import.meta.env.BASE_URL;
 const LOOP_AV1 = `${BASE}video/everview-loop.av1.mp4`;
 const LOOP_H264 = `${BASE}video/everview-loop.h264.mp4`;
+// Two posters for one frame. The desktop element renders ~742 CSS px wide and
+// the phone's ~350, so the 1600px poster was shipping four times the pixels a
+// phone can draw — 88.9 KB of it, the single largest item on Google's
+// "Improve image delivery" list for mobile (2026-09-02). The 960 covers a
+// phone at 3x DPR and costs 34.6 KB.
 const POSTER = `${BASE}video/everview-loop-poster.webp`;
+const POSTER_NARROW = `${BASE}video/everview-loop-poster-960.webp`;
 const FILM_AV1 = `${BASE}video/everview-film.av1.mp4`;
 const FILM_H264 = `${BASE}video/everview-film.h264.mp4`;
 
 /** Desktop only. Width is the whole test; reduced motion is not consulted. */
 function useAutoplayLoop() {
-  const [allowed, setAllowed] = useState(false);
+  // Resolved synchronously on the first render, not in an effect. The width
+  // also picks the poster now, and an effect-only answer meant every desktop
+  // rendered once as "narrow", fetched the phone poster, then remounted and
+  // fetched the other one.
+  const [allowed, setAllowed] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches,
+  );
 
   useEffect(() => {
     const wide = window.matchMedia("(min-width: 768px)");
@@ -161,7 +173,7 @@ export default function FilmSection() {
                 ref={loopRef}
                 key={String(autoplay)}
                 className="block w-full"
-                poster={POSTER}
+                poster={autoplay ? POSTER : POSTER_NARROW}
                 muted
                 loop
                 playsInline
