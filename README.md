@@ -9,7 +9,7 @@ Vite + React 18 + TypeScript + Tailwind + shadcn/ui.
 
 ## Local development
 
-Requires Node.js (v20+).
+Requires Node.js v20.11 or newer — the build scripts use `import.meta.dirname`, which landed in 20.11.
 
 ```sh
 npm install

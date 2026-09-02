@@ -32,9 +32,10 @@ jobs:
       - name: Build
         run: npm run build
 
-      # SPA fallback for client-side routing
-      - name: Add 404 fallback
-        run: cp dist/index.html dist/404.html
+      # The SPA fallback (dist/404.html) is written by scripts/prerender.mjs
+      # during `npm run build`. It is deliberately not a copy of index.html any
+      # more: index.html carries the prerendered home markup, and a 404 is by
+      # definition not the home page.
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
