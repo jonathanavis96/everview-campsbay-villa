@@ -82,25 +82,31 @@ export const PHOTO_CATALOG: Record<string, CatalogEntry> = {
         "The Ground Floor King: a sleigh bed and a bench, with doors opening straight onto the garden.",
     },
   },
-  "1-bedroom-masterSuite": {
+  "1-bedroom-master-suite": {
     default: {
       description:
-        "The Master Suite: a wide upholstered bed under a chandelier, with the dressing area beyond it.",
+        "The Master Suite from the bed, two walls of glass opening onto Camps Bay, the mountainside and the sea.",
     },
   },
   "2-bedroom-masterSuite": {
     default: {
       description:
+        "The Master Suite: a wide upholstered bed under a chandelier, with the dressing area beyond it.",
+    },
+  },
+  "3-bedroom-masterSuite": {
+    default: {
+      description:
         "The Master Suite from the dressing side, its bed facing sliding doors onto the balcony and the ocean.",
     },
   },
-  "3-bedroom-masterSuiteBalcony": {
+  "4-bedroom-masterSuiteBalcony": {
     default: {
       description:
         "The Master Suite's balcony: an open paved terrace behind glass, looking across Camps Bay to Lion's Head.",
     },
   },
-  "4-bedroom-masterSuiteBathroom": {
+  "5-bedroom-masterSuiteBathroom": {
     default: {
       description:
         "The Master Suite's en-suite: a freestanding bath by the window, twin basins, and a walk-in shower behind glass.",

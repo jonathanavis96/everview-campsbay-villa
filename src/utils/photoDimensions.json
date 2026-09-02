@@ -34,30 +34,30 @@
     "height": 853,
     "hash": "51920b778a3143a5"
   },
-  "1-bedroom-masterSuite": {
+  "1-bedroom-master-suite": {
+    "width": 1200,
+    "height": 800,
+    "hash": "f3eef3fc66b7eb68"
+  },
+  "2-bedroom-masterSuite": {
     "width": 1600,
     "height": 1068,
     "hash": "51af66a6d3d56e31"
   },
-  "2-bedroom-masterSuite": {
+  "3-bedroom-masterSuite": {
     "width": 1600,
     "height": 1067,
     "hash": "19894572cf7b6daa"
   },
-  "3-bedroom-masterSuiteBalcony": {
+  "4-bedroom-masterSuiteBalcony": {
     "width": 1600,
     "height": 1067,
     "hash": "5c08d0f78c083112"
   },
-  "4-bedroom-masterSuiteBathroom": {
+  "5-bedroom-masterSuiteBathroom": {
     "width": 1600,
     "height": 1067,
     "hash": "6982d22946369148"
-  },
-  "5-bedroom-master-suite": {
-    "width": 1200,
-    "height": 800,
-    "hash": "f3eef3fc66b7eb68"
   },
   "6-bedroom-master-suite": {
     "width": 1200,

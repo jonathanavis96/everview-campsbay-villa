@@ -81,13 +81,18 @@ export default function ReviewsSection() {
                 </button>
 
                 <div
-                  className="flex items-center gap-2"
+                  className="flex items-center"
                   role="tablist"
                   aria-label="Review selection"
                 >
                   {REVIEWS.map((review, i) => {
                     const active = i === index;
                     return (
+                      // The bar stays 6px tall, but the button around it is a
+                      // full 24x24 target: at the drawn size these were 8x6
+                      // taps, which is the one accessibility failure Lighthouse
+                      // reports on mobile. The horizontal padding replaces the
+                      // old gap, so the dots sit the same distance apart.
                       <button
                         key={review.id}
                         type="button"
@@ -95,12 +100,17 @@ export default function ReviewsSection() {
                         aria-selected={active}
                         aria-label={`Go to review ${i + 1} of ${count}`}
                         onClick={() => goTo(i)}
-                        className={`h-1.5 rounded-full transition-all duration-300 ${
-                          active
-                            ? "w-8 bg-ink"
-                            : "w-2 bg-line hover:bg-stone"
-                        }`}
-                      />
+                        className="group flex h-6 items-center justify-center px-2"
+                      >
+                        <span
+                          aria-hidden="true"
+                          className={`h-1.5 rounded-full transition-all duration-300 ${
+                            active
+                              ? "w-8 bg-ink"
+                              : "w-2 bg-line group-hover:bg-stone"
+                          }`}
+                        />
+                      </button>
                     );
                   })}
                 </div>
