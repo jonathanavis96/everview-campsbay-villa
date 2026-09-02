@@ -22,11 +22,19 @@ const heroJpgSrcSet = `${hero640Jpg} 640w, ${hero960Jpg} 960w, ${hero1280Jpg} 12
 // The type sits in the photograph's own quiet band, but a sunset frame has
 // no reliably dark pixel anywhere — so every line above the fold carries its
 // own shadow, and the wordmark a hairline dark stroke as well.
+//
+// The 2026-09 regrade turned the pool from near-black to pale water, which is
+// exactly what sits behind this type. The measured contrast still cleared AA,
+// but only just for the lede, so each shadow now runs a tight dark halo close
+// to the glyph *and* a wide soft one that darkens the plate behind the whole
+// line. The tight pair is what does the work; the wide one keeps the edge of
+// the type from looking cut out against bright water.
 const TITLE_SHADOW =
-  "0 2px 10px rgba(11,17,20,0.55), 0 0 26px rgba(11,17,20,0.35)";
+  "0 1px 2px rgba(11,17,20,0.85), 0 2px 12px rgba(11,17,20,0.75), 0 0 44px rgba(11,17,20,0.55)";
 const LEDE_SHADOW =
-  "0 1px 4px rgba(11,17,20,0.7), 0 0 14px rgba(11,17,20,0.35)";
-const LABEL_SHADOW = "0 1px 4px rgba(11,17,20,0.7)";
+  "0 1px 2px rgba(11,17,20,0.95), 0 2px 10px rgba(11,17,20,0.75), 0 0 30px rgba(11,17,20,0.55)";
+const LABEL_SHADOW =
+  "0 1px 2px rgba(11,17,20,0.95), 0 2px 10px rgba(11,17,20,0.7), 0 0 22px rgba(11,17,20,0.45)";
 
 export default function HeroSection() {
   const scrollToEnquiry = () => {
