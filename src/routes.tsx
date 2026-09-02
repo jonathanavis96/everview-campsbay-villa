@@ -23,6 +23,14 @@ export default function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Index />} />
+      {/* GitHub Pages serves the physical `<base>/index.html` URL as well as
+          the directory, keeping `/index.html` in the browser's pathname — so
+          without this the wildcard below claims it and a guest who lands on
+          the file path gets the 404 page. It was already the wrong page
+          before the build prerendered anything; now it would also be a
+          hydration mismatch against the home markup in that very file, with
+          the hero flashing up before React threw it away. */}
+      <Route path="/index.html" element={<Index />} />
       {PlanEditor && (
         <Route
           path="/plan-editor"
